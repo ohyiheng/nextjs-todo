@@ -13,8 +13,8 @@ export default function Sidebar({
             ${collapsed && "-ml-(--sidebar-width)"}
             w-(--sidebar-width) min-h-screen h-full
             p-3 space-y-4
-            bg-neutral-100
-            border-r border-r-neutral-200
+            bg-neutral-100 dark:bg-neutral-900
+            border-r border-r-neutral-200 dark:border-r-neutral-700
             duration-200 ease-out
         `}>
             {children}

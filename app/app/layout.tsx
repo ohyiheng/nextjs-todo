@@ -33,7 +33,7 @@ export default function Layout({
                     <SidebarLink href="/app/tags" title="Tags" icon={<Hashtag />} />
                 </nav>
                 <div>
-                    <p className="text-sm text-neutral-600 font-medium px-3 py-1.5">Projects</p>
+                    <p className="text-sm text-neutral-600 dark:text-neutral-400 font-medium px-3 py-1.5">Projects</p>
                     <nav id="project-nav">
                         <SidebarLink href="/app/project/1" title="Project 1" />
                         <SidebarLink href="/app/project/2" title="Project 2" />
@@ -42,7 +42,7 @@ export default function Layout({
                     </nav>
                 </div>
             </Sidebar>
-            <main className="grow bg-white">
+            <main className="grow bg-white dark:bg-neutral-950">
                 <Button width="icon" onClick={() => { setCollapsed(!collapsed) }}>
                     <SidebarExpand />
                 </Button>
