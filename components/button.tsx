@@ -8,8 +8,8 @@ export const btnStyles = {
         icon: "p-1.5"
     },
     color: {
-        primary: "bg-sky-600 text-neutral-50 hover:bg-sky-700 border-transparent",
-        white: "bg-white hover:bg-neutral-50 border-neutral-200 hover:border-sky-800/70",
+        primary: "bg-sky-600 dark:bg-sky-400 text-neutral-50 dark:text-neutral-900 hover:bg-sky-700 dark:hover:bg-sky-500 border-transparent",
+        white: "bg-white dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 hover:border-neutral-500 text-neutral-600 hover:text-neutral-900 dark:text-neutral-300 dark:hover:text-neutral-50",
         transparent: "border-transparent hover:bg-neutral-500/10",
         transparentWithBorder: "border-neutral-200 hover:bg-neutral-500/10",
     }
