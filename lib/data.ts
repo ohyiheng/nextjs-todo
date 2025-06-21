@@ -1,6 +1,6 @@
 import sql from "@/lib/db";
-import { Project, ProjectNode } from "@/lib/definitions";
-
+import { ProjectNode, TaskNode } from "@/lib/definitions";
+import { partition } from "@/lib/utils";
 
 /**
  * Fetches all projects from the database and constructs a hierarchical tree structure
@@ -13,45 +13,108 @@ import { Project, ProjectNode } from "@/lib/definitions";
  * each with their nested sub-projects.
  */
 export async function fetchProjects() {
-    const allProjects = await sql<ProjectNode[]>`
-        SELECT ${sql("id", "name", "createdAt", "lastModifiedAt", "level", "parentProjectId")} FROM projects
+    const projectNodes = await sql<ProjectNode[]>`
+        SELECT ${sql("id", "name", "createdAt", "lastModifiedAt", "level", "parentId")} FROM projects
     `
 
-    function findSubProjects(projectId: string, level: number): ProjectNode[] | null {
-        if (level === 5) {
-            return null;
-        }
+    // keep root projects only
+    const [ rootProjects, remainingProjects ] = partition(projectNodes, project => project.parentId == null)
 
-        const subProjects: ProjectNode[] = allProjects.filter(project => project.parentProjectId === projectId);
-        if (!subProjects) {
-            return null;
-        }
-
-        const result = subProjects.map((subProject) => {
-            subProject.subProjects = findSubProjects(subProject.id, level + 1);
-            return subProject;
-        })
-        return result;
-    }
-
-    // get root projects
-    const projectTree = allProjects.filter(project => project.parentProjectId == null);
     // for each root project, find its subprojects
-    for (let i = 0; i < projectTree.length; i++) {
-        projectTree[ i ].subProjects = findSubProjects(projectTree[ i ].id, 1);
+    for (let i = 0; i < rootProjects.length; i++) {
+        rootProjects[ i ].subProjects = findSubProjects(remainingProjects, rootProjects[ i ].id, 1, 3);
     }
 
-    sortProjectTree(projectTree);
-    return projectTree;
+    sortTree(rootProjects);
+    return rootProjects;
 }
 
-// Sort project tree by name
-function sortProjectTree(tree: ProjectNode[] | null) {
+export async function fetchTasks(id?: string) {
+    const taskNodes = await sql<TaskNode[]>`
+        SELECT ${sql(
+        "id",
+        "name",
+        "createdAt",
+        "lastModifiedAt",
+        "priority",
+        "level",
+        "description",
+        "parentId",
+        "projectId"
+    )} FROM tasks
+    `
+
+    // keep root tasks only
+    const [ rootTasks, remainingTasks ] = partition(taskNodes, task => task.parentId == null)
+
+    // for each root task, find its subtasks
+    for (let i = 0; i < rootTasks.length; i++) {
+        rootTasks[ i ].subTasks = findSubTasks(remainingTasks, rootTasks[ i ].id, 1, 3);
+    }
+
+    sortTree(rootTasks);
+    return rootTasks;
+}
+
+function findSubProjects(
+    projectNodes: ProjectNode[],
+    projectId: string,
+    level: number,
+    maxLevel: number
+) {
+    if (level === maxLevel) {
+        return null;
+    }
+
+    // filter matching subProjects
+    let [ subProjects, remainingProjects ] = partition(projectNodes, project => project.parentId === projectId);
+    if (!subProjects || subProjects.length === 0) {
+        return null;
+    }
+
+    // recursively find subProjects of each subProject
+    subProjects.forEach(subProject => {
+        subProject.subProjects = findSubProjects(remainingProjects, subProject.id, level + 1, maxLevel);
+    })
+    return subProjects;
+}
+
+function findSubTasks(
+    taskNodes: TaskNode[],
+    taskId: string,
+    level: number,
+    maxLevel: number
+) {
+    if (level === maxLevel) {
+        return null;
+    }
+
+    // filter matching subProjects
+    let [ subTasks, remainingTasks ] = partition(taskNodes, task => task.parentId === taskId);
+    if (!subTasks || subTasks.length === 0) {
+        return null;
+    }
+
+    // recursively find subProjects of each subProject
+    subTasks = subTasks.map((subTask) => {
+        subTask.subTasks = findSubTasks(remainingTasks, subTask.id, level + 1, maxLevel);
+        return subTask;
+    })
+    return subTasks;
+}
+
+
+// Sort project/task tree by name
+function sortTree(tree: ProjectNode[] | TaskNode[] | null) {
     if (!tree) {
         return;
     }
-    tree.sort((a: ProjectNode, b: ProjectNode) => a.name.localeCompare(b.name));
-    for (let i = 0; i < tree.length; i++) {
-        sortProjectTree(tree[ i ].subProjects)
+    tree.sort((a, b) => a.name.localeCompare(b.name));
+    for (let node of tree) {
+        if ("subProjects" in node) {
+            sortTree(node.subProjects);
+        } else if ("subTasks" in node) {
+            sortTree(node.subTasks);
+        }
     }
 }

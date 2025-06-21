@@ -9,8 +9,12 @@ export type Task = {
     completed: boolean,
     startDate?: Date,
     dueDate?: Date,
-    parentTaskId?: string,
+    parentId?: string,
     projectId?: string,
+}
+
+export type TaskNode = Task & {
+    subTasks: TaskNode[] | null
 }
 
 export type Project = {
@@ -19,7 +23,7 @@ export type Project = {
     createdAt: Date,
     lastModifiedAt: Date,
     level: number,
-    parentProjectId?: string,
+    parentId?: string,
 }
 
 export type ProjectNode = Project & {
