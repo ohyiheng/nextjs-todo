@@ -18,6 +18,29 @@ import { useState } from "react"
 import React from "react";
 import { ProjectNode } from "@/lib/definitions";
 
+const links = [
+    {
+        title: "Inbox",
+        href: "/app",
+        icon: <Box />
+    },
+    {
+        title: "Today",
+        href: "/app/today",
+        icon: <SunLight />
+    },
+    {
+        title: "Upcoming",
+        href: "/app/upcoming",
+        icon: <Calendar />
+    },
+    {
+        title: "Tags",
+        href: "/app/tags",
+        icon: <Hashtag />
+    },
+]
+
 export default function AppSidebar({
     projects,
     children
@@ -26,6 +49,7 @@ export default function AppSidebar({
     children: React.ReactNode
 }>) {
     const [ opened, setOpened ] = useState(true);
+    const [ title, setTitle ] = useState("Inbox");
 
     function mapProjectElements(projects: ProjectNode[]) {
         return projects.map((project) => (
@@ -33,18 +57,19 @@ export default function AppSidebar({
                 href={"/app/project/" + project.id}
                 title={project.name}
                 key={project.id}
+                onClick={() => { setTitle(project.name) }}
             >
                 {
-                    project.subProject &&
-                    project.subProject.length > 0 &&
-                    mapProjectElements(project.subProject)
+                    project.subProjects &&
+                    project.subProjects.length > 0 &&
+                    mapProjectElements(project.subProjects)
                 }
             </SidebarLink>
         ))
     }
 
     return (
-        <div className="flex min-h-screen">
+        <div className="flex h-screen max-h-screen box-border">
             <Sidebar opened={opened}>
                 <div className="space-y-2">
                     <Button width="full" color="primary">
@@ -56,10 +81,15 @@ export default function AppSidebar({
                     <SidebarSearch />
                 </div>
                 <nav id="main-nav">
-                    <SidebarLink href="/app" title="Inbox" icon={<Box />} />
-                    <SidebarLink href="/app/today" title="Today" icon={<SunLight />} />
-                    <SidebarLink href="/app/upcoming" title="Upcoming" icon={<Calendar />} />
-                    <SidebarLink href="/app/tags" title="Tags" icon={<Hashtag />} />
+                    {links.map((link) => (
+                        <SidebarLink
+                            key={link.title}
+                            href={link.href}
+                            title={link.title}
+                            icon={link.icon}
+                            onClick={() => { setTitle(link.title) }}
+                        />
+                    ))}
                 </nav>
                 <div>
                     <p className="text-sm text-neutral-600 dark:text-neutral-400 font-medium px-3 py-1.5">
@@ -70,12 +100,18 @@ export default function AppSidebar({
                     </nav>
                 </div>
             </Sidebar>
-            <main className="grow bg-white dark:bg-neutral-950">
-                <Button width="icon" onClick={() => {setOpened(!opened)}}>
-                    <SidebarExpand />
-                </Button>
-                {children}
-            </main>
+            <div className="grow bg-white dark:bg-neutral-950 flex flex-col">
+                <header className="p-(--outer-padding) w-full flex justify-between items-center">
+                    <Button width="icon" onClick={() => { setOpened(!opened) }}>
+                        <SidebarExpand />
+                    </Button>
+                    <h1 className="text-lg">{title}</h1>
+                    <div></div>
+                </header>
+                <main className="p-6 mx-auto w-[700px] max-w-[700px] grow">
+                    {children}
+                </main>
+            </div>
         </div>
     )
 }
@@ -91,7 +127,7 @@ export function Sidebar({
         <div className={`
             ${!opened && "-ml-(--sidebar-width)"}
             w-(--sidebar-width) min-h-screen max-h-screen
-            p-3 space-y-4
+            p-(--outer-padding) space-y-4
             bg-neutral-100 dark:bg-neutral-900
             border-r border-r-neutral-200 dark:border-r-neutral-700
             duration-200 ease-out
@@ -105,12 +141,14 @@ export function SidebarLink({
     href,
     title,
     icon,
-    children
+    children,
+    onClick
 }: Readonly<{
     href: string,
     title: string,
     icon?: any,
-    children?: React.ReactNode
+    children?: React.ReactNode,
+    onClick?: () => void
 }>) {
 
     const [ expanded, setExpanded ] = useState(false);
@@ -122,6 +160,7 @@ export function SidebarLink({
                 href={href}
                 onMouseEnter={() => setHovered(true)}
                 onMouseLeave={() => setHovered(false)}
+                onClick={onClick}
                 className={clsx(
                     btnStyles.base,
                     btnStyles.layout.full,
@@ -140,6 +179,7 @@ export function SidebarLink({
                                 "-my-1.5"
                             )}
                             onClick={(e) => {
+                                e.stopPropagation();
                                 e.preventDefault();
                             }}>
                             <MoreVert />
@@ -155,6 +195,7 @@ export function SidebarLink({
                                 expanded && "rotate-90"
                             )}
                             onClick={(e) => {
+                                e.stopPropagation();
                                 e.preventDefault();
                                 setExpanded(!expanded);
                             }}>
