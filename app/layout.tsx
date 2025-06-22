@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { IconoirProvider } from "iconoir-react";
 
 const inter = Inter({ subsets: [ "latin" ] });
 
@@ -20,13 +19,7 @@ export default async function RootLayout({
       <body
         className={`${inter.className} antialiased bg-neutral-100 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-50 text-base`}
       >
-        <IconoirProvider iconProps={{
-          width: "1.25em",
-          height: "1.25em",
-          strokeWidth: 2,
-        }}>
           {children}
-        </IconoirProvider>
       </body>
     </html>
   );

@@ -3,31 +3,31 @@
 import clsx from "clsx"
 import Link from "next/link"
 import Button, { btnStyles } from "@/components/button"
-import {
-    MoreVert,
-    NavArrowRight,
-    Search,
-    Box,
-    Calendar,
-    Hashtag,
-    Plus,
-    SidebarExpand,
-    SunLight
-} from "iconoir-react"
 import { useState } from "react"
 import React from "react";
 import { ProjectNode } from "@/lib/definitions";
+import { 
+    Calendar,
+    ChevronRight,
+    EllipsisVertical,
+    Inbox,
+    PanelLeft,
+    Plus,
+    Search,
+    Sun,
+    Tag
+} from "lucide-react";
 
 const links = [
     {
         title: "Inbox",
         href: "/app",
-        icon: <Box />
+        icon: <Inbox />
     },
     {
         title: "Today",
         href: "/app/today",
-        icon: <SunLight />
+        icon: <Sun />
     },
     {
         title: "Upcoming",
@@ -37,7 +37,7 @@ const links = [
     {
         title: "Tags",
         href: "/app/tags",
-        icon: <Hashtag />
+        icon: <Tag />
     },
 ]
 
@@ -100,10 +100,10 @@ export default function AppSidebar({
                     </nav>
                 </div>
             </Sidebar>
-            <div className="grow bg-white dark:bg-neutral-950 flex flex-col">
+            <div className="grow bg-neutral-50 dark:bg-neutral-950 flex flex-col">
                 <header className="p-(--outer-padding) w-full flex justify-between items-center">
                     <Button width="icon" onClick={() => { setOpened(!opened) }}>
-                        <SidebarExpand />
+                        <PanelLeft />
                     </Button>
                     <h1 className="text-lg">{title}</h1>
                     <div></div>
@@ -167,7 +167,7 @@ export function SidebarLink({
                     btnStyles.color.transparent,
                     "w-full block"
                 )}>
-                <div title={title} className={"flex items-center gap-1.5"}>
+                <div title={title} className={"flex items-center gap-2"}>
                     {icon}
                     <p className="grow truncate">{title}</p>
                     {hovered &&
@@ -182,7 +182,7 @@ export function SidebarLink({
                                 e.stopPropagation();
                                 e.preventDefault();
                             }}>
-                            <MoreVert />
+                            <EllipsisVertical />
                         </button>
                     }
                     {children &&
@@ -199,7 +199,7 @@ export function SidebarLink({
                                 e.preventDefault();
                                 setExpanded(!expanded);
                             }}>
-                            <NavArrowRight />
+                            <ChevronRight />
                         </button>
                     }
                 </div>
