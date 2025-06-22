@@ -29,20 +29,35 @@ export async function fetchProjects() {
     return rootProjects;
 }
 
-export async function fetchTasks(id?: string) {
-    const taskNodes = await sql<TaskNode[]>`
+export async function fetchTasks(projectId?: string) {
+    let taskNodes;
+    if (projectId) {
+        taskNodes = await sql<TaskNode[]>`
         SELECT ${sql(
-        "id",
-        "name",
-        "createdAt",
-        "lastModifiedAt",
-        "priority",
-        "level",
-        "description",
-        "parentId",
-        "projectId"
-    )} FROM tasks
-    `
+            "id",
+            "name",
+            "createdAt",
+            "lastModifiedAt",
+            "priority",
+            "level",
+            "description",
+            "parentId",
+            "projectId"
+        )} FROM tasks WHERE project_id = ${projectId}`
+    } else {
+        taskNodes = await sql<TaskNode[]>`
+        SELECT ${sql(
+            "id",
+            "name",
+            "createdAt",
+            "lastModifiedAt",
+            "priority",
+            "level",
+            "description",
+            "parentId",
+            "projectId"
+        )} FROM tasks`
+    }
 
     // keep root tasks only
     const [ rootTasks, remainingTasks ] = partition(taskNodes, task => task.parentId == null)
