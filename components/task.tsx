@@ -9,9 +9,11 @@ import { TaskNode } from "@/lib/definitions";
 
 export function Task({
     id,
+    priority,
     children
 }: {
     id: string | number,
+    priority: number,
     children: React.ReactNode
 }) {
     const {
@@ -29,6 +31,22 @@ export function Task({
         transition,
     }
 
+    let completeBtnStyle;
+    switch (priority) {
+        case 1:
+            completeBtnStyle = "border-red-500 bg-red-100 dark:bg-red-900";
+            break;
+        case 2:
+            completeBtnStyle = "border-amber-500 bg-amber-100 dark:bg-amber-900";
+            break;
+        case 3:
+            completeBtnStyle = "border-sky-500 bg-sky-100 dark:bg-sky-900";
+            break;
+        default:
+            completeBtnStyle = "border-neutral-400 bg-neutral-50 dark:bg-neutral-700";
+            break;
+    }
+
     return (
         <div ref={setNodeRef} style={style} {...attributes} {...listeners}
             className={clsx(
@@ -36,14 +54,17 @@ export function Task({
                 !isDragging && "bg-white dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700",
                 "relative",
                 "flex items-center gap-3",
-                "px-5 py-2.5 h-12",
+                "px-4 py-2.5 h-12",
                 "border",
                 "rounded-md cursor-grab",
             )}>
 
             {!isDragging &&
                 <>
-                    <button className="w-6 h-6 rounded-full bg-neutral-50 dark:bg-neutral-700 border border-neutral-400 cursor-pointer"></button>
+                    <button className={clsx(
+                        "w-6 h-6 rounded-full border-2 cursor-pointer",
+                        completeBtnStyle
+                    )}></button>
                     {children}
                 </>
             }
@@ -74,12 +95,12 @@ export function TaskContainer({ taskList }: { taskList: TaskNode[] }) {
         <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
             <TaskSection items={ids}>
                 {tasks.map(task => (
-                    <Task key={task.id} id={task.id}>{task.name}</Task>
+                    <Task key={task.id} id={task.id} priority={task.priority}>{task.name}</Task>
                 ))}
             </TaskSection>
             <DragOverlay>
                 {activeTask ? (
-                    <Task id={activeTask.id}>{activeTask.name}</Task>
+                    <Task id={activeTask.id} priority={activeTask.priority}>{activeTask.name}</Task>
                 ) : null}
             </DragOverlay>
         </DndContext>
