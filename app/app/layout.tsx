@@ -1,5 +1,4 @@
-import AppSidebar from "@/components/sidebar";
-import { TaskContainer } from "@/components/task";
+import AppLayout from "@/components/app";
 import { fetchProjects, fetchTasks } from "@/lib/data";
 
 export default async function Layout({
@@ -8,12 +7,10 @@ export default async function Layout({
     children: React.ReactNode;
 }>) {
     const projects = await fetchProjects();
-    const tasks = await fetchTasks();
-    console.dir(tasks, { depth: null })
 
     return (
-        <AppSidebar projects={projects}>
-            <TaskContainer taskList={tasks} />
-        </AppSidebar>
+        <AppLayout projects={projects}>
+            {children}
+        </AppLayout>
     );
 }
