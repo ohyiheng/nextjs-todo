@@ -1,10 +1,14 @@
-import { TaskContainer } from "@/components/task";
 import { fetchTasks } from "@/lib/data";
+import { App } from "@/components/app"
+import TasksProvider from "@/components/context/TasksContext";
 
 export default async function Page() {
     let tasks = await fetchTasks();
     tasks = tasks.filter((task) => task.projectId === null);
+
     return (
-        <TaskContainer taskList={tasks} />
+        <TasksProvider tasks={tasks}>
+            <App/>
+        </TasksProvider>
     )
 }

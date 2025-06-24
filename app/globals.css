@@ -2,6 +2,7 @@
 
 :root {
   --sidebar-width: 280px;
+  --task-details-width: 400px;
   --outer-padding: 0.75rem;
 }
 
