@@ -1,20 +1,20 @@
 "use client";
 
-import { DndContext, DragEndEvent, DragOverlay } from "@dnd-kit/core"
-import { arrayMove, SortableContext, useSortable } from "@dnd-kit/sortable"
+import { DndContext, DragEndEvent, DragOverlay, PointerSensor, TouchSensor, useSensor, useSensors } from "@dnd-kit/core"
+import { SortableContext, useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import clsx from "clsx";
-import { useState } from "react"
+import { useContext, useState } from "react"
 import { TaskNode } from "@/lib/definitions";
+import { ActiveTaskDispatchContext } from "./context/ActiveTaskContext";
+import { TasksContext, TasksDispatchContext } from "./context/TasksContext";
 
 export function Task({
     id,
-    priority,
-    children
+    taskNode
 }: {
-    id: string | number,
-    priority: number,
-    children: React.ReactNode
+    id: string,
+    taskNode: TaskNode
 }) {
     const {
         isDragging,
@@ -31,8 +31,10 @@ export function Task({
         transition,
     }
 
+    const setActiveTask = useContext(ActiveTaskDispatchContext);
+
     let completeBtnStyle;
-    switch (priority) {
+    switch (taskNode.priority) {
         case 1:
             completeBtnStyle = "border-red-500 bg-red-100 dark:bg-red-900";
             break;
@@ -54,53 +56,83 @@ export function Task({
                 !isDragging && "bg-white dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700",
                 "relative",
                 "flex items-center gap-3",
-                "px-4 py-2.5 h-12",
+                "px-3 h-14",
                 "border",
-                "rounded-md cursor-grab",
-            )}>
-
+                "rounded-md cursor-pointer",
+            )}
+            onClick={() => {
+                setActiveTask(taskNode);
+            }}
+        >
             {!isDragging &&
                 <>
                     <button className={clsx(
                         "w-6 h-6 rounded-full border-2 cursor-pointer",
                         completeBtnStyle
                     )}></button>
-                    {children}
+                    {taskNode.name}
                 </>
             }
         </div>
     )
 }
 
-export function TaskContainer({ taskList }: { taskList: TaskNode[] }) {
-    const [ tasks, setTaskList ] = useState(taskList);
+export function TaskContainer() {
+    const tasks = useContext(TasksContext);
+    const dispatch = useContext(TasksDispatchContext);
+    if (tasks == null) {
+        return;
+    }
+
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                delay: 100,
+                tolerance: 100
+            }
+        }),
+        useSensor(TouchSensor, {
+            activationConstraint: {
+                delay: 200,
+                tolerance: 50
+            }
+        })
+    )
+
+    const [ draggingTask, setDraggingTask ] = useState<TaskNode | null>(null);
     const ids = tasks.map(task => task.id);
-    const [ activeTask, setActiveTask ] = useState<TaskNode | null>(null);
 
     function handleDragStart(event: DragEndEvent) {
         const taskId = event.active.id as string;
-        setActiveTask(getTaskById(tasks, taskId))
+        setDraggingTask(getTaskById(tasks!, taskId))
     }
 
     function handleDragEnd(event: DragEndEvent) {
-        setActiveTask(null);
+        setDraggingTask(null);
         if (event.over && event.active.id !== event.over.id) {
             const oldIndex = ids.indexOf(event.active.id as string);
             const newIndex = ids.indexOf(event.over!.id as string);
-            setTaskList(arrayMove(tasks, oldIndex, newIndex))
+            dispatch({
+                type: "move",
+                oldIndex: oldIndex,
+                newIndex: newIndex
+            });
         }
     }
 
     return (
-        <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+        <DndContext
+            sensors={sensors}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}>
             <TaskSection items={ids}>
                 {tasks.map(task => (
-                    <Task key={task.id} id={task.id} priority={task.priority}>{task.name}</Task>
+                    <Task key={task.id} id={task.id} taskNode={task} />
                 ))}
             </TaskSection>
             <DragOverlay>
-                {activeTask ? (
-                    <Task id={activeTask.id} priority={activeTask.priority}>{activeTask.name}</Task>
+                {draggingTask ? (
+                    <Task key={draggingTask.id} id={draggingTask.id} taskNode={draggingTask} />
                 ) : null}
             </DragOverlay>
         </DndContext>
@@ -119,7 +151,7 @@ function TaskSection({
 
     return (
         <SortableContext items={items}>
-            <div className="p-4 space-y-2">
+            <div className="space-y-2">
                 {children}
             </div>
         </SortableContext>
