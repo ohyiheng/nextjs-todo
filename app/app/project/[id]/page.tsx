@@ -1,4 +1,5 @@
-import { TaskContainer } from "@/components/task";
+import { App } from "@/components/app";
+import TasksProvider from "@/components/context/TasksContext";
 import { fetchTasks } from "@/lib/data";
 
 export default async function Page({
@@ -8,10 +9,10 @@ export default async function Page({
 }) {
     const { id } = await params;
     const tasks = await fetchTasks(id);
+
     return (
-        <>
-            <TaskContainer taskList={tasks} />
-            <div>something</div>
-        </>
+        <TasksProvider tasks={tasks}>
+            <App />
+        </TasksProvider>
     )
 }

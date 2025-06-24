@@ -1,108 +1,70 @@
 "use client";
 
 import { ProjectNode } from "@/lib/definitions";
-import { useState } from "react";
-import { Sidebar, SidebarLink, SidebarSearch } from "@/components/sidebar";
-import Button from "@/components/button";
-import { Calendar, Inbox, PanelLeft, Plus, Sun, Tag } from "lucide-react";
+import React, { useContext, useState } from "react";
+import { Sidebar } from "@/components/sidebar";
+import { btnStyles } from "@/components/button";
+import { X } from "lucide-react";
+import { TaskContainer } from "./task";
+import clsx from "clsx";
+import { ProjectContext } from "./context/ProjectContext";
+import ActiveTaskProvider, { ActiveTaskContext, ActiveTaskDispatchContext } from "./context/ActiveTaskContext";
 
-const links = [
-    {
-        title: "Inbox",
-        href: "/app",
-        icon: <Inbox />
-    },
-    {
-        title: "Today",
-        href: "/app/today",
-        icon: <Sun />
-    },
-    {
-        title: "Upcoming",
-        href: "/app/upcoming",
-        icon: <Calendar />
-    },
-    {
-        title: "Tags",
-        href: "/app/tags",
-        icon: <Tag />
-    },
-]
 
 export default function AppLayout({
     projects,
-    children,
-    itemDetail,
+    children
 }: Readonly<{
     projects: ProjectNode[],
-    children: React.ReactNode,
-    itemDetail?: React.ReactNode,
+    children: React.ReactNode
 }>) {
-    const [ opened, setOpened ] = useState(true);
-    const [ title, setTitle ] = useState("Inbox");
-
-    function mapProjectElements(projects: ProjectNode[]) {
-        return projects.map((project) => (
-            <SidebarLink
-                href={"/app/project/" + project.id}
-                title={project.name}
-                key={project.id}
-                onClick={() => { setTitle(project.name) }}
-            >
-                {
-                    project.subProjects &&
-                    project.subProjects.length > 0 &&
-                    mapProjectElements(project.subProjects)
-                }
-            </SidebarLink>
-        ))
-    }
 
     return (
         <div className="flex h-screen max-h-screen box-border">
-            <Sidebar opened={opened}>
-                <div className="space-y-2">
-                    <Button width="full" color="primary">
-                        <div className="flex gap-1 items-center justify-center">
-                            <Plus />
-                            Add task
-                        </div>
-                    </Button>
-                    <SidebarSearch />
-                </div>
-                <nav id="main-nav">
-                    {links.map((link) => (
-                        <SidebarLink
-                            key={link.title}
-                            href={link.href}
-                            title={link.title}
-                            icon={link.icon}
-                            onClick={() => { setTitle(link.title) }}
-                        />
-                    ))}
-                </nav>
-                <div>
-                    <p className="text-sm text-neutral-600 dark:text-neutral-400 font-medium px-3 py-1.5">
-                        Projects
-                    </p>
-                    <nav id="project-nav">
-                        {mapProjectElements(projects)}
-                    </nav>
-                </div>
-            </Sidebar>
-            <div className="grow bg-neutral-50 dark:bg-neutral-950 flex flex-col">
+            <ProjectContext value={projects}>
+                <ActiveTaskProvider>
+                    {children}
+                </ActiveTaskProvider>
+            </ProjectContext>
+        </div>
+    )
+}
+
+export function App() {
+    const [ title, setTitle ] = useState("Inbox");
+    const activeTask = useContext(ActiveTaskContext);
+    const setActiveTask = useContext(ActiveTaskDispatchContext);
+
+    return (
+        <>
+            <Sidebar setTitle={setTitle} />
+            <main className="grow bg-neutral-50 dark:bg-neutral-950 flex flex-col">
                 <header className="p-(--outer-padding) w-full flex justify-between items-center">
-                    <Button width="icon" onClick={() => { setOpened(!opened) }}>
-                        <PanelLeft />
-                    </Button>
-                    <h1 className="text-lg">{title}</h1>
+                    <h1 className="text-2xl">{title}</h1>
                     <div></div>
                 </header>
-                <main className="p-6 mx-auto w-[700px] max-w-[700px] grow">
-                    {children}
-                </main>
+                <div className="p-4 mx-auto w-full grow">
+                    <TaskContainer />
+                </div>
+            </main>
+            <div className={clsx(
+                !activeTask && "-mr-(--task-details-width)",
+                "w-(--task-details-width) h-full p-(--outer-padding)","border-l border-neutral-300 bg-white",
+                "duration-200 ease-in-out"
+            )}>
+                <div className="flex items-center gap-3">
+                    <button
+                        className={clsx(
+                            btnStyles.base,
+                            btnStyles.layout.icon,
+                            btnStyles.color.transparentWithBorder
+                        )}
+                        onClick={() => { setActiveTask(null) }}>
+                        <X />
+                    </button>
+                    <h2 className="font-semibold text-lg">{activeTask?.name}</h2>
+                </div>
             </div>
-            {itemDetail}
-        </div>
+        </>
     )
 }
