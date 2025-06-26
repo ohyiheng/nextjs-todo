@@ -4,7 +4,7 @@ import { DndContext, DragEndEvent, DragOverlay, PointerSensor, TouchSensor, useS
 import { SortableContext, useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import clsx from "clsx";
-import { useContext, useState } from "react"
+import { useContext, useId, useState } from "react"
 import { TaskNode } from "@/lib/definitions";
 import { ActiveTaskDispatchContext } from "./context/ActiveTaskContext";
 import { TasksContext, TasksDispatchContext } from "./context/TasksContext";
@@ -120,8 +120,11 @@ export function TaskContainer() {
         }
     }
 
+    const id = useId();
+
     return (
         <DndContext
+            id={id}
             sensors={sensors}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}>
@@ -149,8 +152,10 @@ function TaskSection({
     children?: React.ReactNode
 }) {
 
+    const id = useId();
+
     return (
-        <SortableContext items={items}>
+        <SortableContext id={id} items={items}>
             <div className="space-y-2">
                 {children}
             </div>

@@ -8,7 +8,7 @@ import { X } from "lucide-react";
 import { TaskContainer } from "./task";
 import clsx from "clsx";
 import { ProjectContext } from "./context/ProjectContext";
-import ActiveTaskProvider, { ActiveTaskContext, ActiveTaskDispatchContext } from "./context/ActiveTaskContext";
+import { useTitle } from "./context/TitleContext";
 
 
 export default function AppLayout({
@@ -31,9 +31,7 @@ export default function AppLayout({
 }
 
 export function App() {
-    const [ title, setTitle ] = useState("Inbox");
-    const activeTask = useContext(ActiveTaskContext);
-    const setActiveTask = useContext(ActiveTaskDispatchContext);
+    const { title, setTitle } = useTitle();
 
     return (
         <>
