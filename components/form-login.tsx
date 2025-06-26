@@ -17,8 +17,8 @@ export default function LoginForm({ signUp }: { signUp?: boolean }) {
             className="
             w-4/5 md:w-[400px]
             p-6 space-y-5
-            bg-white dark:bg-neutral-900
-            border border-neutral-200 dark:border-neutral-700
+            bg-white dark:bg-zinc-900
+            border border-zinc-200 dark:border-zinc-700
             shadow-xs rounded-xl
         ">
             <h2 className="text-xl font-bold">
@@ -36,8 +36,8 @@ export default function LoginForm({ signUp }: { signUp?: boolean }) {
                     aria-describedby="username-errors"
                     className={clsx(
                         "block w-full px-3 py-1.5",
-                        "bg-white dark:bg-neutral-800",
-                        "border border-neutral-200 dark:border-neutral-700",
+                        "bg-white dark:bg-zinc-800",
+                        "border border-zinc-200 dark:border-zinc-700",
                         { "border-red-600": formState.errors?.username },
                         "shadow-xs rounded-lg"
                     )}
@@ -61,8 +61,8 @@ export default function LoginForm({ signUp }: { signUp?: boolean }) {
                     aria-describedby="password-errors"
                     className={clsx(
                         "block w-full px-3 py-1.5",
-                        "bg-white dark:bg-neutral-800",
-                        "border border-neutral-200 dark:border-neutral-700",
+                        "bg-white dark:bg-zinc-800",
+                        "border border-zinc-200 dark:border-zinc-700",
                         { "border-red-600": formState.errors?.password },
                         "shadow-xs rounded-lg"
                     )}
@@ -84,7 +84,7 @@ export default function LoginForm({ signUp }: { signUp?: boolean }) {
                     w-full px-3 py-1.5
                     bg-sky-700 dark:bg-sky-400
                     hover:bg-sky-800 dark:hover:bg-sky-500
-                    text-neutral-50 dark:text-neutral-900 
+                    text-zinc-50 dark:text-zinc-900 
                     font-medium rounded-lg cursor-pointer
                     duration-100 ease-in-out
                     `}

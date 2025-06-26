@@ -8,10 +8,10 @@ export const btnStyles = {
         icon: "p-1.5"
     },
     color: {
-        primary: "bg-sky-600 dark:bg-sky-400 text-neutral-50 dark:text-neutral-900 hover:bg-sky-700 dark:hover:bg-sky-500 border-transparent",
-        white: "bg-white dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-500 text-neutral-600 hover:text-neutral-900 dark:text-neutral-300 dark:hover:text-neutral-50",
-        transparent: "border-transparent hover:bg-neutral-500/10 dark:hover:bg-neutral-400/20",
-        transparentWithBorder: "border-neutral-200 hover:bg-neutral-500/10",
+        primary: "bg-sky-600 dark:bg-sky-400 text-zinc-50 dark:text-zinc-900 hover:bg-sky-700 dark:hover:bg-sky-500 border-transparent",
+        white: "bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-500 text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-50",
+        transparent: "border-transparent hover:bg-zinc-500/10 dark:hover:bg-zinc-400/20",
+        transparentWithBorder: "border-zinc-200 hover:bg-zinc-500/10 dark:border-zinc-600 dark:hover:border-zinc-500",
     }
 }
 
@@ -23,8 +23,8 @@ export default function Button({
 }: {
     children: React.ReactNode,
     width?: "full" | "icon" | "normal",
-    onClick?: any
-    color?: "primary" | "secondary" | "white" | "transparent",
+    onClick?: (e?: any) => any
+    color?: "primary" | "white" | "transparent",
 }) {
     return (
         <button className={clsx(

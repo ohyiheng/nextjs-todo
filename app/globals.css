@@ -1,8 +1,18 @@
 @import "tailwindcss";
 
+@layer base {
+  :focus:not(:focus-visible) {
+    @apply outline-none;
+  }
+  
+  :focus-visible {
+    @apply outline-2 outline-blue-500 outline-offset-2;
+  }
+}
+
 :root {
   --sidebar-width: 280px;
-  --task-details-width: 400px;
+  --right-panel-width: 450px;
   --outer-padding: 0.75rem;
 }
 
