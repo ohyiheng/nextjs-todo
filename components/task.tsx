@@ -45,15 +45,17 @@ export function Task({
             completeBtnStyle = "border-sky-500 bg-sky-100 dark:bg-sky-900";
             break;
         default:
-            completeBtnStyle = "border-neutral-400 bg-neutral-50 dark:bg-neutral-700";
+            completeBtnStyle = "border-zinc-400 bg-zinc-50 dark:bg-zinc-700";
             break;
     }
 
     return (
         <div ref={setNodeRef} style={style} {...attributes} {...listeners}
             className={clsx(
+                (activeTask === taskNode) && "bg-sky-50 border-sky-600",
+                (activeTask !== taskNode && !isDragging) && "bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700",
                 isDragging && "bg-sky-700/10 border-sky-700/50 dark:bg-sky-400/10 dark:border-sky-300/40",
-                !isDragging && "bg-white dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700",
+                (activeTask !== taskNode) && "hover:bg-sky-50/40 hover:border-sky-600/20",
                 "relative",
                 "flex items-center gap-3",
                 "px-3 h-14",
@@ -87,7 +89,7 @@ export function TaskContainer() {
     const sensors = useSensors(
         useSensor(PointerSensor, {
             activationConstraint: {
-                delay: 100,
+                delay: 200,
                 tolerance: 100
             }
         }),

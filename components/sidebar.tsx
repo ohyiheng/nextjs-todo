@@ -56,8 +56,8 @@ export function Sidebar({
             ${!opened && "-ml-(--sidebar-width)"}
             w-(--sidebar-width) min-h-screen max-h-screen
             p-(--outer-padding) space-y-4
-            bg-neutral-100 dark:bg-neutral-900
-            border-r border-r-neutral-200 dark:border-r-neutral-700
+            bg-zinc-100 dark:bg-zinc-900
+            border-r border-r-zinc-200 dark:border-r-zinc-700
             duration-200 ease-out
         `}>
             <div className="flex flex-col justify-between h-full">
@@ -85,7 +85,7 @@ export function Sidebar({
                         ))}
                     </nav>
                     <div>
-                        <p className="text-sm text-neutral-600 dark:text-neutral-400 font-medium px-3 py-1.5">
+                        <p className="text-sm text-zinc-600 dark:text-zinc-400 font-medium px-3 py-1.5">
                             Projects
                         </p>
                         <nav id="project-nav">
@@ -97,7 +97,7 @@ export function Sidebar({
                     <div className="p-(--outer-padding) mb-3">
                         rainmrn
                     </div>
-                    <div className="flex border-t border-neutral-300 pt-3">
+                    <div className="flex border-t border-zinc-300 pt-3">
                         <button className={clsx(
                             btnStyles.base,
                             btnStyles.layout.icon,
