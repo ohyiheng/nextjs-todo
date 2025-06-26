@@ -21,9 +21,9 @@ import { ProjectContext } from "@/components/context/ProjectContext";
 
 export function Sidebar({
     setTitle,
-}: Readonly<{
-    setTitle: Dispatch<SetStateAction<string>>
-}>) {
+}: {
+    setTitle: Dispatch<string>
+}) {
     const projects = useContext(ProjectContext);
     const links = [
         {
@@ -77,7 +77,9 @@ export function Sidebar({
                                 href={link.href}
                                 title={link.title}
                                 icon={link.icon}
-                                onClick={() => { setTitle(link.title) }}
+                                onClick={() => {
+                                    setTitle(link.title);
+                                }}
                             />
                         ))}
                     </nav>
@@ -115,7 +117,9 @@ export function Sidebar({
                     href={"/app/project/" + project.id}
                     title={project.name}
                     key={project.id}
-                    onClick={() => { setTitle(project.name) }}
+                    onClick={() => {
+                        setTitle(project.name);
+                    }}
                 >
                     {
                         project.subProjects &&

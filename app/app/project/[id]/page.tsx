@@ -1,6 +1,8 @@
 import { App } from "@/components/app";
+import { ProjectContext } from "@/components/context/ProjectContext";
 import TasksProvider from "@/components/context/TasksContext";
-import { fetchTasks } from "@/lib/data";
+import TitleProvider from "@/components/context/TitleContext";
+import { fetchProjectsById, fetchTasks } from "@/lib/data";
 
 export default async function Page({
     params
@@ -8,11 +10,14 @@ export default async function Page({
     params: Promise<{ id: string }>
 }) {
     const { id } = await params;
+    const project = await fetchProjectsById(id);
     const tasks = await fetchTasks(id);
 
     return (
         <TasksProvider tasks={tasks}>
-            <App />
+            <TitleProvider defaultTitle={project?.name ?? ""}>
+                <App />
+            </TitleProvider>
         </TasksProvider>
     )
 }
