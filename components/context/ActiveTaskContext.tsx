@@ -1,25 +1,31 @@
 import { TaskNode } from "@/lib/definitions";
-import { createContext, Dispatch, useState } from "react";
+import { createContext, Dispatch, useContext, useState } from "react";
 
-export const ActiveTaskContext = createContext<TaskNode | null>(null);
-export const ActiveTaskDispatchContext = createContext<Dispatch<TaskNode | null>>(() => {});
+type ActiveTaskContextType = {
+    activeTask: TaskNode | null,
+    setActiveTask: Dispatch<TaskNode | null>
+}
 
-export default function ActiveTaskProvider({
+const ActiveTaskContext = createContext<ActiveTaskContextType | undefined>(undefined);
+
+export function ActiveTaskProvider({
     children
 }: {
     children: React.ReactNode
 }) {
     const [ activeTask, setActiveTask ] = useState<TaskNode | null>(null);
 
-    function setActiveTaskOrNull(t: TaskNode | null) {
-        setActiveTask(t);
-    }
-
     return (
-        <ActiveTaskContext value={activeTask}>
-            <ActiveTaskDispatchContext value={setActiveTaskOrNull}>
-                {children}
-            </ActiveTaskDispatchContext>
+        <ActiveTaskContext value={{ activeTask, setActiveTask }}>
+            {children}
         </ActiveTaskContext>
     )
+}
+
+export default function useActiveTask() {
+    const activeTaskContext = useContext(ActiveTaskContext);
+    if (!activeTaskContext) {
+        throw new Error("useActiveTask should be used within an ActiveTaskProvider");
+    }
+    return activeTaskContext;
 }
