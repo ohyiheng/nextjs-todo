@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { ProjectNode } from "@/lib/definitions";
 import { ProjectContext } from "@/components/context/ProjectContext";
+import useActiveTask from "./context/ActiveTaskContext";
 
 export function Sidebar({
     setTitle,
@@ -149,6 +150,7 @@ export function SidebarLink({
 
     const [ expanded, setExpanded ] = useState(false);
     const [ hovered, setHovered ] = useState(false);
+    const { setActiveTask } = useActiveTask();
 
     return (
         <>
@@ -156,7 +158,12 @@ export function SidebarLink({
                 href={href}
                 onMouseEnter={() => setHovered(true)}
                 onMouseLeave={() => setHovered(false)}
-                onClick={onClick}
+                onClick={() => {
+                    if (onClick) {
+                        setTimeout(onClick, 0);
+                    }
+                    setActiveTask(null);
+                }}
                 className={clsx(
                     btnStyles.base,
                     btnStyles.layout.full,

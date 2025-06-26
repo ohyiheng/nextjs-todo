@@ -6,8 +6,8 @@ import { CSS } from "@dnd-kit/utilities"
 import clsx from "clsx";
 import { useContext, useId, useState } from "react"
 import { TaskNode } from "@/lib/definitions";
-import { ActiveTaskDispatchContext } from "./context/ActiveTaskContext";
 import { TasksContext, TasksDispatchContext } from "./context/TasksContext";
+import useActiveTask from "./context/ActiveTaskContext";
 
 export function Task({
     id,
@@ -31,7 +31,7 @@ export function Task({
         transition,
     }
 
-    const setActiveTask = useContext(ActiveTaskDispatchContext);
+    const { activeTask, setActiveTask } = useActiveTask();
 
     let completeBtnStyle;
     switch (taskNode.priority) {
