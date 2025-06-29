@@ -1,7 +1,7 @@
 "use client";
 
 import { ProjectNode } from "@/lib/definitions";
-import React from "react";
+import React, { useState } from "react";
 import { Sidebar } from "@/components/sidebar";
 import { TaskContainer } from "./task";
 import { ProjectContext } from "./context/ProjectContext";
@@ -30,6 +30,7 @@ export default function AppLayout({
 
 export function App() {
     const { title, setTitle } = useTitle();
+    const [ isEditing, setIsEditing ] = useState(false);
 
     return (
         <ActiveTaskProvider>
@@ -37,10 +38,10 @@ export function App() {
             <main className="grow bg-zinc-50 dark:bg-zinc-950 flex flex-col">
                 <Header title={title} />
                 <div className="p-4 mx-auto w-full grow">
-                    <TaskContainer />
+                    <TaskContainer setIsEditing={setIsEditing} />
                 </div>
             </main>
-            <RightPanel />
+            <RightPanel isEditing={isEditing} setIsEditing={setIsEditing} />
         </ActiveTaskProvider>
     )
 }

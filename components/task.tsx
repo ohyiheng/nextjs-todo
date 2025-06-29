@@ -4,17 +4,19 @@ import { DndContext, DragEndEvent, DragOverlay, PointerSensor, TouchSensor, useS
 import { SortableContext, useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import clsx from "clsx";
-import { useContext, useId, useState } from "react"
+import { Dispatch, useContext, useId, useState } from "react"
 import { TaskNode } from "@/lib/definitions";
 import { TasksContext, TasksDispatchContext } from "./context/TasksContext";
 import useActiveTask from "./context/ActiveTaskContext";
 
 export function Task({
     id,
-    taskNode
+    taskNode,
+    setIsEditing
 }: {
     id: string,
-    taskNode: TaskNode
+    taskNode: TaskNode,
+    setIsEditing: Dispatch<boolean>
 }) {
     const {
         isDragging,
@@ -52,10 +54,9 @@ export function Task({
     return (
         <div ref={setNodeRef} style={style} {...attributes} {...listeners}
             className={clsx(
-                (activeTask === taskNode) && "bg-sky-50 border-sky-600",
-                (activeTask !== taskNode && !isDragging) && "bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700",
+                (activeTask?.id === taskNode.id) && "bg-sky-50 border-sky-600 dark:bg-sky-950",
+                (activeTask?.id !== taskNode.id && !isDragging) && "bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700",
                 isDragging && "bg-sky-700/10 border-sky-700/50 dark:bg-sky-400/10 dark:border-sky-300/40",
-                (activeTask !== taskNode) && "hover:bg-sky-50/40 hover:border-sky-600/20",
                 "relative",
                 "flex items-center gap-3",
                 "px-3 h-14",
@@ -64,6 +65,7 @@ export function Task({
             )}
             onClick={() => {
                 setActiveTask(taskNode);
+                setIsEditing(false);
             }}
         >
             {!isDragging &&
@@ -79,7 +81,11 @@ export function Task({
     )
 }
 
-export function TaskContainer() {
+export function TaskContainer({
+    setIsEditing
+}: {
+    setIsEditing: Dispatch<boolean>
+}) {
     const tasks = useContext(TasksContext);
     const dispatch = useContext(TasksDispatchContext);
     if (tasks == null) {
@@ -132,12 +138,12 @@ export function TaskContainer() {
             onDragEnd={handleDragEnd}>
             <TaskSection items={ids}>
                 {tasks.map(task => (
-                    <Task key={task.id} id={task.id} taskNode={task} />
+                    <Task key={task.id} id={task.id} taskNode={task} setIsEditing={setIsEditing} />
                 ))}
             </TaskSection>
             <DragOverlay>
                 {draggingTask ? (
-                    <Task key={draggingTask.id} id={draggingTask.id} taskNode={draggingTask} />
+                    <Task key={draggingTask.id} id={draggingTask.id} taskNode={draggingTask} setIsEditing={setIsEditing} />
                 ) : null}
             </DragOverlay>
         </DndContext>
