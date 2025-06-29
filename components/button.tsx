@@ -5,7 +5,8 @@ export const btnStyles = {
     layout: {
         normal: "py-1.5 px-3",
         full: "py-1.5 px-3 w-full",
-        icon: "p-1.5"
+        icon: "p-1.5",
+        chip: "px-2 py-1"
     },
     color: {
         primary: "bg-sky-600 dark:bg-sky-400 text-zinc-50 dark:text-zinc-900 hover:bg-sky-700 dark:hover:bg-sky-500 border-transparent",
@@ -20,11 +21,15 @@ export default function Button({
     width = "normal",
     onClick,
     color = "transparent",
+    type,
+    className,
 }: {
     children: React.ReactNode,
-    width?: "full" | "icon" | "normal",
+    width?: "full" | "icon" | "chip" | "normal",
     onClick?: (e?: any) => any
     color?: "primary" | "white" | "transparent",
+    type?: "submit" | "reset" | "button",
+    className?: string
 }) {
     return (
         <button className={clsx(
@@ -34,8 +39,10 @@ export default function Button({
             width === "normal" && btnStyles.layout.normal,
             width === "full" && btnStyles.layout.full,
             width === "icon" && btnStyles.layout.icon,
-            btnStyles.base
-        )} onClick={onClick}>
+            width === "chip" && btnStyles.layout.chip,
+            btnStyles.base,
+            className
+        )} type={type} onClick={onClick}>
             <div className="truncate">{children}</div>
         </button>
     )
