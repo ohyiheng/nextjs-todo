@@ -1,12 +1,12 @@
 "use client";
 
 import { ChevronDown, Edit, PanelRightClose } from "lucide-react";
-import useActiveTask from "./context/ActiveTaskContext";
+import useActiveTask from "./providers/ActiveTaskContext";
 import clsx from "clsx";
 import Button from "./button";
 import { Dispatch, useContext, useState } from "react";
 import { TaskNode } from "@/lib/definitions";
-import { ProjectContext } from "./context/ProjectContext";
+import useProjects from "./providers/ProjectsProvider";
 import { ProjectSelector } from "./selectors";
 
 export default function RightPanel({
@@ -19,14 +19,7 @@ export default function RightPanel({
     const { activeTask, setActiveTask } = useActiveTask();
     const [ originalTask, setOriginalTask ] = useState<TaskNode | null>(null);
     const [ confirmCancelPopUp, setConfirmCancelPopUp ] = useState(false);
-
-    const handleFocusIn = () => {
-        if (!isEditing) {
-            setOriginalTask(activeTask);
-        }
-    }
-
-    const projects = useContext(ProjectContext);
+    const { projects } = useProjects();
 
     let projectName;
     if (activeTask?.projectId) {
@@ -45,6 +38,7 @@ export default function RightPanel({
         )}>
             <form action="">
                 <div className="h-full flex flex-col gap-2">
+                    {/* Top bar */}
                     <div className="flex items-center justify-between">
                         <Button width="icon" onClick={(e) => {
                             e.preventDefault();
@@ -66,7 +60,6 @@ export default function RightPanel({
                                 value={activeTask?.name ?? ""}
                                 className="grow p-1.5 outline-none font-semibold text-lg truncate
                             bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 focus:border-neutral-600 dark:focus:border-neutral-400 rounded-md"
-                                onFocus={handleFocusIn}
                                 onChange={(e) => {
                                     setActiveTask({
                                         ...activeTask!,
@@ -78,7 +71,6 @@ export default function RightPanel({
                                 value={activeTask?.description ?? ""}
                                 className="w-full h-24 p-1.5 outline-none overflow-ellipsis
                             bg-white dark:bg-neutral-800 border border-neutral-300  dark:border-neutral-700 focus:border-neutral-600 dark:focus:border-neutral-400 rounded-md text-sm resize-none"
-                                onFocus={handleFocusIn}
                                 onChange={(e) => {
                                     setActiveTask({
                                         ...activeTask!,

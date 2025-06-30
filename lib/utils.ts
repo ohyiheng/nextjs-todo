@@ -1,3 +1,6 @@
+import { clsx, type ClassValue } from "clsx"
+import { twMerge } from "tailwind-merge"
+
 export async function hashSecret(secret: string): Promise<Uint8Array> {
     const secretBytes = new TextEncoder().encode(secret);
     const secretHashBuffer = await crypto.subtle.digest("SHA-256", secretBytes);
@@ -25,4 +28,8 @@ export function partition<T>(array: T[], predicate: (x: T) => boolean) {
         }
     }
     return [pass, fail];
+}
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
 }

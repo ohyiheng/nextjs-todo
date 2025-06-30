@@ -1,16 +1,20 @@
-import AppLayout from "@/components/app";
-import { fetchProjects } from "@/lib/data";
-
+import AppBreadcrumb from "@/components/app/app-breadcrumb";
+import { AppSidebar } from "@/components/app/app-sidebar";
+import Providers from "@/components/providers/Providers";
 export default async function Layout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    const projects = await fetchProjects();
-
     return (
-        <AppLayout projects={projects}>
-            {children}
-        </AppLayout>
+        <Providers>
+            <AppSidebar />
+            <div className="w-full">
+                <header className="p-3">
+                    <AppBreadcrumb />
+                </header>
+                <main className="p-3">{children}</main>
+            </div>
+        </Providers>
     );
 }

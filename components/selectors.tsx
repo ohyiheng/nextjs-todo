@@ -1,36 +1,37 @@
 import { ProjectNode, TaskNode } from "@/lib/definitions"
-import { useContext, useRef, useState } from "react"
-import { ProjectContext } from "./context/ProjectContext"
+import { useContext, useState } from "react"
+import useProjects from "./providers/ProjectsProvider"
 import { Check, ChevronDown, ChevronsUpDown } from "lucide-react";
 import { autoUpdate, offset, useClick, useDismiss, useFloating, useInteractions, useRole } from "@floating-ui/react";
 import clsx from "clsx";
 
+// Takes in a task object, shows what project the task belongs to, and let users assign the task to another project
 export function ProjectSelector({
     task
 }: {
     task: TaskNode
 }) {
-    const projects = useContext(ProjectContext);
+    const { projects } = useProjects();
     if (!projects) {
         return <p>No projects</p>;
     }
     const oriProject = projects.find(p => p.id === task.projectId);
 
+    // initialise popover
     const [ isOpen, setIsOpen ] = useState(false);
-
     const { refs, floatingStyles, context } = useFloating({
         open: isOpen,
         onOpenChange: setIsOpen,
         middleware: [ offset(5) ],
         whileElementsMounted: autoUpdate,
     });
-
     const { getReferenceProps, getFloatingProps } = useInteractions([
         useClick(context),
         useDismiss(context),
         useRole(context),
     ])
 
+    // used to get the width of the selector button, so the popover's width matches
     const projectSelectorBtn = document.getElementById("project-selector-btn");
 
     return (

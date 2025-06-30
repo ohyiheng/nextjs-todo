@@ -1,7 +1,6 @@
-import { App } from "@/components/app";
-import { ProjectContext } from "@/components/context/ProjectContext";
-import TasksProvider from "@/components/context/TasksContext";
-import TitleProvider from "@/components/context/TitleContext";
+import { App } from "@/components/app/app";
+import TasksProvider from "@/components/providers/TasksContext";
+import TitleProvider from "@/components/providers/TitleProvider";
 import { fetchProjectsById, fetchTasks } from "@/lib/data";
 
 export default async function Page({
@@ -15,9 +14,7 @@ export default async function Page({
 
     return (
         <TasksProvider tasks={tasks}>
-            <TitleProvider defaultTitle={project?.name ?? ""}>
                 <App />
-            </TitleProvider>
         </TasksProvider>
     )
 }
