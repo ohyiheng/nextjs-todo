@@ -3,27 +3,22 @@
 import { ProjectNode } from "@/lib/definitions";
 import React, { useState } from "react";
 import { Sidebar } from "@/components/sidebar";
-import { TaskContainer } from "./task";
-import { ProjectContext } from "./context/ProjectContext";
-import { ActiveTaskProvider } from "./context/ActiveTaskContext";
-import { useTitle } from "./context/TitleContext";
-import RightPanel from "./right-panel";
-import Header from "./header";
+import { TaskContainer } from "../task";
+import { ActiveTaskProvider } from "../providers/ActiveTaskContext";
+import { useTitle } from "../providers/TitleProvider";
+import RightPanel from "../right-panel";
+import Header from "../header";
 
 
 export default function AppLayout({
-    projects,
     children
 }: Readonly<{
-    projects: ProjectNode[],
     children: React.ReactNode
 }>) {
 
     return (
         <div className="flex h-screen max-h-screen box-border">
-            <ProjectContext value={projects}>
-                {children}
-            </ProjectContext>
+            {children}
         </div>
     )
 }

@@ -1,3 +1,5 @@
+"use client";
+
 import { TaskNode } from "@/lib/definitions";
 import { createContext, Dispatch, useContext, useState } from "react";
 
