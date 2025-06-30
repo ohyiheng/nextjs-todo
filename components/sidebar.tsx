@@ -17,15 +17,15 @@ import {
     Tag,
 } from "lucide-react";
 import { ProjectNode } from "@/lib/definitions";
-import { ProjectContext } from "@/components/context/ProjectContext";
-import useActiveTask from "./context/ActiveTaskContext";
+import useProjects from "@/components/providers/ProjectsProvider";
+import useActiveTask from "./providers/ActiveTaskContext";
 
 export function Sidebar({
     setTitle,
 }: {
     setTitle: Dispatch<string>
 }) {
-    const projects = useContext(ProjectContext);
+    const { projects } = useProjects();
     const links = [
         {
             title: "Inbox",
@@ -111,7 +111,7 @@ export function Sidebar({
         </div>
     )
 
-    function mapProjectElements(projects: ProjectNode[] | null) {
+    function mapProjectElements(projects: ProjectNode[]) {
         if (projects) {
             return projects.map((project) => (
                 <SidebarLink

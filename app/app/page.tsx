@@ -1,7 +1,6 @@
 import { fetchTasks } from "@/lib/data";
-import { App } from "@/components/app"
-import TasksProvider from "@/components/context/TasksContext";
-import TitleProvider from "@/components/context/TitleContext";
+import TasksProvider from "@/components/providers/TasksContext";
+import { TaskContainer } from "@/components/task";
 
 export default async function Page() {
     let tasks = await fetchTasks();
@@ -9,9 +8,7 @@ export default async function Page() {
 
     return (
         <TasksProvider tasks={tasks}>
-            <TitleProvider defaultTitle="Inbox">
-                <App/>
-            </TitleProvider>
+            <TaskContainer />
         </TasksProvider>
     )
 }

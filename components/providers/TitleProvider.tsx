@@ -10,16 +10,14 @@ type TitleContextType = {
 export const TitleContext = createContext<TitleContextType | undefined>(undefined);
 
 export default function TitleProvider({
-    defaultTitle,
     children
 }: {
-    defaultTitle: string
     children: React.ReactNode
 }) {
-    const [ title, setTitle ] = useState(defaultTitle);
+    const [ title, setTitle ] = useState("");
 
     return (
-        <TitleContext value={{title, setTitle}}>
+        <TitleContext value={{ title, setTitle }}>
             {children}
         </TitleContext>
     )
