@@ -1,7 +1,19 @@
-import sql from "@/lib/db";
 import { ProjectNode, TaskNode } from "@/lib/definitions";
 import { partition } from "@/lib/utils";
 
+import postgres from "postgres";
+
+const sql = postgres(
+    "postgres://postgres:example@localhost:5432/postgres",
+    {
+        idle_timeout: 10,
+        transform: {
+            ...postgres.camel,
+            undefined: null
+        },
+        max: 100
+    },
+);
 /**
  * Fetches all projects from the database and constructs a hierarchical tree structure
  * of projects and their sub-projects up to a maximum depth of 5 levels.
@@ -27,6 +39,13 @@ export async function fetchProjects() {
 
     sortTree(rootProjects);
     return rootProjects;
+}
+
+export async function fetchProjectsById(id: string) {
+    const projectNodes = await sql<ProjectNode[]>`
+        SELECT ${sql("id", "name", "createdAt", "lastModifiedAt", "level", "parentId")} FROM projects WHERE id = ${id}
+    `
+    return projectNodes[ 0 ];
 }
 
 export async function fetchTasks(projectId?: string) {

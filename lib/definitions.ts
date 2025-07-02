@@ -4,7 +4,7 @@ export type Task = {
     description?: string,
     createdAt: Date,
     lastModifiedAt: Date,
-    priority: number,
+    priority: '0' | '1' | '2' | '3',
     level: number,
     completed: boolean,
     startDate?: Date,
