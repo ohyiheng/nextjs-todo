@@ -16,6 +16,7 @@ import {
     SidebarMenuSubButton,
     SidebarMenuSubItem,
     SidebarRail,
+    SidebarSeparator,
     SidebarTrigger,
 } from "@/components/ui/sidebar"
 import useProjects from "../providers/ProjectsProvider"
@@ -53,18 +54,18 @@ export function AppSidebar() {
     return (
         <Sidebar className="" collapsible="icon">
             <SidebarHeader>
-                <Button>
+                <SidebarMenuButton>
                     <Plus />
                     Add task
-                </Button>
-                <Button variant="outline">
+                </SidebarMenuButton>
+                <SidebarMenuButton>
                     <Search />
                     Search
-                </Button>
+                </SidebarMenuButton>
             </SidebarHeader>
             <SidebarContent>
                 <SidebarGroup>
-                    <SidebarGroupLabel>App</SidebarGroupLabel>
+                    <SidebarGroupLabel>Tasks</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {links.map(link => (
@@ -117,7 +118,6 @@ export function AppSidebar() {
                 </SidebarGroup>
             </SidebarContent>
             <SidebarFooter>
-                <SidebarTrigger />
             </SidebarFooter>
             <SidebarRail />
         </Sidebar>

@@ -1,20 +1,27 @@
 import AppBreadcrumb from "@/components/app/app-breadcrumb";
 import { AppSidebar } from "@/components/app/app-sidebar";
 import Providers from "@/components/providers/Providers";
-export default async function Layout({
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+
+export default function Layout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
     return (
         <Providers>
-            <AppSidebar />
-            <div className="w-full">
-                <header className="p-3">
-                    <AppBreadcrumb />
-                </header>
-                <main className="p-3">{children}</main>
-            </div>
+            <SidebarProvider>
+                <AppSidebar />
+                <SidebarInset>
+                    <div className="w-full">
+                        <header className="p-3 flex items-center gap-4">
+                            <SidebarTrigger />
+                            <AppBreadcrumb />
+                        </header>
+                        <main className="p-3 m-auto">{children}</main>
+                    </div>
+                </SidebarInset>
+            </SidebarProvider>
         </Providers>
     );
 }
