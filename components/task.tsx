@@ -4,11 +4,12 @@ import clsx from "clsx";
 import { useContext } from "react"
 import { TaskNode } from "@/lib/definitions";
 import { TasksContext, TasksDispatchContext } from "./providers/TasksContext";
-import useActiveTask from "./providers/ActiveTaskContext";
-import { DatePickerChip } from "./app/date-picker";
+import { DatePicker } from "./app/date-picker";
 import { Edit2 } from "lucide-react";
 import { Button } from "./ui/button";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
+import TaskForm from "./app/task-form";
+import { Checkbox } from "./ui/checkbox";
 
 export function Task({
     id,
@@ -17,18 +18,15 @@ export function Task({
     id: string,
     taskNode: TaskNode
 }) {
-
-    const { activeTask, setActiveTask } = useActiveTask();
-
     let completeBtnStyle;
     switch (taskNode.priority) {
-        case 1:
+        case '1':
             completeBtnStyle = "border-red-500 bg-red-100 dark:bg-red-900";
             break;
-        case 2:
+        case '2':
             completeBtnStyle = "border-amber-500 bg-amber-100 dark:bg-amber-900";
             break;
-        case 3:
+        case '3':
             completeBtnStyle = "border-sky-500 bg-sky-100 dark:bg-sky-900";
             break;
         default:
@@ -37,47 +35,40 @@ export function Task({
     }
 
     return (
-        <div
-            className={clsx(
-                (activeTask?.id === taskNode.id) && "bg-input",
-                (activeTask?.id !== taskNode.id) && "bg-zinc-100 dark:bg-zinc-900",
-                "relative",
-                "flex items-center gap-4",
-                "px-3 py-2",
-                "border",
-                "rounded-lg cursor-pointer",
-                "group",
-            )}
-            onClick={() => {
-                setActiveTask(taskNode);
-            }}
-        >
-            <button className={clsx(
-                "w-6 h-6 rounded-full border-2 cursor-pointer",
-                completeBtnStyle
-            )}></button>
-            <div className="grow flex flex-col items-start gap-2">
-                <p className="font-medium">{taskNode.name}</p>
-                {taskNode.createdAt &&
-                    <DatePickerChip initialDate={taskNode.createdAt} />
-                }
-            </div>
-            <Sheet>
-                <SheetTrigger asChild>
-                    <Button variant="outline" size="icon" className="hidden group-hover:inline-flex">
-                        <Edit2 />
-                    </Button>
-                </SheetTrigger>
-                <SheetContent>
-                    <SheetHeader>
-                        <SheetTitle>{taskNode.name}</SheetTitle>
-                        <SheetDescription>
-                            {taskNode.description}
-                        </SheetDescription>
-                    </SheetHeader>
-                </SheetContent>
-            </Sheet>
-        </div>
+        <Sheet>
+            <SheetTrigger asChild>
+                <div
+                    className={clsx(
+                        "bg-zinc-100 dark:bg-zinc-900",
+                        "relative",
+                        "flex items-center gap-4",
+                        "px-4 py-2",
+                        "border",
+                        "rounded-lg cursor-pointer",
+                        "group",
+                    )}
+                >
+                    <Checkbox checked={taskNode.completed} className={clsx(
+                        "size-5 rounded-full",
+                        completeBtnStyle
+                    )} />
+                    <div className="grow flex items-center gap-2">
+                        <p className="font-medium">{taskNode.name}</p>
+                        {taskNode.createdAt &&
+                            <DatePicker size="sm" initialDate={taskNode.createdAt} />
+                        }
+                    </div>
+                </div >
+            </SheetTrigger>
+            <SheetContent className="w-screen md:w-[700px] h-full">
+                <SheetHeader>
+                    <SheetTitle>Edit Task</SheetTitle>
+                </SheetHeader>
+                <div className="px-4 h-full">
+                    <TaskForm task={taskNode} />
+                </div>
+            </SheetContent>
+        </Sheet>
     )
 }
 

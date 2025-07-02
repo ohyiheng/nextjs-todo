@@ -15,9 +15,7 @@ export default async function Providers({
         <ProjectsProvider projects={projects}>
             <TitleProvider>
                 <ActiveTaskProvider>
-                    <SidebarProvider>
                         {children}
-                    </SidebarProvider>
                 </ActiveTaskProvider>
             </TitleProvider>
         </ProjectsProvider>
