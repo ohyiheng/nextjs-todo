@@ -2,12 +2,13 @@ import postgres from "postgres";
 
 const sql = postgres(
     "postgres://postgres:example@localhost:5432/postgres",
-    { 
-        transform: { 
+    {
+        idle_timeout: 10,
+        transform: {
             ...postgres.camel,
             undefined: null
         },
-        max: 10
+        max: 100
     },
 );
 
