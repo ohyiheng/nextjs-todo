@@ -33,3 +33,17 @@ export async function updateTask(task: z.infer<typeof TaskFormSchema>) {
     revalidatePath("/app/inbox");
     revalidatePath("/app/project/[id]", "page");
 }
+
+export async function completeTask(id: string, completed: boolean) {
+    try {
+        await sql`UPDATE tasks SET
+            completed = ${!completed}
+            WHERE id = ${id}
+        `
+    } catch (error) {
+        console.error(error);
+    }
+
+    revalidatePath("/app/inbox");
+    revalidatePath("/app/project/[id]", "page");
+}
