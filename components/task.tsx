@@ -10,6 +10,7 @@ import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
 import TaskForm from "./app/task-form";
 import { Checkbox } from "./ui/checkbox";
+import { completeTask } from "@/lib/actions";
 
 export function Task({
     id,
@@ -48,12 +49,21 @@ export function Task({
                         "group",
                     )}
                 >
-                    <Checkbox checked={taskNode.completed} className={clsx(
-                        "size-5 rounded-full",
-                        completeBtnStyle
-                    )} />
+                    <Checkbox checked={taskNode.completed}
+                        onCheckedChange={async () => {
+                            console.log(taskNode.completed);
+                            await completeTask(taskNode.id, taskNode.completed);
+                            taskNode.completed = !taskNode.completed;
+                        }}
+                        className={clsx(
+                            "size-5 rounded-full",
+                            completeBtnStyle
+                        )} />
                     <div className="grow flex items-center gap-2">
-                        <p className="font-medium">{taskNode.name}</p>
+                        <p className={clsx(
+                            "font-semibold",
+                            taskNode.completed && "line-through text-muted-foreground"
+                        )}>{taskNode.name}</p>
                         {taskNode.dueDate &&
                             <DatePicker size="sm" initialDate={taskNode.dueDate} />
                         }
