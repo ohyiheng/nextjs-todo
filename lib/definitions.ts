@@ -7,10 +7,10 @@ export type Task = {
     priority: '0' | '1' | '2' | '3',
     level: number,
     completed: boolean,
-    startDate?: Date,
-    dueDate?: Date,
+    projectId: string | null,
+    startDate: Date | null,
+    dueDate: Date | null,
     parentId?: string,
-    projectId?: string,
 }
 
 export type TaskNode = Task & {
