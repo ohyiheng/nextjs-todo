@@ -12,14 +12,14 @@ import { FormControl } from "../ui/form";
 import { getProjectNameFromId } from "@/lib/utils";
 import { UseFormSetValue } from "react-hook-form";
 import { z } from "zod/v4";
-import { TaskFormSchema } from "./task-form";
+import { TaskFormType } from "./task-form";
 
 export default function ProjectCombobox({
     value,
     setValue
 }: {
     value: string | null,
-    setValue: UseFormSetValue<z.infer<typeof TaskFormSchema>>
+    setValue: UseFormSetValue<TaskFormType>
 }) {
     const { projects } = useProjects();
     const [ isOpen, setIsOpen ] = useState(false);

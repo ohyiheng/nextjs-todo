@@ -61,7 +61,9 @@ export async function fetchTasks(projectId?: string) {
             "level",
             "description",
             "parentId",
-            "projectId"
+            "projectId",
+            "startDate",
+            "dueDate"
         )} FROM tasks WHERE project_id = ${projectId}`
     } else {
         taskNodes = await sql<TaskNode[]>`
@@ -74,7 +76,9 @@ export async function fetchTasks(projectId?: string) {
             "level",
             "description",
             "parentId",
-            "projectId"
+            "projectId",
+            "startDate",
+            "dueDate"
         )} FROM tasks`
     }
 
