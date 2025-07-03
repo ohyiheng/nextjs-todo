@@ -54,8 +54,8 @@ export function Task({
                     )} />
                     <div className="grow flex items-center gap-2">
                         <p className="font-medium">{taskNode.name}</p>
-                        {taskNode.createdAt &&
-                            <DatePicker size="sm" initialDate={taskNode.createdAt} />
+                        {taskNode.dueDate &&
+                            <DatePicker size="sm" initialDate={taskNode.dueDate} />
                         }
                     </div>
                 </div >

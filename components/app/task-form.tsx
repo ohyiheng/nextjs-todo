@@ -17,7 +17,7 @@ import { DialogClose } from "../ui/dialog";
 import { SheetClose } from "../ui/sheet";
 import { updateTask } from "@/lib/actions";
 import { usePathname, useRouter } from "next/navigation";
-import { TasksContext } from "../providers/TasksContext";
+import { TasksContext, TasksDispatchContext } from "../providers/TasksContext";
 import { getTaskNodeById } from "@/lib/utils";
 
 export const TaskFormSchema = z.object({
@@ -25,10 +25,12 @@ export const TaskFormSchema = z.object({
     name: z.string(),
     priority: z.literal([ '0', '1', '2', '3' ]),
     description: z.string(),
-    startDate: z.date().optional(),
-    dueDate: z.date().optional(),
+    startDate: z.date().nullable(),
+    dueDate: z.date().nullable(),
     projectId: z.uuid().nullable(),
 })
+
+export type TaskFormType = z.infer<typeof TaskFormSchema>;
 
 export default function TaskForm({
     task
@@ -36,6 +38,7 @@ export default function TaskForm({
     task: TaskNode
 }) {
     const tasks = useContext(TasksContext);
+    const dispatch = useContext(TasksDispatchContext);
 
     const form = useForm<z.infer<typeof TaskFormSchema>>({
         resolver: zodResolver(TaskFormSchema),
@@ -49,14 +52,13 @@ export default function TaskForm({
             projectId: task.projectId
         }
     })
-    
+
     async function onSubmit(values: z.infer<typeof TaskFormSchema>) {
         await updateTask(values);
-        const task = getTaskNodeById(tasks!, values.id);
-        if (task) {
-            task.name = values.name;
-            task.description = values.description;
-        }
+        dispatch({
+            type: "edit",
+            newValues: values
+        })
     }
 
     return (
@@ -111,15 +113,15 @@ export default function TaskForm({
                             <FormItem>
                                 <FormLabel>Priority</FormLabel>
                                 <FormControl>
-                                    <Select {...field}>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
                                         <SelectTrigger>
                                             <SelectValue placeholder="Priority" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="0">No priority</SelectItem>
-                                            <SelectItem value="1" className="text-sky-600">Low</SelectItem>
-                                            <SelectItem value="2" className="text-amber-600">Medium</SelectItem>
-                                            <SelectItem value="3" className="text-red-600">High</SelectItem>
+                                            <SelectItem value="1">High</SelectItem>
+                                            <SelectItem value="2">Medium</SelectItem>
+                                            <SelectItem value="3">Low</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </FormControl>
@@ -135,7 +137,7 @@ export default function TaskForm({
                                 <FormLabel>Start Date</FormLabel>
                                 <FormControl>
                                     <div>
-                                        <DatePicker initialDate={field.value} />
+                                        <DatePicker initialDate={field.value} onChange={field.onChange} />
                                     </div>
                                 </FormControl>
                                 <FormMessage />
@@ -150,7 +152,7 @@ export default function TaskForm({
                                 <FormLabel>Due Date</FormLabel>
                                 <FormControl>
                                     <div>
-                                        <DatePicker initialDate={field.value} />
+                                        <DatePicker initialDate={field.value} onChange={field.onChange} />
                                     </div>
                                 </FormControl>
                                 <FormMessage />
@@ -162,7 +164,9 @@ export default function TaskForm({
                     <SheetClose asChild>
                         <Button type="button" variant="ghost">Cancel</Button>
                     </SheetClose>
-                    <Button type="submit" className="mb-8">Submit</Button>
+                    <SheetClose asChild>
+                        <Button type="submit" className="mb-8">Submit</Button>
+                    </SheetClose>
                 </div>
             </form>
         </Form>
