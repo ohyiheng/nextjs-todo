@@ -3,6 +3,7 @@ import { SidebarProvider } from "../ui/sidebar"
 import { ProjectsProvider } from "./ProjectsProvider"
 import TitleProvider from "./TitleProvider";
 import { ActiveTaskProvider } from "./ActiveTaskContext";
+import { SortingProvider } from "./SortingProvider";
 
 export default async function Providers({
     children
@@ -15,7 +16,9 @@ export default async function Providers({
         <ProjectsProvider projects={projects}>
             <TitleProvider>
                 <ActiveTaskProvider>
+                    <SortingProvider>
                         {children}
+                    </SortingProvider>
                 </ActiveTaskProvider>
             </TitleProvider>
         </ProjectsProvider>

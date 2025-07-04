@@ -119,9 +119,9 @@ export default function TaskForm({
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="0">No priority</SelectItem>
-                                            <SelectItem value="1">High</SelectItem>
+                                            <SelectItem value="1">Low</SelectItem>
                                             <SelectItem value="2">Medium</SelectItem>
-                                            <SelectItem value="3">Low</SelectItem>
+                                            <SelectItem value="3">High</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </FormControl>

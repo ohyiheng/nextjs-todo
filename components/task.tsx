@@ -13,6 +13,7 @@ import { Checkbox } from "./ui/checkbox";
 import { completeTask } from "@/lib/actions";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible";
 import { partition } from "@/lib/utils";
+import useSorting, { sortTasksBy } from "./providers/SortingProvider";
 
 export function Task({
     id,
@@ -23,17 +24,17 @@ export function Task({
 }) {
     let completeBtnStyle;
     switch (taskNode.priority) {
-        case '1':
-            completeBtnStyle = "border-red-500 bg-red-100 dark:bg-red-900";
+        case '3':
+            completeBtnStyle = "border-red-500 bg-red-100 dark:bg-red-900/50";
             break;
         case '2':
-            completeBtnStyle = "border-amber-500 bg-amber-100 dark:bg-amber-900";
+            completeBtnStyle = "border-amber-500 bg-amber-100 dark:bg-amber-900/50";
             break;
-        case '3':
-            completeBtnStyle = "border-sky-500 bg-sky-100 dark:bg-sky-900";
+        case '1':
+            completeBtnStyle = "border-sky-500 bg-sky-100 dark:bg-sky-900/50";
             break;
         default:
-            completeBtnStyle = "border-zinc-400 bg-zinc-50 dark:bg-zinc-700";
+            completeBtnStyle = "border-zinc-400 bg-zinc-50 dark:bg-zinc-900/50";
             break;
     }
 
@@ -91,12 +92,40 @@ export function TaskContainer() {
     }
     const [ pendingTasks, completedTasks ] = partition(tasks, task => !task.completed);
     const [ open, setOpen ] = useState(false);
+    const { sort } = useSorting();
+
+    let sortingPredicate: (a: TaskNode, b: TaskNode) => number;
+    switch (sort.by) {
+        case "priority": {
+            sortingPredicate = (a, b) => {
+                return sort.order === "asc"
+                    ? parseInt(a.priority) - parseInt(b.priority)
+                    : parseInt(b.priority) - parseInt(a.priority)
+            };
+            break;
+        }
+        case "dueDate": {
+            sortingPredicate = (a, b) => {
+                return sort.order === "asc"
+                    ? (a.dueDate?.getTime() ?? Number.MAX_SAFE_INTEGER) - (b.dueDate?.getTime() ?? Number.MAX_SAFE_INTEGER)
+                    : (b.dueDate?.getTime() ?? 0) - (a.dueDate?.getTime() ?? 0)
+            }
+            break;
+        }
+        default: {
+            sortingPredicate = (a, b) => {
+                return sort.order === "asc"
+                    ? a.name.localeCompare(b.name)
+                    : b.name.localeCompare(a.name)
+            }
+        }
+    }
 
     return (
         <div className="space-y-6">
             {pendingTasks.length > 0 &&
                 <TaskSection>
-                    {tasks.filter(task => !task.completed).map(task => (
+                    {tasks.filter(task => !task.completed).sort(sortingPredicate).map(task => (
                         <Task key={task.id} id={task.id} taskNode={task} />
                     ))}
                 </TaskSection>
