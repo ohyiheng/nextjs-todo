@@ -18,7 +18,7 @@ export default function ProjectCombobox({
     value,
     setValue
 }: {
-    value: string | null,
+    value: number,
     setValue: UseFormSetValue<TaskFormType>
 }) {
     const { projects } = useProjects();
@@ -49,6 +49,15 @@ export default function ProjectCombobox({
                     <CommandList>
                         <CommandEmpty>No projects found.</CommandEmpty>
                         <CommandGroup>
+                            <CommandItem
+                                keywords={[ "Inbox" ]}
+                                onSelect={() => {
+                                    setValue("projectId", 1);
+                                    setIsOpen(false);
+                                }}
+                            >
+                                Inbox
+                            </CommandItem>
                             {mapAllProjects(projects)}
                         </CommandGroup>
                     </CommandList>
@@ -62,7 +71,6 @@ export default function ProjectCombobox({
             return projects.map((project) => (
                 <React.Fragment key={project.id}>
                     <CommandItem
-                        value={project.id}
                         keywords={project.name.split(' ')}
                         onSelect={() => {
                             setValue("projectId", project.id);

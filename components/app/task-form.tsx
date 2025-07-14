@@ -27,7 +27,7 @@ export const TaskFormSchema = z.object({
     description: z.string(),
     startDate: z.date().nullable(),
     dueDate: z.date().nullable(),
-    projectId: z.uuid().nullable(),
+    projectId: z.number(),
 })
 
 export type TaskFormType = z.infer<typeof TaskFormSchema>;
@@ -37,7 +37,6 @@ export default function TaskForm({
 }: {
     task: TaskNode
 }) {
-    const tasks = useContext(TasksContext);
     const dispatch = useContext(TasksDispatchContext);
 
     const form = useForm<z.infer<typeof TaskFormSchema>>({
