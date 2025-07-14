@@ -7,7 +7,7 @@ export type Task = {
     priority: '0' | '1' | '2' | '3',
     level: number,
     completed: boolean,
-    projectId: string | null,
+    projectId: number,
     startDate: Date | null,
     dueDate: Date | null,
     parentId?: string,
@@ -17,13 +17,17 @@ export type TaskNode = Task & {
     subTasks: TaskNode[] | null
 }
 
+export type SortByType = "priority" | "due" | "name";
+
 export type Project = {
-    id: string,
+    id: number,
     name: string,
     createdAt: Date,
     lastModifiedAt: Date,
     level: number,
-    parentId?: string,
+    sortBy?: SortByType,
+    sortOrder?: "asc" | "desc",
+    parentId?: number,
 }
 
 export type ProjectNode = Project & {

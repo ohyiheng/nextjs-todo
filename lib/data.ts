@@ -26,7 +26,9 @@ const sql = postgres(
  */
 export async function fetchProjects() {
     const projectNodes = await sql<ProjectNode[]>`
-        SELECT ${sql("id", "name", "createdAt", "lastModifiedAt", "level", "parentId")} FROM projects
+        SELECT ${sql("id", "name", "createdAt", "lastModifiedAt", "level", "sortBy", "sortOrder", "parentId")}
+        FROM projects
+        WHERE id != 1
     `
 
     // keep root projects only
@@ -48,7 +50,7 @@ export async function fetchProjectsById(id: string) {
     return projectNodes[ 0 ];
 }
 
-export async function fetchTasks(projectId?: string) {
+export async function fetchTasks(projectId?: number) {
     let taskNodes;
     if (projectId) {
         taskNodes = await sql<TaskNode[]>`
@@ -98,7 +100,7 @@ export async function fetchTasks(projectId?: string) {
 
 function findSubProjects(
     projectNodes: ProjectNode[],
-    projectId: string,
+    projectId: number,
     level: number,
     maxLevel: number
 ) {

@@ -31,7 +31,10 @@ export function partition<T>(array: T[], predicate: (x: T) => boolean) {
     return [ pass, fail ];
 }
 
-export function getProjectNameFromId(projects: ProjectNode[], id: string) {
+export function getProjectNameFromId(projects: ProjectNode[], id: number) {
+    if (id === 1) {
+        return "Inbox";
+    }
     let projectName = projects.find(project => project.id === id)?.name;
     if (projectName) return projectName;
 
