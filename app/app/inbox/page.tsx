@@ -1,6 +1,6 @@
 import { fetchTasks } from "@/lib/data";
 import TasksProvider from "@/components/providers/TasksContext";
-import { TaskContainer } from "@/components/task";
+import { TaskContainer } from "@/components/app/task";
 
 export default async function Page() {
     let tasks = await fetchTasks();
