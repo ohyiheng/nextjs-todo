@@ -32,7 +32,7 @@ export default function ProjectCombobox({
                         role="combobox"
                         className="font-normal"
                     >
-                        <span>
+                        <span className="max-w-[140px] md:max-w-[200px] truncate">
                             {value ? getProjectFromId(projects, value)?.name : "Pick a project"}
                         </span>
                         <ChevronsUpDown />
