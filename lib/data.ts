@@ -28,7 +28,6 @@ export async function fetchProjects() {
     const projectNodes = await sql<ProjectNode[]>`
         SELECT ${sql("id", "name", "createdAt", "lastModifiedAt", "level", "sortBy", "sortOrder", "parentId")}
         FROM projects
-        WHERE id != 1
     `
 
     // keep root projects only
