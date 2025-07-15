@@ -31,7 +31,7 @@ export function AppSidebar() {
     const links = [
         {
             title: "Inbox",
-            href: "/app",
+            href: "/app/inbox",
             icon: <Inbox />
         },
         {
