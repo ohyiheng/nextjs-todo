@@ -4,7 +4,7 @@ import { TaskNode } from "@/lib/definitions";
 import { arrayMove } from "@dnd-kit/sortable";
 import { createContext, Dispatch, useReducer } from "react";
 import { TaskFormType } from "../app/task-form";
-import { getTaskById } from "../task";
+import { getTaskById } from "../app/task";
 
 type TasksAction = {
     type: "move",
@@ -43,7 +43,7 @@ function tasksReducer(prevTasks: TaskNode[] | null, action: TasksAction) {
     switch (action.type) {
         case "move": {
             return arrayMove(prevTasks, action.oldIndex, action.newIndex);
-        } 
+        }
         case "edit": {
             let task = getTaskById(prevTasks, action.newValues.id);
             console.log(action.newValues);

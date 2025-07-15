@@ -1,24 +1,20 @@
 "use client";
 
-import { ProjectNode, TaskNode } from "@/lib/definitions";
+import { TaskNode } from "@/lib/definitions";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form";
 import { z } from "zod/v4";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import useProjects from "../providers/ProjectsProvider";
 import React, { useContext } from "react";
 import ProjectCombobox from "./project-combobox";
 import { DatePicker } from "./date-picker";
 import { Button } from "../ui/button";
-import { DialogClose } from "../ui/dialog";
 import { SheetClose } from "../ui/sheet";
 import { updateTask } from "@/lib/actions";
-import { usePathname, useRouter } from "next/navigation";
-import { TasksContext, TasksDispatchContext } from "../providers/TasksContext";
-import { getTaskNodeById } from "@/lib/utils";
+import { TasksDispatchContext } from "../providers/TasksContext";
 
 export const TaskFormSchema = z.object({
     id: z.uuid(),

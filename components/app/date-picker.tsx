@@ -1,13 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Calendar } from "../ui/calendar";
 import { CalendarIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import { format } from "date-fns";
-import { UseFormSetValue } from "react-hook-form";
-import { TaskFormType } from "./task-form";
 
 export function DatePicker({
     initialDate,
