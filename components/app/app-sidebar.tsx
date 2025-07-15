@@ -22,6 +22,7 @@ import { Calendar, ChevronRight, Inbox, Plus, Search, Sun, Tag } from "lucide-re
 import { ProjectNode } from "@/lib/definitions";
 import { Collapsible } from "../ui/collapsible";
 import { CollapsibleContent, CollapsibleTrigger } from "@radix-ui/react-collapsible";
+import Link from "next/link";
 
 export function AppSidebar() {
     const { projects } = useProjects();
@@ -70,10 +71,10 @@ export function AppSidebar() {
                             {links.map(link => (
                                 <SidebarMenuItem key={link.href}>
                                     <SidebarMenuButton asChild>
-                                        <a href={link.href}>
+                                        <Link href={link.href}>
                                             {link.icon}
                                             <span>{link.title}</span>
-                                        </a>
+                                        </Link>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
                             ))}
@@ -88,9 +89,9 @@ export function AppSidebar() {
                                 <Collapsible key={project.id}>
                                     <SidebarMenuItem>
                                         <SidebarMenuButton asChild>
-                                            <a href={`/app/project/${project.id}`}>
+                                            <Link href={`/app/project/${project.id}`}>
                                                 <span>{project.name}</span>
-                                            </a>
+                                            </Link>
                                         </SidebarMenuButton>
                                         {
                                             project.subProjects &&
@@ -126,15 +127,11 @@ export function AppSidebar() {
         if (projects && projects.length > 0) {
             return projects.map((project) => (
                 <Collapsible key={project.id}>
-                    <SidebarMenuSubItem
-                    // onClick={() => {
-                    //     setTitle(project.name);
-                    // }}
-                    >
+                    <SidebarMenuSubItem>
                         <SidebarMenuSubButton asChild>
-                            <a href={`/app/project/${project.id}`}>
+                            <Link href={`/app/project/${project.id}`}>
                                 <span>{project.name}</span>
-                            </a>
+                            </Link>
                         </SidebarMenuSubButton>
                         {
                             project.subProjects &&
