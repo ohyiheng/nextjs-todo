@@ -4,6 +4,7 @@ import { z } from "zod/v4";
 import { TaskFormSchema } from "@/components/app/task-form";
 import postgres from "postgres";
 import { revalidatePath } from "next/cache";
+import { SortByType } from "./definitions";
 
 const sql = postgres(
     "postgres://postgres:example@localhost:5432/postgres",
@@ -46,4 +47,21 @@ export async function completeTask(id: string, completed: boolean) {
 
     revalidatePath("/app/inbox");
     revalidatePath("/app/project/[id]", "page");
+}
+
+export async function updateProjectSort(id: number, sortBy?: SortByType, sortOrder?: "asc" | "desc") {
+    try {
+        if (sortBy) {
+            await sql`UPDATE projects
+                SET sort_by = ${sortBy}
+                WHERE id = ${id}`
+        }
+        if (sortOrder) {
+            await sql`UPDATE projects
+            SET sort_order = ${sortOrder}
+            WHERE id = ${id}`
+        }
+    } catch (error) {
+        console.error(error);
+    }
 }

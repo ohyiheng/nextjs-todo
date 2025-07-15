@@ -1,9 +1,8 @@
 import { fetchProjects } from "@/lib/data";
-import { SidebarProvider } from "../ui/sidebar"
 import { ProjectsProvider } from "./ProjectsProvider"
 import TitleProvider from "./TitleProvider";
 import { ActiveTaskProvider } from "./ActiveTaskContext";
-import { SortingProvider } from "./SortingProvider";
+import { Provider as JotaiProvider } from "jotai";
 
 export default async function Providers({
     children
@@ -16,9 +15,9 @@ export default async function Providers({
         <ProjectsProvider projects={projects}>
             <TitleProvider>
                 <ActiveTaskProvider>
-                    <SortingProvider>
+                    <JotaiProvider>
                         {children}
-                    </SortingProvider>
+                    </JotaiProvider>
                 </ActiveTaskProvider>
             </TitleProvider>
         </ProjectsProvider>
