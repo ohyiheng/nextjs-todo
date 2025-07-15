@@ -16,11 +16,8 @@ import {
     SidebarMenuSubButton,
     SidebarMenuSubItem,
     SidebarRail,
-    SidebarSeparator,
-    SidebarTrigger,
 } from "@/components/ui/sidebar"
 import useProjects from "../providers/ProjectsProvider"
-import { Button } from "../ui/button";
 import { Calendar, ChevronRight, Inbox, Plus, Search, Sun, Tag } from "lucide-react";
 import { ProjectNode } from "@/lib/definitions";
 import { Collapsible } from "../ui/collapsible";
@@ -50,6 +47,8 @@ export function AppSidebar() {
             icon: <Tag />
         },
     ];
+
+    const projectsWithoutInbox = projects.filter(project => project.id !== 1);
 
     return (
         <Sidebar className="" collapsible="icon">
@@ -85,7 +84,7 @@ export function AppSidebar() {
                     <SidebarGroupLabel>Projects</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            {projects.map(project => (
+                            {projectsWithoutInbox.map(project => (
                                 <Collapsible key={project.id}>
                                     <SidebarMenuItem>
                                         <SidebarMenuButton asChild>
