@@ -17,7 +17,7 @@ export type TaskNode = Task & {
     subTasks: TaskNode[] | null
 }
 
-export type SortByType = "priority" | "due" | "name";
+export type SortByType = "priority" | "start" | "due" | "name";
 
 export type Project = {
     id: number,
