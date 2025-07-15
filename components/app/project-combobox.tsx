@@ -11,8 +11,7 @@ import React from "react";
 import { FormControl } from "../ui/form";
 import { UseFormSetValue } from "react-hook-form";
 import { TaskFormType } from "./task-form";
-import { useAtomValue } from "jotai";
-import { activeProjectAtom } from "@/lib/atoms";
+import { getProjectFromId } from "@/lib/utils";
 
 export default function ProjectCombobox({
     value,
@@ -22,7 +21,6 @@ export default function ProjectCombobox({
     setValue: UseFormSetValue<TaskFormType>
 }) {
     const { projects } = useProjects();
-    const activeProject = useAtomValue(activeProjectAtom);
     const [ isOpen, setIsOpen ] = useState(false);
 
     return (
@@ -35,7 +33,7 @@ export default function ProjectCombobox({
                         className="font-normal"
                     >
                         <span>
-                            {value ? activeProject?.name : "Pick a project"}
+                            {value ? getProjectFromId(projects, value)?.name : "Pick a project"}
                         </span>
                         <ChevronsUpDown />
                     </Button>
