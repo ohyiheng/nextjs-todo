@@ -3,14 +3,14 @@
 import clsx from "clsx";
 import { useContext, useEffect, useState } from "react"
 import { TaskNode } from "@/lib/definitions";
-import { TasksContext } from "./providers/TasksContext";
-import { DatePicker } from "./app/date-picker";
-import { ChevronRight, Edit2 } from "lucide-react";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
-import TaskForm from "./app/task-form";
-import { Checkbox } from "./ui/checkbox";
+import { TasksContext } from "../providers/TasksContext";
+import { DatePicker } from "./date-picker";
+import { ChevronRight } from "lucide-react";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
+import TaskForm from "./task-form";
+import { Checkbox } from "../ui/checkbox";
 import { completeTask } from "@/lib/actions";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
 import { partition } from "@/lib/utils";
 import { useAtomValue } from "jotai";
 import { activeProjectAtom } from "@/lib/atoms";
