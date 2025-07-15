@@ -4,15 +4,15 @@ import { ProjectNode } from "@/lib/definitions";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { ChevronsUpDown } from "lucide-react";
 import { Button } from "../ui/button";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "../ui/command";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "../ui/command";
 import useProjects from "../providers/ProjectsProvider";
 import { JSX, useState } from "react";
 import React from "react";
 import { FormControl } from "../ui/form";
-import { getProjectNameFromId } from "@/lib/utils";
 import { UseFormSetValue } from "react-hook-form";
-import { z } from "zod/v4";
 import { TaskFormType } from "./task-form";
+import { useAtomValue } from "jotai";
+import { activeProjectAtom } from "@/lib/atoms";
 
 export default function ProjectCombobox({
     value,
@@ -22,6 +22,7 @@ export default function ProjectCombobox({
     setValue: UseFormSetValue<TaskFormType>
 }) {
     const { projects } = useProjects();
+    const activeProject = useAtomValue(activeProjectAtom);
     const [ isOpen, setIsOpen ] = useState(false);
 
     return (
@@ -34,13 +35,13 @@ export default function ProjectCombobox({
                         className="font-normal"
                     >
                         <span>
-                            {value ? getProjectNameFromId(projects, value) : "Pick a project"}
+                            {value ? activeProject?.name : "Pick a project"}
                         </span>
                         <ChevronsUpDown />
                     </Button>
                 </FormControl>
             </PopoverTrigger>
-            <PopoverContent>
+            <PopoverContent className="p-0">
                 <Command filter={(value, search, keywords) => {
                     if (keywords?.join(' ').toLowerCase().includes(search.toLowerCase())) return 1;
                     return 0;
@@ -58,7 +59,10 @@ export default function ProjectCombobox({
                             >
                                 Inbox
                             </CommandItem>
-                            {mapAllProjects(projects)}
+                        </CommandGroup>
+                            <CommandSeparator />
+                        <CommandGroup>
+                            {mapAllProjects(projects.filter(project => project.id !== 1))}
                         </CommandGroup>
                     </CommandList>
                 </Command>

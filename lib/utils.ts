@@ -31,20 +31,17 @@ export function partition<T>(array: T[], predicate: (x: T) => boolean) {
     return [ pass, fail ];
 }
 
-export function getProjectNameFromId(projects: ProjectNode[], id: number) {
-    if (id === 1) {
-        return "Inbox";
-    }
-    let projectName = projects.find(project => project.id === id)?.name;
-    if (projectName) return projectName;
+export function getProjectFromId(projects: ProjectNode[], id: number): ProjectNode | null {
+    let project = projects.find(project => project.id === id) ?? null;
+    if (project) return project;
 
     for (let i = 0; i < projects.length; i++) {
         if (projects[i].subProjects && projects[i].subProjects!.length > 0) {
-            projectName = getProjectNameFromId(projects[i].subProjects!, id);
-            if (projectName) break;
+            project = getProjectFromId(projects[i].subProjects!, id);
+            if (project) break;
         }
     }
-    return projectName;
+    return project;
 }
 
 export function getTaskNodeById(tasks: TaskNode[], id: string): TaskNode | undefined {
