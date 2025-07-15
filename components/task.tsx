@@ -1,19 +1,19 @@
 "use client";
 
 import clsx from "clsx";
-import { useContext, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { TaskNode } from "@/lib/definitions";
-import { TasksContext, TasksDispatchContext } from "./providers/TasksContext";
+import { TasksContext } from "./providers/TasksContext";
 import { DatePicker } from "./app/date-picker";
 import { ChevronRight, Edit2 } from "lucide-react";
-import { Button } from "./ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
 import TaskForm from "./app/task-form";
 import { Checkbox } from "./ui/checkbox";
 import { completeTask } from "@/lib/actions";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible";
 import { partition } from "@/lib/utils";
-import useSorting, { sortTasksBy } from "./providers/SortingProvider";
+import { useAtomValue } from "jotai";
+import { activeProjectAtom } from "@/lib/atoms";
 
 export function Task({
     id,
@@ -92,19 +92,24 @@ export function TaskContainer() {
     }
     const [ pendingTasks, completedTasks ] = partition(tasks, task => !task.completed);
     const [ open, setOpen ] = useState(false);
-    const { sort } = useSorting();
+    const activeProject = useAtomValue(activeProjectAtom);
+
+    const sort = {
+        by: activeProject?.sortBy,
+        order: activeProject?.sortOrder
+    }
 
     let sortingPredicate: (a: TaskNode, b: TaskNode) => number;
     switch (sort.by) {
-        case "priority": {
+        case "start": {
             sortingPredicate = (a, b) => {
                 return sort.order === "asc"
-                    ? parseInt(a.priority) - parseInt(b.priority)
-                    : parseInt(b.priority) - parseInt(a.priority)
-            };
+                    ? (a.startDate?.getTime() ?? Number.MAX_SAFE_INTEGER) - (b.startDate?.getTime() ?? Number.MAX_SAFE_INTEGER)
+                    : (b.startDate?.getTime() ?? 0) - (a.startDate?.getTime() ?? 0)
+            }
             break;
         }
-        case "dueDate": {
+        case "due": {
             sortingPredicate = (a, b) => {
                 return sort.order === "asc"
                     ? (a.dueDate?.getTime() ?? Number.MAX_SAFE_INTEGER) - (b.dueDate?.getTime() ?? Number.MAX_SAFE_INTEGER)
@@ -112,14 +117,31 @@ export function TaskContainer() {
             }
             break;
         }
-        default: {
+        case "name": {
             sortingPredicate = (a, b) => {
                 return sort.order === "asc"
                     ? a.name.localeCompare(b.name)
                     : b.name.localeCompare(a.name)
             }
+            break;
+        }
+        default: {
+            sortingPredicate = (a, b) => {
+                return sort.order === "asc"
+                    ? parseInt(a.priority) - parseInt(b.priority)
+                    : parseInt(b.priority) - parseInt(a.priority)
+            };
+            break;
         }
     }
+
+    const [ mounted, setMounted ] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!mounted) return null;
 
     return (
         <div className="space-y-6">
