@@ -2,27 +2,34 @@
 
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Calendar } from "../ui/calendar";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Target } from "lucide-react";
 import { Button } from "../ui/button";
-import { format } from "date-fns";
 
 export function DatePicker({
     initialDate,
     onChange,
+    icon = "calendar",
     size = "default"
 }: {
     initialDate: Date | null,
     onChange: (...event: any[]) => void,
+    icon?: "target" | "calendar",
     size?: "default" | "sm"
 }) {
     // const [ date, setDate ] = useState<Date | undefined>(initialDate);
+    const icons = {
+        "target": Target,
+        "calendar": CalendarIcon
+    }
+
+    const IconComponent = Object.entries(icons).find(obj => obj[0] === icon)![1];
 
     return (
         <Popover>
             <PopoverTrigger asChild>
                 <Button variant="outline" size={size} className="cursor-pointer font-normal text-sm" onClick={e => e.stopPropagation()}>
-                    <CalendarIcon strokeWidth="1.5px" className="p-[1.5px]" />
-                    {initialDate ? format(initialDate, "PPP") : <span>Pick a date</span>}
+                    <IconComponent strokeWidth="1.5px" className="p-[1.5px]" />
+                    {initialDate ? initialDate.toLocaleDateString() : <span>Pick a date</span>}
                 </Button>
             </PopoverTrigger>
             <PopoverContent onClick={e => e.stopPropagation()} className="p-0 w-full">
