@@ -12,9 +12,9 @@ import React, { useContext } from "react";
 import ProjectCombobox from "./project-combobox";
 import { DatePicker } from "./date-picker";
 import { Button } from "../ui/button";
-import { SheetClose } from "../ui/sheet";
 import { updateTask } from "@/lib/actions";
 import { TasksDispatchContext } from "../providers/TasksContext";
+import { DialogClose } from "../ui/dialog";
 
 export const TaskFormSchema = z.object({
     id: z.uuid(),
@@ -49,16 +49,30 @@ export default function TaskForm({
     })
 
     async function onSubmit(values: z.infer<typeof TaskFormSchema>) {
+        console.log("Form submitted with values:", values);
+
+        if (dispatch) {
+            console.log("Calling dispatch...");
+            dispatch({
+                type: "edit",
+                newValues: values
+            });
+            console.log("Dispatch called");
+        } else {
+            console.error("Dispatch is undefined!");
+        }
+
+        console.log("Calling updateTask...");
         await updateTask(values);
-        dispatch({
-            type: "edit",
-            newValues: values
-        })
+        console.log("updateTask completed");
     }
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="h-full flex flex-col justify-between">
+            <form onSubmit={(e) => {
+                e.preventDefault();
+                form.handleSubmit(onSubmit)(e);
+            }} className="h-full flex flex-col justify-between gap-6">
                 <div className="space-y-6">
                     <FormField
                         control={form.control}
@@ -90,8 +104,8 @@ export default function TaskForm({
                         control={form.control}
                         name="projectId"
                         render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Project</FormLabel>
+                            <FormItem className="flex">
+                                <FormLabel className="grow">Project</FormLabel>
                                 <FormControl>
                                     <div>
                                         <ProjectCombobox value={field.value} setValue={form.setValue} />
@@ -105,8 +119,8 @@ export default function TaskForm({
                         control={form.control}
                         name="priority"
                         render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Priority</FormLabel>
+                            <FormItem className="flex">
+                                <FormLabel className="grow">Priority</FormLabel>
                                 <FormControl>
                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                                         <SelectTrigger>
@@ -128,8 +142,8 @@ export default function TaskForm({
                         control={form.control}
                         name="startDate"
                         render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Start Date</FormLabel>
+                            <FormItem className="flex">
+                                <FormLabel className="grow">Start Date</FormLabel>
                                 <FormControl>
                                     <div>
                                         <DatePicker initialDate={field.value} onChange={field.onChange} />
@@ -143,8 +157,8 @@ export default function TaskForm({
                         control={form.control}
                         name="dueDate"
                         render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Due Date</FormLabel>
+                            <FormItem className="flex">
+                                <FormLabel className="grow">Due Date</FormLabel>
                                 <FormControl>
                                     <div>
                                         <DatePicker initialDate={field.value} onChange={field.onChange} />
@@ -156,12 +170,12 @@ export default function TaskForm({
                     />
                 </div>
                 <div className="flex flex-col gap-2">
-                    <SheetClose asChild>
+                    <DialogClose asChild>
                         <Button type="button" variant="ghost">Cancel</Button>
-                    </SheetClose>
-                    <SheetClose asChild>
-                        <Button type="submit" className="mb-8">Submit</Button>
-                    </SheetClose>
+                    </DialogClose>
+                    <DialogClose asChild>
+                        <Button type="submit" className="">Submit</Button>
+                    </DialogClose>
                 </div>
             </form>
         </Form>

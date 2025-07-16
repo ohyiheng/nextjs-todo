@@ -14,6 +14,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/colla
 import { partition } from "@/lib/utils";
 import { useAtomValue } from "jotai";
 import { activeProjectAtom } from "@/lib/atoms";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 
 export function Task({
     id,
@@ -39,7 +40,7 @@ export function Task({
     }
 
     return (
-        <Sheet>
+        <Dialog>
             <div
                 className={clsx(
                     "bg-zinc-100 dark:bg-zinc-900",
@@ -61,7 +62,7 @@ export function Task({
                         "size-5 rounded-full",
                         completeBtnStyle
                     )} />
-                <SheetTrigger asChild>
+                <DialogTrigger asChild>
                     <div className="grow flex items-center gap-2">
                         <p className={clsx(
                             "font-semibold",
@@ -71,17 +72,15 @@ export function Task({
                             <DatePicker size="sm" initialDate={taskNode.dueDate} />
                         }
                     </div>
-                </SheetTrigger>
+                </DialogTrigger>
             </div >
-            <SheetContent className="w-screen md:w-[700px] h-full">
-                <SheetHeader>
-                    <SheetTitle>Edit Task</SheetTitle>
-                </SheetHeader>
-                <div className="px-4 h-full">
-                    <TaskForm task={taskNode} />
-                </div>
-            </SheetContent>
-        </Sheet>
+            <DialogContent onOpenAutoFocus={(e) => e.preventDefault()} className="focus-within:outline-none">
+                <DialogHeader className="mb-4">
+                    <DialogTitle>Edit Task</DialogTitle>
+                </DialogHeader>
+                <TaskForm task={taskNode} />
+            </DialogContent>
+        </Dialog>
     )
 }
 
