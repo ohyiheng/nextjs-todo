@@ -25,8 +25,8 @@ export type Project = {
     createdAt: Date,
     lastModifiedAt: Date,
     level: number,
-    sortBy?: SortByType,
-    sortOrder?: "asc" | "desc",
+    sortBy: SortByType,
+    sortOrder: "asc" | "desc",
     parentId?: number,
 }
 

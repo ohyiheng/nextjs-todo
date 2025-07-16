@@ -4,17 +4,17 @@ import clsx from "clsx";
 import { useContext, useEffect, useState } from "react"
 import { TaskNode } from "@/lib/definitions";
 import { TasksContext } from "../providers/TasksContext";
-import { DatePicker } from "./date-picker";
-import { ChevronRight } from "lucide-react";
+import { Calendar, ChevronRight, Target } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
 import TaskForm from "./task-form";
 import { Checkbox } from "../ui/checkbox";
 import { completeTask } from "@/lib/actions";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
-import { partition } from "@/lib/utils";
+import { computeDueDateColor, computeStartDateColor, getTaskSortingPredicate, partition, taskInFuture } from "@/lib/utils";
 import { useAtomValue } from "jotai";
 import { activeProjectAtom } from "@/lib/atoms";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
+import { DateTime } from "luxon";
 
 export function Task({
     id,
@@ -23,33 +23,36 @@ export function Task({
     id: string,
     taskNode: TaskNode
 }) {
-    let completeBtnStyle;
+    let checkboxColor;
     switch (taskNode.priority) {
         case '3':
-            completeBtnStyle = "border-red-500 bg-red-100 dark:bg-red-900/50";
+            checkboxColor = "border-red-500 bg-red-100 dark:bg-red-900/20";
             break;
         case '2':
-            completeBtnStyle = "border-amber-500 bg-amber-100 dark:bg-amber-900/50";
+            checkboxColor = "border-amber-500 bg-amber-100 dark:bg-amber-900/20";
             break;
         case '1':
-            completeBtnStyle = "border-sky-500 bg-sky-100 dark:bg-sky-900/50";
+            checkboxColor = "border-sky-500 bg-sky-100 dark:bg-sky-900/20";
             break;
         default:
-            completeBtnStyle = "border-zinc-400 bg-zinc-50 dark:bg-zinc-900/50";
+            checkboxColor = "border-zinc-400 bg-zinc-50 dark:bg-zinc-900/20";
             break;
     }
+
 
     return (
         <Dialog>
             <div
                 className={clsx(
-                    "bg-zinc-100 dark:bg-zinc-900",
+                    "bg-zinc-50 dark:bg-zinc-900",
                     "relative",
                     "flex items-center gap-4",
                     "px-4 py-2",
                     "border",
                     "rounded-lg cursor-pointer",
+                    "text-sm",
                     "group",
+                    taskInFuture(taskNode) && "text-muted-foreground"
                 )}
             >
                 <Checkbox checked={taskNode.completed}
@@ -59,18 +62,34 @@ export function Task({
                         taskNode.completed = !taskNode.completed;
                     }}
                     className={clsx(
-                        "size-5 rounded-full",
-                        completeBtnStyle
+                        "size-5 rounded-full border-2",
+                        checkboxColor
                     )} />
                 <DialogTrigger asChild>
-                    <div className="grow flex items-center gap-2">
+                    <div className="grow flex flex-col justify-center gap-1">
                         <p className={clsx(
-                            "font-semibold",
                             taskNode.completed && "line-through text-muted-foreground"
                         )}>{taskNode.name}</p>
-                        {taskNode.dueDate &&
-                            <DatePicker size="sm" initialDate={taskNode.dueDate} />
-                        }
+                        <div className="flex items-center gap-2">
+                            {taskNode.startDate &&
+                                <div className={clsx(
+                                    "flex items-center gap-1",
+                                    computeStartDateColor(taskNode)
+                                )}>
+                                    <Calendar strokeWidth={1.5} className="p-0.5" />
+                                    <p className="text-xs">{taskNode.startDate && DateTime.fromJSDate(taskNode.startDate).toRelativeCalendar()}</p>
+                                </div>
+                            }
+                            {taskNode.dueDate &&
+                                <div className={clsx(
+                                    "flex items-center gap-1",
+                                    computeDueDateColor(taskNode)
+                                )}>
+                                    <Target strokeWidth={1.5} className="p-0.5" />
+                                    <p className="text-xs">{taskNode.dueDate && DateTime.fromJSDate(taskNode.dueDate).toRelativeCalendar()}</p>
+                                </div>
+                            }
+                        </div>
                     </div>
                 </DialogTrigger>
             </div >
@@ -90,52 +109,12 @@ export function TaskContainer() {
         return;
     }
     const [ pendingTasks, completedTasks ] = partition(tasks, task => !task.completed);
-    const [ open, setOpen ] = useState(false);
     const activeProject = useAtomValue(activeProjectAtom);
 
-    const sort = {
-        by: activeProject?.sortBy,
-        order: activeProject?.sortOrder
-    }
-
     let sortingPredicate: (a: TaskNode, b: TaskNode) => number;
-    switch (sort.by) {
-        case "start": {
-            sortingPredicate = (a, b) => {
-                return sort.order === "asc"
-                    ? (a.startDate?.getTime() ?? Number.MAX_SAFE_INTEGER) - (b.startDate?.getTime() ?? Number.MAX_SAFE_INTEGER)
-                    : (b.startDate?.getTime() ?? 0) - (a.startDate?.getTime() ?? 0)
-            }
-            break;
-        }
-        case "due": {
-            sortingPredicate = (a, b) => {
-                return sort.order === "asc"
-                    ? (a.dueDate?.getTime() ?? Number.MAX_SAFE_INTEGER) - (b.dueDate?.getTime() ?? Number.MAX_SAFE_INTEGER)
-                    : (b.dueDate?.getTime() ?? 0) - (a.dueDate?.getTime() ?? 0)
-            }
-            break;
-        }
-        case "name": {
-            sortingPredicate = (a, b) => {
-                return sort.order === "asc"
-                    ? a.name.localeCompare(b.name)
-                    : b.name.localeCompare(a.name)
-            }
-            break;
-        }
-        default: {
-            sortingPredicate = (a, b) => {
-                return sort.order === "asc"
-                    ? parseInt(a.priority) - parseInt(b.priority)
-                    : parseInt(b.priority) - parseInt(a.priority)
-            };
-            break;
-        }
-    }
+    sortingPredicate = getTaskSortingPredicate(activeProject ?? undefined);
 
     const [ mounted, setMounted ] = useState(false);
-
     useEffect(() => {
         setMounted(true);
     }, []);
@@ -146,30 +125,30 @@ export function TaskContainer() {
         <div className="space-y-6">
             {pendingTasks.length > 0 &&
                 <TaskSection>
-                    {tasks.filter(task => !task.completed).sort(sortingPredicate).map(task => (
+                    {pendingTasks.sort(sortingPredicate).map(task => (
                         <Task key={task.id} id={task.id} taskNode={task} />
                     ))}
                 </TaskSection>
             }
             {completedTasks.length > 0 &&
-                <Collapsible open={open} onOpenChange={setOpen}>
-                    <TaskSection>
-                        <CollapsibleTrigger>
-                            <div className="flex items-center gap-1 cursor-pointer">
-                                <p className="text-sm text-muted-foreground font-medium">Completed</p>
-                                <ChevronRight className={clsx(
-                                    "stroke-muted-foreground",
-                                    "duration-100 ease-in-out",
-                                    open && "rotate-90"
-                                )} />
-                            </div>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent>
-                            {tasks.filter(task => task.completed).map(task => (
+                <Collapsible defaultOpen={false}>
+                    <CollapsibleTrigger asChild>
+                        <button className="mb-2 flex items-center gap-1 cursor-pointer group">
+                            <p className="text-sm text-muted-foreground font-medium">Completed</p>
+                            <ChevronRight className={clsx(
+                                "stroke-muted-foreground",
+                                "duration-100 ease-in-out",
+                                "group-data-[state=open]:rotate-90"
+                            )} />
+                        </button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                        <TaskSection>
+                            {completedTasks.map(task => (
                                 <Task key={task.id} id={task.id} taskNode={task} />
                             ))}
-                        </CollapsibleContent>
-                    </TaskSection>
+                        </TaskSection>
+                    </CollapsibleContent>
                 </Collapsible>
             }
         </div>

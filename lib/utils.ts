@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { ProjectNode, TaskNode } from "./definitions";
+import { DateTime } from "luxon";
 
 export async function hashSecret(secret: string): Promise<Uint8Array> {
     const secretBytes = new TextEncoder().encode(secret);
@@ -36,8 +37,8 @@ export function getProjectFromId(projects: ProjectNode[], id: number): ProjectNo
     if (project) return project;
 
     for (let i = 0; i < projects.length; i++) {
-        if (projects[i].subProjects && projects[i].subProjects!.length > 0) {
-            project = getProjectFromId(projects[i].subProjects!, id);
+        if (projects[ i ].subProjects && projects[ i ].subProjects!.length > 0) {
+            project = getProjectFromId(projects[ i ].subProjects!, id);
             if (project) break;
         }
     }
@@ -49,12 +50,77 @@ export function getTaskNodeById(tasks: TaskNode[], id: string): TaskNode | undef
     if (result) return result;
 
     for (let i = 0; i < tasks.length; i++) {
-        if (tasks[i].subTasks && tasks[i].subTasks!.length > 0) {
+        if (tasks[ i ].subTasks && tasks[ i ].subTasks!.length > 0) {
             result = getTaskNodeById(tasks, id);
             if (result) break;
         }
     }
     return result;
+}
+
+export function computeStartDateColor(task: TaskNode) {
+    if (!task.startDate) return "";
+
+    const diffInDays = DateTime.fromJSDate(task.startDate).startOf('day').diff(DateTime.now().startOf('day'), 'days').days;
+
+    if (diffInDays < 0) return "text-red-600 dark:text-red-400";
+    if (diffInDays < 7) return "text-green-700 dark:text-green-400";
+    return "text-zinc-700 dark:text-zinc-400";
+}
+
+export function computeDueDateColor(task: TaskNode) {
+    if (!task.dueDate) return "";
+
+    const diffInDays = DateTime.fromJSDate(task.dueDate).diff(DateTime.now(), 'days').as('days');
+
+    if (diffInDays < 0) return "text-red-600 dark:text-red-400";
+    if (diffInDays < 7) return "text-orange-700 dark:text-orange-400"
+    return "text-zinc-700 dark:text-zinc-400"
+}
+
+export function taskInFuture(task: TaskNode): boolean {
+    if (!task.startDate) return false;
+    const diffInDays = DateTime.fromJSDate(task.startDate).diff(DateTime.now(), 'days').as('days');
+    return diffInDays > 0 ? true : false;
+}
+
+export function getTaskSortingPredicate(project?: ProjectNode) {
+    let sortingPredicate: (a: TaskNode, b: TaskNode) => number;
+    switch (project?.sortBy) {
+        case "start": {
+            sortingPredicate = (a, b) => {
+                return project.sortOrder === "asc"
+                    ? (a.startDate?.getTime() ?? Number.MAX_SAFE_INTEGER) - (b.startDate?.getTime() ?? Number.MAX_SAFE_INTEGER)
+                    : (b.startDate?.getTime() ?? 0) - (a.startDate?.getTime() ?? 0)
+            }
+            break;
+        }
+        case "due": {
+            sortingPredicate = (a, b) => {
+                return project.sortOrder === "asc"
+                    ? (a.dueDate?.getTime() ?? Number.MAX_SAFE_INTEGER) - (b.dueDate?.getTime() ?? Number.MAX_SAFE_INTEGER)
+                    : (b.dueDate?.getTime() ?? 0) - (a.dueDate?.getTime() ?? 0)
+            }
+            break;
+        }
+        case "name": {
+            sortingPredicate = (a, b) => {
+                return project.sortOrder === "asc"
+                    ? a.name.localeCompare(b.name)
+                    : b.name.localeCompare(a.name)
+            }
+            break;
+        }
+        default: {
+            sortingPredicate = (a, b) => {
+                return project?.sortOrder === "asc"
+                    ? parseInt(a.priority) - parseInt(b.priority)
+                    : parseInt(b.priority) - parseInt(a.priority)
+            };
+            break;
+        }
+    }
+    return sortingPredicate;
 }
 
 export function cn(...inputs: ClassValue[]) {
