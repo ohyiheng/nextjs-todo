@@ -25,6 +25,8 @@ import { Collapsible } from "../ui/collapsible";
 import { CollapsibleContent, CollapsibleTrigger } from "@radix-ui/react-collapsible";
 import Link from "next/link";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { useSetAtom } from "jotai";
+import { addTaskDialogOpenAtom } from "@/lib/atoms";
 
 export function AppSidebar() {
     const { projects } = useProjects();
@@ -54,10 +56,12 @@ export function AppSidebar() {
     const projectsWithoutInbox = projects.filter(project => project.id !== 1);
     const { state } = useSidebar();
 
+    const setAddTaskDialogOpen = useSetAtom(addTaskDialogOpenAtom);
+
     return (
         <Sidebar className="" collapsible="icon">
             <SidebarHeader>
-                <SidebarMenuButton>
+                <SidebarMenuButton onClick={() => setAddTaskDialogOpen(true)}>
                     <Plus />
                     Add task
                 </SidebarMenuButton>

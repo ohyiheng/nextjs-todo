@@ -4,17 +4,19 @@ import clsx from "clsx";
 import { useContext, useEffect, useState } from "react"
 import { TaskNode } from "@/lib/definitions";
 import { TasksContext } from "../providers/TasksContext";
-import { Calendar, ChevronRight, Target } from "lucide-react";
+import { Calendar, ChevronRight, Plus, Target } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
 import TaskForm from "./task-form";
 import { Checkbox } from "../ui/checkbox";
 import { completeTask } from "@/lib/actions";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
 import { computeDueDateColor, computeStartDateColor, getTaskSortingPredicate, partition, taskInFuture } from "@/lib/utils";
-import { useAtomValue } from "jotai";
-import { activeProjectAtom } from "@/lib/atoms";
+import { useAtomValue, useSetAtom } from "jotai";
+import { activeProjectAtom, addTaskDialogOpenAtom } from "@/lib/atoms";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 import { DateTime } from "luxon";
+import { Button } from "../ui/button";
+import TaskEdit from "./task-edit";
 
 export function Task({
     id,
@@ -39,9 +41,10 @@ export function Task({
             break;
     }
 
+    const [open, setOpen] = useState(false);
 
     return (
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
             <div
                 className={clsx(
                     "bg-zinc-50 dark:bg-zinc-900",
@@ -70,26 +73,28 @@ export function Task({
                         <p className={clsx(
                             taskNode.completed && "line-through text-muted-foreground"
                         )}>{taskNode.name}</p>
-                        <div className="flex items-center gap-2">
-                            {taskNode.startDate &&
-                                <div className={clsx(
-                                    "flex items-center gap-1",
-                                    computeStartDateColor(taskNode)
-                                )}>
-                                    <Calendar strokeWidth={1.5} className="p-0.5" />
-                                    <p className="text-xs">{taskNode.startDate && DateTime.fromJSDate(taskNode.startDate).toRelativeCalendar()}</p>
-                                </div>
-                            }
-                            {taskNode.dueDate &&
-                                <div className={clsx(
-                                    "flex items-center gap-1",
-                                    computeDueDateColor(taskNode)
-                                )}>
-                                    <Target strokeWidth={1.5} className="p-0.5" />
-                                    <p className="text-xs">{taskNode.dueDate && DateTime.fromJSDate(taskNode.dueDate).toRelativeCalendar()}</p>
-                                </div>
-                            }
-                        </div>
+                        {(taskNode.startDate || taskNode.dueDate) &&
+                            <div className="flex items-center gap-3">
+                                {taskNode.startDate &&
+                                    <div className={clsx(
+                                        "flex items-center gap-1.5",
+                                        computeStartDateColor(taskNode)
+                                    )}>
+                                        <Calendar strokeWidth={1.5} className="size-4" />
+                                        <p className="text-xs">{taskNode.startDate && DateTime.fromJSDate(taskNode.startDate).toRelativeCalendar()}</p>
+                                    </div>
+                                }
+                                {taskNode.dueDate &&
+                                    <div className={clsx(
+                                        "flex items-center gap-1.5",
+                                        computeDueDateColor(taskNode)
+                                    )}>
+                                        <Target strokeWidth={1.5} className="size-4" />
+                                        <p className="text-xs">{taskNode.dueDate && DateTime.fromJSDate(taskNode.dueDate).toRelativeCalendar()}</p>
+                                    </div>
+                                }
+                            </div>
+                        }
                     </div>
                 </DialogTrigger>
             </div >
@@ -97,7 +102,7 @@ export function Task({
                 <DialogHeader className="mb-4">
                     <DialogTitle>Edit Task</DialogTitle>
                 </DialogHeader>
-                <TaskForm task={taskNode} />
+                <TaskEdit task={taskNode} close={() => setOpen(false)} />
             </DialogContent>
         </Dialog>
     )
@@ -110,6 +115,7 @@ export function TaskContainer() {
     }
     const [ pendingTasks, completedTasks ] = partition(tasks, task => !task.completed);
     const activeProject = useAtomValue(activeProjectAtom);
+    const setAddTaskDialogOpen = useSetAtom(addTaskDialogOpenAtom);
 
     let sortingPredicate: (a: TaskNode, b: TaskNode) => number;
     sortingPredicate = getTaskSortingPredicate(activeProject ?? undefined);
@@ -130,6 +136,12 @@ export function TaskContainer() {
                     ))}
                 </TaskSection>
             }
+            <Button variant="outline" className="w-full cursor-pointer"
+                onClick={() => setAddTaskDialogOpen(true)}
+            >
+                <Plus />
+                Add task
+            </Button>
             {completedTasks.length > 0 &&
                 <Collapsible defaultOpen={false}>
                     <CollapsibleTrigger asChild>

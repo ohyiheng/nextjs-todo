@@ -1,6 +1,6 @@
 "use client";
 
-import { ProjectNode } from "@/lib/definitions";
+import { ProjectNode, TaskFormType } from "@/lib/definitions";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { ChevronsUpDown } from "lucide-react";
 import { Button } from "../ui/button";
@@ -10,15 +10,16 @@ import { JSX, useState } from "react";
 import React from "react";
 import { FormControl } from "../ui/form";
 import { UseFormSetValue } from "react-hook-form";
-import { TaskFormType } from "./task-form";
 import { getProjectFromId } from "@/lib/utils";
 
 export default function ProjectCombobox({
     value,
-    setValue
+    setValue,
+    variant
 }: {
     value: number,
-    setValue: UseFormSetValue<TaskFormType>
+    setValue: UseFormSetValue<TaskFormType>,
+    variant?: "link" | "default" | "destructive" | "outline" | "secondary" | "ghost" | null
 }) {
     const { projects } = useProjects();
     const [ isOpen, setIsOpen ] = useState(false);
@@ -28,14 +29,14 @@ export default function ProjectCombobox({
             <PopoverTrigger asChild>
                 <FormControl>
                     <Button
-                        variant="outline"
+                        variant={variant}
                         role="combobox"
                         className="font-normal"
                     >
-                        <span className="max-w-[140px] md:max-w-[200px] truncate">
-                            {value ? getProjectFromId(projects, value)?.name : "Pick a project"}
+                        <span className="max-w-[140px] sm:max-w-[200px] truncate">
+                            {value ? getProjectFromId(projects, value)?.name : <span className="text-muted-foreground">Pick a project</span>}
                         </span>
-                        <ChevronsUpDown />
+                        <ChevronsUpDown strokeWidth={1} className="opacity-50" />
                     </Button>
                 </FormControl>
             </PopoverTrigger>
