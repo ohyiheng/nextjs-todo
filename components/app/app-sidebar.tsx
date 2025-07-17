@@ -16,13 +16,15 @@ import {
     SidebarMenuSubButton,
     SidebarMenuSubItem,
     SidebarRail,
+    useSidebar,
 } from "@/components/ui/sidebar"
 import useProjects from "../providers/ProjectsProvider"
-import { Calendar, ChevronRight, Inbox, Plus, Search, Sun, Tag } from "lucide-react";
+import { Calendar, Hash, Inbox, Plus, Search, Sun, Tag } from "lucide-react";
 import { ProjectNode } from "@/lib/definitions";
 import { Collapsible } from "../ui/collapsible";
 import { CollapsibleContent, CollapsibleTrigger } from "@radix-ui/react-collapsible";
 import Link from "next/link";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 export function AppSidebar() {
     const { projects } = useProjects();
@@ -50,6 +52,7 @@ export function AppSidebar() {
     ];
 
     const projectsWithoutInbox = projects.filter(project => project.id !== 1);
+    const { state } = useSidebar();
 
     return (
         <Sidebar className="" collapsible="icon">
@@ -86,32 +89,30 @@ export function AppSidebar() {
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {projectsWithoutInbox.map(project => (
-                                <Collapsible key={project.id}>
-                                    <SidebarMenuItem>
+                                <SidebarMenuItem key={project.id}>
+                                    {state === "collapsed" ?
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <SidebarMenuButton asChild>
+                                                    <Link className="truncate" href={`/app/project/${project.id}`}>
+                                                        <Hash />
+                                                        <span>{project.name}</span>
+                                                    </Link>
+                                                </SidebarMenuButton>
+                                            </TooltipTrigger>
+                                            <TooltipContent side="right">
+                                                <p>{project.name}</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                        :
                                         <SidebarMenuButton asChild>
-                                            <Link href={`/app/project/${project.id}`}>
+                                            <Link className="truncate" href={`/app/project/${project.id}`}>
+                                                <Hash />
                                                 <span>{project.name}</span>
                                             </Link>
                                         </SidebarMenuButton>
-                                        {
-                                            project.subProjects &&
-                                            project.subProjects.length > 0 &&
-                                            <>
-                                                <SidebarMenuAction>
-                                                    <CollapsibleTrigger asChild>
-                                                        <ChevronRight className="data-[state=open]:rotate-90 duration-75 ease-in-out cursor-pointer" />
-                                                    </CollapsibleTrigger>
-                                                </SidebarMenuAction>
-                                                <CollapsibleContent>
-                                                    <SidebarMenuSub>
-                                                        {mapSubProjects(project.subProjects)}
-                                                    </SidebarMenuSub>
-                                                </CollapsibleContent>
-                                            </>
-                                        }
-
-                                    </SidebarMenuItem>
-                                </Collapsible>
+                                    }
+                                </SidebarMenuItem>
                             ))}
                         </SidebarMenu>
                     </SidebarGroupContent>
@@ -120,39 +121,6 @@ export function AppSidebar() {
             <SidebarFooter>
             </SidebarFooter>
             <SidebarRail />
-        </Sidebar>
+        </Sidebar >
     )
-
-    function mapSubProjects(projects: ProjectNode[]) {
-        if (projects && projects.length > 0) {
-            return projects.map((project) => (
-                <Collapsible key={project.id}>
-                    <SidebarMenuSubItem>
-                        <SidebarMenuSubButton asChild>
-                            <Link href={`/app/project/${project.id}`}>
-                                <span>{project.name}</span>
-                            </Link>
-                        </SidebarMenuSubButton>
-                        {
-                            project.subProjects &&
-                            project.subProjects.length > 0 &&
-                            <>
-                                <SidebarMenuAction>
-                                    <CollapsibleTrigger asChild>
-                                        <ChevronRight className={`data-[state=open]:rotate-90 duration-75 ease-in-out cursor-pointer`} />
-                                    </CollapsibleTrigger>
-                                </SidebarMenuAction>
-                                <CollapsibleContent>
-                                    <SidebarMenuSub>
-                                        {mapSubProjects(project.subProjects)}
-                                    </SidebarMenuSub>
-                                </CollapsibleContent>
-                            </>
-                        }
-                    </SidebarMenuSubItem>
-                </Collapsible>
-            ))
-        }
-        return null;
-    }
 }
