@@ -1,3 +1,5 @@
+import z from "zod/v4";
+
 export type Task = {
     id: string,
     name: string,
@@ -33,3 +35,15 @@ export type Project = {
 export type ProjectNode = Project & {
     subProjects: ProjectNode[] | null
 }
+
+export const TaskFormSchema = z.object({
+    id: z.uuid(),
+    name: z.string(),
+    priority: z.literal([ '0', '1', '2', '3' ]),
+    description: z.string(),
+    startDate: z.date().nullable(),
+    dueDate: z.date().nullable(),
+    projectId: z.number(),
+})
+
+export type TaskFormType = z.infer<typeof TaskFormSchema>;

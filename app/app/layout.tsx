@@ -1,4 +1,5 @@
 import ActiveProjectUpdater from "@/components/app/active-project-updater";
+import AddTask from "@/components/app/task-add";
 import { AppSidebar } from "@/components/app/app-sidebar";
 import AppTitle from "@/components/app/app-title";
 import ProjectSortingSelect from "@/components/app/project-sorting-select";
@@ -28,6 +29,7 @@ export default function Layout({
                             {children}
                         </main>
                     </div>
+                    <AddTask />
                 </SidebarInset>
             </SidebarProvider>
         </Providers>

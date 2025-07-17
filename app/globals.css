@@ -62,11 +62,6 @@ h1 {
   @apply font-semibold;
 }
 
-.lucide {
-  width: 20px;
-  height: 20px;
-}
-
 .lucide-small {
   width: 16px;
   height: 16px;
