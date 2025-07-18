@@ -20,6 +20,8 @@ import { useEffect } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import CancelButton from "./cancel-button";
 import { TaskFormSchema, TaskFormType } from "@/lib/definitions";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "../ui/drawer";
 
 const AddTaskFormSchema = z.object({
     name: z.string(),
@@ -48,14 +50,28 @@ export default function AddTask() {
         console.log("Form submitted");
     }
 
+    const isMobile = useIsMobile();
+
     useEffect(() => {
         form.setValue("projectId", activeProject?.id ?? 1);
     }, [ activeProject, addTaskDialogOpen ])
 
+    if (isMobile) return (
+        <Drawer open={addTaskDialogOpen} onOpenChange={setAddTaskDialogOpen}>
+            {/* "[&>button:last-child]:hidden" hides close button */}
+            <DrawerContent className="px-4 mb-6 box-border sm:[&>button:last-child]:hidden focus-within:outline-none">
+                <DrawerHeader className="mb-2">
+                    <DrawerTitle>Add task</DrawerTitle>
+                </DrawerHeader>
+                <TaskForm form={form} onSubmit={onSubmit} close={() => setAddTaskDialogOpen(false)} />
+            </DrawerContent>
+        </Drawer>
+    )
+
     return (
         <Dialog open={addTaskDialogOpen} onOpenChange={setAddTaskDialogOpen}>
             {/* "[&>button:last-child]:hidden" hides close button */}
-            <DialogContent className="sm:[&>button:last-child]:hidden top-1/3">
+            <DialogContent className="sm:[&>button:last-child]:hidden">
                 <DialogHeader className="mb-2">
                     <DialogTitle>Add task</DialogTitle>
                 </DialogHeader>

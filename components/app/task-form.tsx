@@ -1,19 +1,13 @@
 "use client";
 
-import { TaskFormType, TaskNode } from "@/lib/definitions";
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm, UseFormReturn } from "react-hook-form";
-import { z } from "zod/v4";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
+import { TaskFormType } from "@/lib/definitions";
+import { UseFormReturn } from "react-hook-form";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
-import React, { useContext, useState } from "react";
 import ProjectCombobox from "./project-combobox";
 import { DatePicker } from "./date-picker";
 import { Button } from "../ui/button";
-import { updateTask } from "@/lib/actions";
-import { TasksDispatchContext } from "../providers/TasksContext";
-import { DialogClose } from "../ui/dialog";
 import PrioritySelect from "./priority-select";
 import { Separator } from "../ui/separator";
 import CancelButton from "./cancel-button";
@@ -101,7 +95,7 @@ export default function TaskForm({
                         control={form.control}
                         name="projectId"
                         render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="shrink">
                                 <FormControl>
                                     <ProjectCombobox value={field.value} setValue={form.setValue} variant="outline" />
                                 </FormControl>
