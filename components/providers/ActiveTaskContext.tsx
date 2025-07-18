@@ -1,11 +1,11 @@
 "use client";
 
-import { TaskNode } from "@/lib/definitions";
+import { Task } from "@/lib/definitions";
 import { createContext, Dispatch, useContext, useState } from "react";
 
 type ActiveTaskContextType = {
-    activeTask: TaskNode | null,
-    setActiveTask: Dispatch<TaskNode | null>
+    activeTask: Task | null,
+    setActiveTask: Dispatch<Task | null>
 }
 
 const ActiveTaskContext = createContext<ActiveTaskContextType | undefined>(undefined);
@@ -15,7 +15,7 @@ export function ActiveTaskProvider({
 }: {
     children: React.ReactNode
 }) {
-    const [ activeTask, setActiveTask ] = useState<TaskNode | null>(null);
+    const [ activeTask, setActiveTask ] = useState<Task | null>(null);
 
     return (
         <ActiveTaskContext value={{ activeTask, setActiveTask }}>

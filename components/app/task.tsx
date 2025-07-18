@@ -2,7 +2,7 @@
 
 import clsx from "clsx";
 import { useContext, useEffect, useState } from "react"
-import { TaskNode } from "@/lib/definitions";
+import type { Task } from "@/lib/definitions";
 import { TasksContext } from "../providers/TasksContext";
 import { Calendar, ChevronRight, Plus, Target } from "lucide-react";
 import { Checkbox } from "../ui/checkbox";
@@ -17,13 +17,13 @@ import TaskEdit from "./task-edit";
 
 export function Task({
     id,
-    taskNode
+    task
 }: {
     id: string,
-    taskNode: TaskNode
+    task: Task
 }) {
     let checkboxColor;
-    switch (taskNode.priority) {
+    switch (task.priority) {
         case '3':
             checkboxColor = "border-red-500 bg-red-100 dark:bg-red-900/20";
             break;
@@ -51,14 +51,14 @@ export function Task({
                 "rounded-lg cursor-pointer",
                 "text-sm",
                 "group",
-                taskInFuture(taskNode) && "text-muted-foreground"
+                taskInFuture(task) && "text-muted-foreground"
             )}
         >
-            <Checkbox checked={taskNode.completed}
+            <Checkbox checked={task.completed}
                 onCheckedChange={async () => {
-                    console.log(taskNode.completed);
-                    await completeTask(taskNode.id, taskNode.completed);
-                    taskNode.completed = !taskNode.completed;
+                    console.log(task.completed);
+                    await completeTask(task.id, task.completed);
+                    task.completed = !task.completed;
                 }}
                 className={clsx(
                     "size-5 rounded-full border-2",
@@ -66,46 +66,51 @@ export function Task({
                 )} />
             <div className="grow flex flex-col justify-center gap-1" onClick={() => setOpen(true)}>
                 <p className={clsx(
-                    taskNode.completed && "line-through text-muted-foreground"
-                )}>{taskNode.name}</p>
-                {(taskNode.startDate || taskNode.dueDate) &&
+                    task.completed && "line-through text-muted-foreground"
+                )}>{task.name}</p>
+                {(task.startDate || task.dueDate) &&
                     <div className="flex items-center gap-3">
-                        {taskNode.startDate &&
+                        {task.startDate &&
                             <div className={clsx(
                                 "flex items-center gap-1.5",
-                                computeStartDateColor(taskNode)
+                                computeStartDateColor(task)
                             )}>
                                 <Calendar strokeWidth={1.5} className="size-4" />
-                                <p className="text-xs">{taskNode.startDate && DateTime.fromJSDate(taskNode.startDate).toRelativeCalendar()}</p>
+                                <p className="text-xs">{task.startDate && DateTime.fromJSDate(task.startDate).toRelativeCalendar()}</p>
                             </div>
                         }
-                        {taskNode.dueDate &&
+                        {task.dueDate &&
                             <div className={clsx(
                                 "flex items-center gap-1.5",
-                                computeDueDateColor(taskNode)
+                                computeDueDateColor(task)
                             )}>
                                 <Target strokeWidth={1.5} className="size-4" />
-                                <p className="text-xs">{taskNode.dueDate && DateTime.fromJSDate(taskNode.dueDate).toRelativeCalendar()}</p>
+                                <p className="text-xs">{task.dueDate && DateTime.fromJSDate(task.dueDate).toRelativeCalendar()}</p>
                             </div>
                         }
                     </div>
                 }
             </div>
-            <TaskEdit task={taskNode} open={open} setOpen={setOpen} />
+            {open &&
+                <TaskEdit task={task} open={open} setOpen={setOpen} />
+            }
         </div>
     )
 }
 
-export function TaskContainer() {
+export function TaskContainer({ projectId }: { projectId: number }) {
     const tasks = useContext(TasksContext);
     if (tasks == null) {
         return;
     }
-    const [ pendingTasks, completedTasks ] = partition(tasks, task => !task.completed);
+
+    const filteredTasks = tasks.filter((task) => task.projectId === projectId);
+
+    const [ pendingTasks, completedTasks ] = partition(filteredTasks, task => !task.completed);
     const activeProject = useAtomValue(activeProjectAtom);
     const setAddTaskDialogOpen = useSetAtom(addTaskDialogOpenAtom);
 
-    let sortingPredicate: (a: TaskNode, b: TaskNode) => number;
+    let sortingPredicate: (a: Task, b: Task) => number;
     sortingPredicate = getTaskSortingPredicate(activeProject ?? undefined);
 
     const [ mounted, setMounted ] = useState(false);
@@ -120,7 +125,7 @@ export function TaskContainer() {
             {pendingTasks.length > 0 &&
                 <TaskSection>
                     {pendingTasks.sort(sortingPredicate).map(task => (
-                        <Task key={task.id} id={task.id} taskNode={task} />
+                        <Task key={task.id} id={task.id} task={task} />
                     ))}
                 </TaskSection>
             }
@@ -145,7 +150,7 @@ export function TaskContainer() {
                     <CollapsibleContent>
                         <TaskSection>
                             {completedTasks.map(task => (
-                                <Task key={task.id} id={task.id} taskNode={task} />
+                                <Task key={task.id} id={task.id} task={task} />
                             ))}
                         </TaskSection>
                     </CollapsibleContent>
@@ -165,23 +170,4 @@ function TaskSection({
             {children}
         </div>
     )
-}
-
-export function getTaskById(tasks: TaskNode[], id: string): TaskNode | null {
-    let result = tasks.find(task => task.id === id);
-    for (let i = 0; i < tasks.length; i++) {
-        if (result) {
-            break;
-        }
-        if (tasks[ i ].subTasks !== null) {
-            let resultFromSubTree = getTaskById(tasks[ i ].subTasks!, id);
-            if (resultFromSubTree) {
-                result = resultFromSubTree;
-            }
-        }
-    }
-    if (result == undefined) {
-        return null;
-    }
-    return result;
 }

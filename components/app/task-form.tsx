@@ -110,11 +110,7 @@ export default function TaskForm({
                                 setTimeout(close, 0);
                             }
                         }} />
-                        <Button type="submit" size="sm" onClick={() => {
-                            if (close) {
-                                setTimeout(close, 0);
-                            }
-                        }}>Submit</Button>
+                        <Button type="submit" size="sm">Submit</Button>
                     </div>
                 </div>
             </form>

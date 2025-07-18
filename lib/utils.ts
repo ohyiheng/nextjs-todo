@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-import { ProjectNode, TaskNode } from "./definitions";
+import { ProjectNode, Task } from "./definitions";
 import { DateTime } from "luxon";
 
 export async function hashSecret(secret: string): Promise<Uint8Array> {
@@ -45,20 +45,13 @@ export function getProjectFromId(projects: ProjectNode[], id: number): ProjectNo
     return project;
 }
 
-export function getTaskNodeById(tasks: TaskNode[], id: string): TaskNode | undefined {
+export function getTaskById(tasks: Task[], id: string): Task | undefined {
     let result = tasks.find(task => task.id === id);
     if (result) return result;
-
-    for (let i = 0; i < tasks.length; i++) {
-        if (tasks[ i ].subTasks && tasks[ i ].subTasks!.length > 0) {
-            result = getTaskNodeById(tasks, id);
-            if (result) break;
-        }
-    }
     return result;
 }
 
-export function computeStartDateColor(task: TaskNode) {
+export function computeStartDateColor(task: Task) {
     if (!task.startDate) return "";
 
     const diffInDays = DateTime.fromJSDate(task.startDate).startOf('day').diff(DateTime.now().startOf('day'), 'days').days;
@@ -68,7 +61,7 @@ export function computeStartDateColor(task: TaskNode) {
     return "text-zinc-700 dark:text-zinc-400";
 }
 
-export function computeDueDateColor(task: TaskNode) {
+export function computeDueDateColor(task: Task) {
     if (!task.dueDate) return "";
 
     const diffInDays = DateTime.fromJSDate(task.dueDate).diff(DateTime.now(), 'days').as('days');
@@ -78,14 +71,14 @@ export function computeDueDateColor(task: TaskNode) {
     return "text-zinc-700 dark:text-zinc-400"
 }
 
-export function taskInFuture(task: TaskNode): boolean {
+export function taskInFuture(task: Task): boolean {
     if (!task.startDate) return false;
     const diffInDays = DateTime.fromJSDate(task.startDate).diff(DateTime.now(), 'days').as('days');
     return diffInDays > 0 ? true : false;
 }
 
 export function getTaskSortingPredicate(project?: ProjectNode) {
-    let sortingPredicate: (a: TaskNode, b: TaskNode) => number;
+    let sortingPredicate: (a: Task, b: Task) => number;
     switch (project?.sortBy) {
         case "start": {
             sortingPredicate = (a, b) => {
@@ -122,6 +115,13 @@ export function getTaskSortingPredicate(project?: ProjectNode) {
     }
     return sortingPredicate;
 }
+
+export function uuidv4() {
+    return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
+        (+c ^ crypto.getRandomValues(new Uint8Array(1))[ 0 ] & 15 >> +c / 4).toString(16)
+    );
+}
+
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs))

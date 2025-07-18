@@ -6,7 +6,6 @@ const sql = postgres(
         idle_timeout: 10,
         transform: {
             ...postgres.camel,
-            undefined: null
         },
         max: 100
     },

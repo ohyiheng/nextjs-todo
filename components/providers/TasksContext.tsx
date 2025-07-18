@@ -1,28 +1,27 @@
 "use client";
 
-import { TaskNode } from "@/lib/definitions";
+import { Task, TaskFormType } from "@/lib/definitions";
 import { arrayMove } from "@dnd-kit/sortable";
 import { createContext, Dispatch, useReducer } from "react";
-import { TaskFormType } from "../app/task-form";
-import { getTaskById } from "../app/task";
+import { getTaskById } from "@/lib/utils";
 
 type TasksAction = {
     type: "move",
     oldIndex: number,
     newIndex: number
 } | {
-    type: "edit",
+    type: "edit" | "add",
     newValues: TaskFormType
 }
 
-export const TasksContext = createContext<TaskNode[] | null>(null);
-export const TasksDispatchContext = createContext<Dispatch<TasksAction>>(() => { });
+export const TasksContext = createContext<Task[] | null>(null);
+export const TasksDispatchContext = createContext<Dispatch<TasksAction> | undefined>(undefined);
 
 export default function TasksProvider({
     tasks,
     children
 }: {
-    tasks: TaskNode[],
+    tasks: Task[],
     children: React.ReactNode
 }) {
     const [ taskList, dispatch ] = useReducer(tasksReducer, tasks);
@@ -36,7 +35,8 @@ export default function TasksProvider({
     )
 }
 
-function tasksReducer(prevTasks: TaskNode[] | null, action: TasksAction) {
+function tasksReducer(prevTasks: Task[] | null, action: TasksAction) {
+    console.log("dispatching...");
     if (!prevTasks) {
         return null;
     }
@@ -46,7 +46,6 @@ function tasksReducer(prevTasks: TaskNode[] | null, action: TasksAction) {
         }
         case "edit": {
             let task = getTaskById(prevTasks, action.newValues.id);
-            console.log(action.newValues);
             task!.name = action.newValues.name;
             task!.description = action.newValues.description;
             task!.priority = action.newValues.priority;
@@ -54,6 +53,10 @@ function tasksReducer(prevTasks: TaskNode[] | null, action: TasksAction) {
             task!.startDate = action.newValues.startDate;
             task!.dueDate = action.newValues.dueDate;
             return prevTasks;
+        }
+        case "add": {
+            const newTasks = [...prevTasks, {...action.newValues}]
+            return newTasks;
         }
     }
 }
