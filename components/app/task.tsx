@@ -3,10 +3,10 @@
 import clsx from "clsx";
 import { useContext, useEffect, useState } from "react"
 import type { Task } from "@/lib/definitions";
-import { TasksContext } from "../providers/TasksContext";
-import { Calendar, ChevronRight, Plus, Target } from "lucide-react";
+import { TasksContext, TasksDispatchContext } from "../providers/TasksContext";
+import { Calendar, ChevronRight, Ellipsis, Plus, Target, Trash } from "lucide-react";
 import { Checkbox } from "../ui/checkbox";
-import { completeTask } from "@/lib/actions";
+import { completeTask, deleteTask } from "@/lib/actions";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
 import { computeDueDateColor, computeStartDateColor, getTaskSortingPredicate, partition, taskInFuture } from "@/lib/utils";
 import { useAtomValue, useSetAtom } from "jotai";
@@ -14,6 +14,9 @@ import { activeProjectAtom, addTaskDialogOpenAtom } from "@/lib/atoms";
 import { DateTime } from "luxon";
 import { Button } from "../ui/button";
 import TaskEdit from "./task-edit";
+import { Card, CardContent } from "../ui/card";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
 export function Task({
     id,
@@ -40,61 +43,82 @@ export function Task({
 
     const [ open, setOpen ] = useState(false);
 
+    const dispatch = useContext(TasksDispatchContext);
+
     return (
-        <div
+        <Card
             className={clsx(
-                "bg-zinc-50 dark:bg-zinc-900",
                 "relative",
-                "flex items-center gap-4",
-                "px-4 py-2",
+                "py-2",
                 "border",
-                "rounded-lg cursor-pointer",
+                "shadow-xs",
+                "cursor-pointer",
                 "text-sm",
                 "group",
                 taskInFuture(task) && "text-muted-foreground"
             )}
         >
-            <Checkbox checked={task.completed}
-                onCheckedChange={async () => {
-                    console.log(task.completed);
-                    await completeTask(task.id, task.completed);
-                    task.completed = !task.completed;
-                }}
-                className={clsx(
-                    "size-5 rounded-full border-2",
-                    checkboxColor
-                )} />
-            <div className="grow flex flex-col justify-center gap-1" onClick={() => setOpen(true)}>
-                <p className={clsx(
-                    task.completed && "line-through text-muted-foreground"
-                )}>{task.name}</p>
-                {(task.startDate || task.dueDate) &&
-                    <div className="flex items-center gap-3">
-                        {task.startDate &&
-                            <div className={clsx(
-                                "flex items-center gap-1.5",
-                                computeStartDateColor(task)
-                            )}>
-                                <Calendar strokeWidth={1.5} className="size-4" />
-                                <p className="text-xs">{task.startDate && DateTime.fromJSDate(task.startDate).toRelativeCalendar()}</p>
-                            </div>
-                        }
-                        {task.dueDate &&
-                            <div className={clsx(
-                                "flex items-center gap-1.5",
-                                computeDueDateColor(task)
-                            )}>
-                                <Target strokeWidth={1.5} className="size-4" />
-                                <p className="text-xs">{task.dueDate && DateTime.fromJSDate(task.dueDate).toRelativeCalendar()}</p>
+            <CardContent className="px-4 flex justify-between">
+                <div className="flex items-center gap-4 grow">
+                    <Checkbox checked={task.completed}
+                        onCheckedChange={async () => {
+                            console.log(task.completed);
+                            await completeTask(task.id, task.completed);
+                            task.completed = !task.completed;
+                        }}
+                        className={clsx(
+                            "size-5 rounded-full border-2",
+                            checkboxColor
+                        )} />
+                    <div className="grow flex flex-col justify-center gap-1" onClick={() => setOpen(true)}>
+                        <p className={clsx(
+                            task.completed && "line-through text-muted-foreground"
+                        )}>{task.name}</p>
+                        {(task.startDate || task.dueDate) &&
+                            <div className="flex items-center gap-3">
+                                {task.startDate &&
+                                    <div className={clsx(
+                                        "flex items-center gap-1.5",
+                                        computeStartDateColor(task)
+                                    )}>
+                                        <Calendar strokeWidth={1.5} className="size-4" />
+                                        <p className="text-xs">{task.startDate && DateTime.fromJSDate(task.startDate).toRelativeCalendar()}</p>
+                                    </div>
+                                }
+                                {task.dueDate &&
+                                    <div className={clsx(
+                                        "flex items-center gap-1.5",
+                                        computeDueDateColor(task)
+                                    )}>
+                                        <Target strokeWidth={1.5} className="size-4" />
+                                        <p className="text-xs">{task.dueDate && DateTime.fromJSDate(task.dueDate).toRelativeCalendar()}</p>
+                                    </div>
+                                }
                             </div>
                         }
                     </div>
+                </div>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" onClick={(e) => {
+                            e.stopPropagation();
+                        }}>
+                            <Ellipsis />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuItem onClick={() => setOpen(true)}>Edit</DropdownMenuItem>
+                        <DropdownMenuItem variant="destructive" onClick={async () => {
+                            if (dispatch) dispatch({ type: "delete", id: task.id });
+                            await deleteTask(task.id);
+                        }}>Delete</DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+                {open &&
+                    <TaskEdit task={task} open={open} setOpen={setOpen} />
                 }
-            </div>
-            {open &&
-                <TaskEdit task={task} open={open} setOpen={setOpen} />
-            }
-        </div>
+            </CardContent>
+        </Card>
     )
 }
 

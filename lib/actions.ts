@@ -60,6 +60,16 @@ export async function updateTask(task: TaskFormType) {
     revalidatePath("/app/project/[id]", "page");
 }
 
+export async function deleteTask(id: string) {
+    try {
+        await sql`DELETE FROM tasks WHERE id = ${id}`
+    } catch (error) {
+        console.error(error)
+    }
+    revalidatePath("/app/inbox");
+    revalidatePath("/app/project/[id]", "page");
+}
+
 export async function completeTask(id: string, completed: boolean) {
     try {
         await sql`UPDATE tasks SET

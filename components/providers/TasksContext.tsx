@@ -12,6 +12,9 @@ type TasksAction = {
 } | {
     type: "edit" | "add",
     newValues: TaskFormType
+} | {
+    type: "delete",
+    id: string
 }
 
 export const TasksContext = createContext<Task[] | null>(null);
@@ -57,6 +60,9 @@ function tasksReducer(prevTasks: Task[] | null, action: TasksAction) {
         case "add": {
             const newTasks = [...prevTasks, {...action.newValues}]
             return newTasks;
+        }
+        case "delete": {
+            return prevTasks.filter(task => task.id !== action.id)
         }
     }
 }
