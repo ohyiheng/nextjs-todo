@@ -5,15 +5,12 @@ import { useContext, useEffect, useState } from "react"
 import { TaskNode } from "@/lib/definitions";
 import { TasksContext } from "../providers/TasksContext";
 import { Calendar, ChevronRight, Plus, Target } from "lucide-react";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
-import TaskForm from "./task-form";
 import { Checkbox } from "../ui/checkbox";
 import { completeTask } from "@/lib/actions";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
 import { computeDueDateColor, computeStartDateColor, getTaskSortingPredicate, partition, taskInFuture } from "@/lib/utils";
 import { useAtomValue, useSetAtom } from "jotai";
 import { activeProjectAtom, addTaskDialogOpenAtom } from "@/lib/atoms";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 import { DateTime } from "luxon";
 import { Button } from "../ui/button";
 import TaskEdit from "./task-edit";
@@ -41,70 +38,61 @@ export function Task({
             break;
     }
 
-    const [open, setOpen] = useState(false);
+    const [ open, setOpen ] = useState(false);
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <div
+        <div
+            className={clsx(
+                "bg-zinc-50 dark:bg-zinc-900",
+                "relative",
+                "flex items-center gap-4",
+                "px-4 py-2",
+                "border",
+                "rounded-lg cursor-pointer",
+                "text-sm",
+                "group",
+                taskInFuture(taskNode) && "text-muted-foreground"
+            )}
+        >
+            <Checkbox checked={taskNode.completed}
+                onCheckedChange={async () => {
+                    console.log(taskNode.completed);
+                    await completeTask(taskNode.id, taskNode.completed);
+                    taskNode.completed = !taskNode.completed;
+                }}
                 className={clsx(
-                    "bg-zinc-50 dark:bg-zinc-900",
-                    "relative",
-                    "flex items-center gap-4",
-                    "px-4 py-2",
-                    "border",
-                    "rounded-lg cursor-pointer",
-                    "text-sm",
-                    "group",
-                    taskInFuture(taskNode) && "text-muted-foreground"
-                )}
-            >
-                <Checkbox checked={taskNode.completed}
-                    onCheckedChange={async () => {
-                        console.log(taskNode.completed);
-                        await completeTask(taskNode.id, taskNode.completed);
-                        taskNode.completed = !taskNode.completed;
-                    }}
-                    className={clsx(
-                        "size-5 rounded-full border-2",
-                        checkboxColor
-                    )} />
-                <DialogTrigger asChild>
-                    <div className="grow flex flex-col justify-center gap-1">
-                        <p className={clsx(
-                            taskNode.completed && "line-through text-muted-foreground"
-                        )}>{taskNode.name}</p>
-                        {(taskNode.startDate || taskNode.dueDate) &&
-                            <div className="flex items-center gap-3">
-                                {taskNode.startDate &&
-                                    <div className={clsx(
-                                        "flex items-center gap-1.5",
-                                        computeStartDateColor(taskNode)
-                                    )}>
-                                        <Calendar strokeWidth={1.5} className="size-4" />
-                                        <p className="text-xs">{taskNode.startDate && DateTime.fromJSDate(taskNode.startDate).toRelativeCalendar()}</p>
-                                    </div>
-                                }
-                                {taskNode.dueDate &&
-                                    <div className={clsx(
-                                        "flex items-center gap-1.5",
-                                        computeDueDateColor(taskNode)
-                                    )}>
-                                        <Target strokeWidth={1.5} className="size-4" />
-                                        <p className="text-xs">{taskNode.dueDate && DateTime.fromJSDate(taskNode.dueDate).toRelativeCalendar()}</p>
-                                    </div>
-                                }
+                    "size-5 rounded-full border-2",
+                    checkboxColor
+                )} />
+            <div className="grow flex flex-col justify-center gap-1" onClick={() => setOpen(true)}>
+                <p className={clsx(
+                    taskNode.completed && "line-through text-muted-foreground"
+                )}>{taskNode.name}</p>
+                {(taskNode.startDate || taskNode.dueDate) &&
+                    <div className="flex items-center gap-3">
+                        {taskNode.startDate &&
+                            <div className={clsx(
+                                "flex items-center gap-1.5",
+                                computeStartDateColor(taskNode)
+                            )}>
+                                <Calendar strokeWidth={1.5} className="size-4" />
+                                <p className="text-xs">{taskNode.startDate && DateTime.fromJSDate(taskNode.startDate).toRelativeCalendar()}</p>
+                            </div>
+                        }
+                        {taskNode.dueDate &&
+                            <div className={clsx(
+                                "flex items-center gap-1.5",
+                                computeDueDateColor(taskNode)
+                            )}>
+                                <Target strokeWidth={1.5} className="size-4" />
+                                <p className="text-xs">{taskNode.dueDate && DateTime.fromJSDate(taskNode.dueDate).toRelativeCalendar()}</p>
                             </div>
                         }
                     </div>
-                </DialogTrigger>
-            </div >
-            <DialogContent onOpenAutoFocus={(e) => e.preventDefault()} className="focus-within:outline-none">
-                <DialogHeader className="mb-4">
-                    <DialogTitle>Edit Task</DialogTitle>
-                </DialogHeader>
-                <TaskEdit task={taskNode} close={() => setOpen(false)} />
-            </DialogContent>
-        </Dialog>
+                }
+            </div>
+            <TaskEdit task={taskNode} open={open} setOpen={setOpen} />
+        </div>
     )
 }
 

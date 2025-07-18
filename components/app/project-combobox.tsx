@@ -31,7 +31,7 @@ export default function ProjectCombobox({
                     <Button
                         variant={variant}
                         role="combobox"
-                        className="font-normal"
+                        className="font-normal truncate"
                     >
                         <span className="max-w-[140px] sm:max-w-[200px] truncate">
                             {value ? getProjectFromId(projects, value)?.name : <span className="text-muted-foreground">Pick a project</span>}

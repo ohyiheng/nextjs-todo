@@ -4,20 +4,13 @@ import { TaskNode } from "@/lib/definitions";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form";
 import { z } from "zod/v4";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
-import { Input } from "../ui/input";
-import { Textarea } from "../ui/textarea";
-import React, { useContext, useState } from "react";
-import ProjectCombobox from "./project-combobox";
-import { DatePicker } from "./date-picker";
-import { Button } from "../ui/button";
+import React, { Dispatch, useContext } from "react";
 import { updateTask } from "@/lib/actions";
 import { TasksDispatchContext } from "../providers/TasksContext";
-import { DialogClose } from "../ui/dialog";
-import PrioritySelect from "./priority-select";
-import { Separator } from "../ui/separator";
-import CancelButton from "./cancel-button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import TaskForm from "./task-form";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "../ui/drawer";
 
 export const TaskFormSchema = z.object({
     id: z.uuid(),
@@ -33,10 +26,12 @@ export type TaskFormType = z.infer<typeof TaskFormSchema>;
 
 export default function TaskEdit({
     task,
-    close
+    open,
+    setOpen,
 }: {
     task: TaskNode,
-    close?: () => void
+    open: boolean,
+    setOpen: Dispatch<boolean>
 }) {
     const dispatch = useContext(TasksDispatchContext);
 
@@ -61,7 +56,29 @@ export default function TaskEdit({
         await updateTask(values);
     }
 
+    const isMobile = useIsMobile();
+
+    if (isMobile) return (
+        <Drawer open={open} onOpenChange={setOpen}>
+            <DrawerContent className="px-4 mb-6 box-border sm:[&>button:last-child]:hidden focus-within:outline-none">
+                <DrawerHeader>
+                    <DrawerTitle>Edit task</DrawerTitle>
+                </DrawerHeader>
+                <TaskForm form={form} onSubmit={onSubmit} close={() => setOpen(false)} />
+            </DrawerContent>
+        </Drawer>
+    )
+
     return (
-        <TaskForm form={form} onSubmit={onSubmit} close={close} />
+        <Dialog open={open} onOpenChange={setOpen}>
+            {/* "[&>button:last-child]:hidden" hides close button */}
+            <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}
+                className="sm:[&>button:last-child]:hidden focus-within:outline-none">
+                <DialogHeader className="mb-2">
+                    <DialogTitle>Edit task</DialogTitle>
+                </DialogHeader>
+                <TaskForm form={form} onSubmit={onSubmit} close={() => setOpen(false)} />
+            </DialogContent>
+        </Dialog>
     )
 }
