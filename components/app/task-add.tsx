@@ -3,51 +3,49 @@
 import { activeProjectAtom, addTaskDialogOpenAtom } from "@/lib/atoms";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { useAtom, useAtomValue } from "jotai";
-import { z } from "zod/v4";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
-import { Input } from "../ui/input";
-import { Textarea } from "../ui/textarea";
-import PrioritySelect from "./priority-select";
-import ProjectCombobox from "./project-combobox";
 import TaskForm from "./task-form";
-import { DatePicker } from "./date-picker";
-import { SendHorizonal, Target } from "lucide-react";
-import { Button } from "../ui/button";
-import { Separator } from "../ui/separator";
-import { useEffect } from "react";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import CancelButton from "./cancel-button";
+import { useContext, useEffect } from "react";
 import { TaskFormSchema, TaskFormType } from "@/lib/definitions";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "../ui/drawer";
-
-const AddTaskFormSchema = z.object({
-    name: z.string(),
-    priority: z.literal([ '0', '1', '2', '3' ]),
-    description: z.string(),
-    startDate: z.date().nullable(),
-    dueDate: z.date().nullable(),
-    projectId: z.number(),
-})
-
-export type AddTaskFormType = z.infer<typeof AddTaskFormSchema>;
+import { TasksDispatchContext } from "../providers/TasksContext";
+import { uuidv4 } from "@/lib/utils";
+import { addTask } from "@/lib/actions";
 
 export default function AddTask() {
     const [ addTaskDialogOpen, setAddTaskDialogOpen ] = useAtom(addTaskDialogOpenAtom);
     const activeProject = useAtomValue(activeProjectAtom);
+    const dispatch = useContext(TasksDispatchContext);
+
+    const newDate = new Date();
 
     const form = useForm<TaskFormType>({
         resolver: zodResolver(TaskFormSchema),
         defaultValues: {
+            id: uuidv4(),
             name: "",
-            projectId: activeProject?.id ?? 1
+            description: undefined,
+            priority: '0',
+            projectId: activeProject?.id ?? 1,
+            startDate: null,
+            dueDate: null,
+            createdAt: newDate,
+            lastModifiedAt: newDate,
+            completed: false
         }
     })
 
     const onSubmit = async (values: TaskFormType) => {
-        console.log("Form submitted");
+        console.log(values);
+        if (dispatch) {
+            dispatch({ type: "add", newValues: values });
+        } else {
+            console.log("no dispatch");
+        }
+        await addTask(values);
+        setAddTaskDialogOpen(false);
     }
 
     const isMobile = useIsMobile();

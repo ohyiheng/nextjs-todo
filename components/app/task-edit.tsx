@@ -1,9 +1,8 @@
 "use client";
 
-import { TaskNode } from "@/lib/definitions";
+import { TaskFormSchema, TaskFormType, Task } from "@/lib/definitions";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form";
-import { z } from "zod/v4";
 import React, { Dispatch, useContext } from "react";
 import { updateTask } from "@/lib/actions";
 import { TasksDispatchContext } from "../providers/TasksContext";
@@ -12,30 +11,17 @@ import TaskForm from "./task-form";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "../ui/drawer";
 
-export const TaskFormSchema = z.object({
-    id: z.uuid(),
-    name: z.string(),
-    priority: z.literal([ '0', '1', '2', '3' ]),
-    description: z.string(),
-    startDate: z.date().nullable(),
-    dueDate: z.date().nullable(),
-    projectId: z.number(),
-})
-
-export type TaskFormType = z.infer<typeof TaskFormSchema>;
-
 export default function TaskEdit({
     task,
     open,
     setOpen,
 }: {
-    task: TaskNode,
+    task: Task,
     open: boolean,
     setOpen: Dispatch<boolean>
 }) {
     const dispatch = useContext(TasksDispatchContext);
-
-    const form = useForm<z.infer<typeof TaskFormSchema>>({
+    const form = useForm<TaskFormType>({
         resolver: zodResolver(TaskFormSchema),
         defaultValues: {
             id: task.id,
@@ -44,16 +30,22 @@ export default function TaskEdit({
             description: task.description,
             startDate: task.startDate,
             dueDate: task.dueDate,
-            projectId: task.projectId
+            projectId: task.projectId,
+            createdAt: task.createdAt,
+            lastModifiedAt: task.lastModifiedAt,
+            completed: task.completed
         }
     })
 
-    async function onSubmit(values: z.infer<typeof TaskFormSchema>) {
-        dispatch({
-            type: "edit",
-            newValues: values
-        });
+    async function onSubmit(values: TaskFormType) {
+        if (dispatch) {
+            dispatch({
+                type: "edit",
+                newValues: values
+            });
+        }
         await updateTask(values);
+        setOpen(false);
     }
 
     const isMobile = useIsMobile();

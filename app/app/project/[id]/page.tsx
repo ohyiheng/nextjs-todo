@@ -5,14 +5,13 @@ import { fetchTasks } from "@/lib/data";
 export default async function Page({
     params
 }: {
-    params: Promise<{ id: number }>
+    params: Promise<{ id: string }>
 }) {
     const { id } = await params;
-    const tasks = await fetchTasks(id);
+
+    // TODO: check if project with given id exists
 
     return (
-        <TasksProvider tasks={tasks}>
-            <TaskContainer />
-        </TasksProvider>
+        <TaskContainer projectId={parseInt(id)} />
     )
 }

@@ -1,7 +1,6 @@
 "use server";
 
-import { z } from "zod/v4";
-import { TaskFormSchema } from "@/components/app/task-form";
+import { TaskFormType } from "./definitions";
 import postgres from "postgres";
 import { revalidatePath } from "next/cache";
 import { SortByType } from "./definitions";
@@ -18,15 +17,41 @@ const sql = postgres(
     },
 );
 
-export async function updateTask(task: z.infer<typeof TaskFormSchema>) {
+export async function addTask(task: TaskFormType) {
+    try {
+        await sql`INSERT INTO tasks (
+            id,
+            name,
+            priority,
+            description,
+            start_date,
+            due_date,
+            project_id
+        ) VALUES (
+            ${task.id},
+            ${task.name},
+            ${task.priority},
+            ${task.description ?? null},
+            ${task.startDate},
+            ${task.dueDate},
+            ${task.projectId}
+         )`;
+    } catch (error) {
+        console.error(error);
+    }
+    revalidatePath("/app/inbox");
+    revalidatePath("/app/project/[id]", "page");
+}
+
+export async function updateTask(task: TaskFormType) {
     try {
         await sql`UPDATE tasks SET
             name = ${task.name},
-            description = ${task.description},
+            description = ${task.description ?? null},
             priority = ${task.priority},
             project_id = ${task.projectId},
-            start_date = ${task.startDate ?? null},
-            due_date = ${task.dueDate ?? null}
+            start_date = ${task.startDate},
+            due_date = ${task.dueDate}
             WHERE id = ${task.id}`;
     } catch (error) {
         console.error(error);
