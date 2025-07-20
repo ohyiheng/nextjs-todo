@@ -1,6 +1,7 @@
 "use client";
 
-import { ProjectFormType, Project } from "@/lib/definitions";
+import { getNextProjectId } from "@/lib/data";
+import { ProjectFormType, Project, SortByType } from "@/lib/definitions";
 import { getProjectById } from "@/lib/utils";
 import { arrayMove } from "@dnd-kit/sortable";
 import { createContext, Dispatch, useContext, useReducer } from "react";
@@ -10,7 +11,7 @@ type ProjectsAction = {
     oldIndex: number,
     newIndex: number
 } | {
-    type: "edit",
+    type: "edit" | "add",
     newValues: ProjectFormType
 } | {
     type: "delete",
@@ -56,6 +57,9 @@ function projectsReducer(prevProjects: Project[], action: ProjectsAction) {
                     return project;
                 }
             });
+        }
+        case "add": {
+            return [ ...prevProjects, { ...action.newValues } ]
         }
         case "delete": {
             return prevProjects.filter(project => project.id !== action.id);

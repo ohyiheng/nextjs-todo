@@ -13,13 +13,15 @@ export default function ActiveProjectUpdater() {
     const setActiveProject = useSetAtom(activeProjectAtom);
     const { projects } = useProjects();
 
+    console.log(projects);
+
     const pathList = pathname.split('/').slice(2);
     useEffect(() => {
         if (pathList[ 0 ] === "inbox") {
-            setActiveProject(getProjectById(projects, 1));
+            setActiveProject(getProjectById(projects, 1) ?? null);
         } else if (pathList[ 0 ] === "project") {
             if (pathList.length > 1) {
-                setActiveProject(getProjectById(projects, parseInt(pathList[ 1 ])));
+                setActiveProject(getProjectById(projects, parseInt(pathList[ 1 ])) ?? null);
             }
         } else {
             setActiveProject(null);

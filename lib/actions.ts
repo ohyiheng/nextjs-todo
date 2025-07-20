@@ -84,6 +84,22 @@ export async function completeTask(id: string, completed: boolean) {
     revalidatePath("/app/project/[id]", "page");
 }
 
+export async function getNextProjectId() {
+    const queryResult = await sql<{newId: string}[]>`SELECT nextval(pg_get_serial_sequence('projects', 'id')) as new_id`
+    const id: string = queryResult[0].newId;
+    return parseInt(id);
+}
+
+export async function addProject(project: ProjectFormType) {
+    try {
+        await sql`INSERT INTO projects (id, name)
+            VALUES (${project.id}, ${project.name})`;
+    } catch (error) {
+        console.error(error);
+    }
+    revalidatePath(`/app/project/${project.id}`);
+}
+
 export async function updateProject(project: ProjectFormType) {
     try {
         await sql`UPDATE projects SET

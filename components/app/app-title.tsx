@@ -12,8 +12,6 @@ import ProjectDropdown from "./project-dropdown";
 
 export default function AppTitle() {
     const activeProject = useAtomValue(activeProjectAtom);
-    const setEditingProject = useSetAtom(editingProjectAtom);
-    const setProjectEditOpen = useSetAtom(projectEditOpenAtom);
     const pathname = usePathname();
 
     let title;

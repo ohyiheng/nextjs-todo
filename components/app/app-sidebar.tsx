@@ -5,6 +5,7 @@ import {
     SidebarContent,
     SidebarFooter,
     SidebarGroup,
+    SidebarGroupAction,
     SidebarGroupContent,
     SidebarGroupLabel,
     SidebarHeader,
@@ -12,20 +13,24 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
     SidebarRail,
+    SidebarSeparator,
     useSidebar,
 } from "@/components/ui/sidebar"
 import useProjects from "../providers/ProjectsProvider"
 import { Calendar, Inbox, Plus, Search, SquareGanttChart, Sun, Tag } from "lucide-react";
 import Link from "next/link";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
-import { useAtomValue, useSetAtom } from "jotai";
-import { activeProjectAtom, addTaskDialogOpenAtom } from "@/lib/atoms";
+import { useAtom, useSetAtom } from "jotai";
+import { activeProjectAtom, addTaskDialogOpenAtom, projectAddOpenAtom } from "@/lib/atoms";
 import ProjectDropdown from "./project-dropdown";
 import { usePathname } from "next/navigation";
+import { Button } from "../ui/button";
 
 export function AppSidebar() {
     const { projects } = useProjects();
-    const activeProject = useAtomValue(activeProjectAtom);
+    const [activeProject, setActiveProject] = useAtom(activeProjectAtom);
+    const setAddTaskDialogOpen = useSetAtom(addTaskDialogOpenAtom);
+    const setProjectAddOpen = useSetAtom(projectAddOpenAtom);
     const pathname = usePathname();
 
     const links = [
@@ -53,8 +58,6 @@ export function AppSidebar() {
 
     const projectsWithoutInbox = projects.filter(project => project.id !== 1);
     const { state, setOpenMobile } = useSidebar();
-
-    const setAddTaskDialogOpen = useSetAtom(addTaskDialogOpenAtom);
 
     return (
         <Sidebar collapsible="icon">
@@ -88,6 +91,10 @@ export function AppSidebar() {
                 </SidebarGroup>
                 <SidebarGroup>
                     <SidebarGroupLabel>Projects</SidebarGroupLabel>
+                    <SidebarGroupAction onClick={() => setProjectAddOpen(true)}>
+                        <Plus className="text-muted-foreground cursor-pointer" />
+                        <span className="sr-only">Add Project</span>
+                    </SidebarGroupAction>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {projectsWithoutInbox.map(project => (
@@ -113,7 +120,10 @@ export function AppSidebar() {
                                                     title={project.name}
                                                     className="truncate"
                                                     href={`/app/project/${project.id}`}
-                                                    onClick={() => setOpenMobile(false)}
+                                                    onClick={() => {
+                                                        setOpenMobile(false);
+                                                        // setActiveProject(project);
+                                                    }}
                                                 >
                                                     <SquareGanttChart />
                                                     <span>{project.name}</span>

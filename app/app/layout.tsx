@@ -8,6 +8,7 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/s
 import { fetchTasks } from "@/lib/data";
 import TasksProvider from "@/components/providers/TasksContext";
 import ProjectEdit from "@/components/app/project-edit";
+import ProjectAdd from "@/components/app/project-add";
 
 export default async function Layout({
     children,
@@ -37,6 +38,7 @@ export default async function Layout({
                         </div>
                         <AddTask />
                         <ProjectEdit />
+                        <ProjectAdd />
                     </TasksProvider>
                 </SidebarInset>
             </SidebarProvider>
