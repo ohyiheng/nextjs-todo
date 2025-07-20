@@ -17,6 +17,8 @@ import TaskEdit from "./task-edit";
 import { Card, CardContent } from "../ui/card";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import { useIsMobile } from "@/hooks/use-mobile";
+import DeleteButton from "./delete-button";
 
 export function Task({
     id,
@@ -45,11 +47,15 @@ export function Task({
 
     const dispatch = useContext(TasksDispatchContext);
 
+    const isMobile = useIsMobile();
+
     return (
         <Card
             className={clsx(
                 "relative",
+                "min-h-12",
                 "py-2",
+                "flex-row items-center",
                 "border",
                 "shadow-xs",
                 "cursor-pointer",
@@ -58,7 +64,7 @@ export function Task({
                 taskInFuture(task) && "text-muted-foreground"
             )}
         >
-            <CardContent className="px-4 flex justify-between">
+            <CardContent className="px-4 flex grow justify-between">
                 <div className="flex items-center gap-4 grow">
                     <Checkbox checked={task.completed}
                         onCheckedChange={async () => {
@@ -98,22 +104,26 @@ export function Task({
                         }
                     </div>
                 </div>
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" onClick={(e) => {
-                            e.stopPropagation();
-                        }}>
-                            <Ellipsis />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                        <DropdownMenuItem onClick={() => setOpen(true)}>Edit</DropdownMenuItem>
-                        <DropdownMenuItem variant="destructive" onClick={async () => {
-                            if (dispatch) dispatch({ type: "delete", id: task.id });
-                            await deleteTask(task.id);
-                        }}>Delete</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                {!isMobile &&
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" onClick={(e) => {
+                                e.stopPropagation();
+                            }}>
+                                <Ellipsis />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                            <DropdownMenuItem onClick={() => setOpen(true)}>Edit</DropdownMenuItem>
+                            <DropdownMenuItem variant="destructive">
+                                <DeleteButton onClick={async () => {
+                                    if (dispatch) dispatch({ type: "delete", id: task.id });
+                                    await deleteTask(task.id);
+                                }} display="text" className="w-full" />
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                }
                 {open &&
                     <TaskEdit task={task} open={open} setOpen={setOpen} />
                 }
