@@ -42,7 +42,7 @@ export default function AddTask() {
         if (dispatch) {
             dispatch({ type: "add", newValues: values });
         } else {
-            console.log("no dispatch");
+            console.log("dispatch function undefined");
         }
         await addTask(values);
         setAddTaskDialogOpen(false);
@@ -52,7 +52,13 @@ export default function AddTask() {
 
     useEffect(() => {
         form.setValue("projectId", activeProject?.id ?? 1);
-    }, [ activeProject, addTaskDialogOpen ])
+    }, [ activeProject ])
+
+    useEffect(() => {
+        form.reset();
+        form.setValue("id", uuidv4()); // refresh UUID whenever dialog opens/closes
+        form.setValue("projectId", activeProject?.id ?? 1);
+    }, [ addTaskDialogOpen ])
 
     if (isMobile) return (
         <Drawer open={addTaskDialogOpen} onOpenChange={setAddTaskDialogOpen}>
