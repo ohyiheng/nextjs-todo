@@ -1,6 +1,8 @@
 import { atom } from "jotai";
-import { ProjectNode } from "./definitions";
+import { Project } from "./definitions";
 
-export const activeProjectAtom = atom<ProjectNode | null>(null);
+export const activeProjectAtom = atom<Project | null>(null);
+export const editingProjectAtom = atom<Project | null>(null);
 
 export const addTaskDialogOpenAtom = atom(false);
+export const projectEditOpenAtom = atom(true);

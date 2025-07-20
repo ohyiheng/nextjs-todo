@@ -33,7 +33,15 @@ export default function TaskForm({
                     render={({ field }) => (
                         <FormItem>
                             <FormControl>
-                                <Input placeholder="Name" className="font-semibold sm:text-lg md:text-lg" {...field} />
+                                <Input
+                                    placeholder="Name"
+                                    className="font-semibold sm:text-lg md:text-lg"
+                                    onFocus={e => {
+                                        requestAnimationFrame(() => {
+                                            e.target.selectionStart = e.target.selectionEnd = e.target.value.length;
+                                        });
+                                    }}
+                                    {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>

@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-import { ProjectNode, Task } from "./definitions";
+import { Project, Task } from "./definitions";
 import { DateTime } from "luxon";
 
 export async function hashSecret(secret: string): Promise<Uint8Array> {
@@ -32,23 +32,12 @@ export function partition<T>(array: T[], predicate: (x: T) => boolean) {
     return [ pass, fail ];
 }
 
-export function getProjectFromId(projects: ProjectNode[], id: number): ProjectNode | null {
-    let project = projects.find(project => project.id === id) ?? null;
-    if (project) return project;
-
-    for (let i = 0; i < projects.length; i++) {
-        if (projects[ i ].subProjects && projects[ i ].subProjects!.length > 0) {
-            project = getProjectFromId(projects[ i ].subProjects!, id);
-            if (project) break;
-        }
-    }
-    return project;
+export function getProjectById(projects: Project[], id: number): Project | undefined {
+    return projects.find(project => project.id === id);
 }
 
 export function getTaskById(tasks: Task[], id: string): Task | undefined {
-    let result = tasks.find(task => task.id === id);
-    if (result) return result;
-    return result;
+    return tasks.find(task => task.id === id);
 }
 
 export function computeStartDateColor(task: Task) {
@@ -77,7 +66,7 @@ export function taskInFuture(task: Task): boolean {
     return diffInDays > 0 ? true : false;
 }
 
-export function getTaskSortingPredicate(project?: ProjectNode) {
+export function getTaskSortingPredicate(project?: Project) {
     let sortingPredicate: (a: Task, b: Task) => number;
     switch (project?.sortBy) {
         case "start": {

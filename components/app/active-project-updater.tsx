@@ -1,7 +1,7 @@
 "use client";
 
 import { activeProjectAtom } from "@/lib/atoms";
-import { getProjectFromId } from "@/lib/utils";
+import { getProjectById } from "@/lib/utils";
 import { useSetAtom } from "jotai";
 import { usePathname } from "next/navigation";
 import useProjects from "../providers/ProjectsProvider";
@@ -16,10 +16,10 @@ export default function ActiveProjectUpdater() {
     const pathList = pathname.split('/').slice(2);
     useEffect(() => {
         if (pathList[ 0 ] === "inbox") {
-            setActiveProject(getProjectFromId(projects, 1));
+            setActiveProject(getProjectById(projects, 1));
         } else if (pathList[ 0 ] === "project") {
             if (pathList.length > 1) {
-                setActiveProject(getProjectFromId(projects, parseInt(pathList[ 1 ])));
+                setActiveProject(getProjectById(projects, parseInt(pathList[ 1 ])));
             }
         } else {
             setActiveProject(null);

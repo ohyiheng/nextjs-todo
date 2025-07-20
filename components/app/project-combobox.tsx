@@ -10,7 +10,7 @@ import { JSX, useState } from "react";
 import React from "react";
 import { FormControl } from "../ui/form";
 import { UseFormSetValue } from "react-hook-form";
-import { getProjectFromId } from "@/lib/utils";
+import { getProjectById } from "@/lib/utils";
 
 export default function ProjectCombobox({
     value,
@@ -34,7 +34,7 @@ export default function ProjectCombobox({
                         className="font-normal truncate"
                     >
                         <span className="max-w-[140px] sm:max-w-[200px] truncate">
-                            {value ? getProjectFromId(projects, value)?.name : <span className="text-muted-foreground">Pick a project</span>}
+                            {value ? getProjectById(projects, value)?.name : <span className="text-muted-foreground">Pick a project</span>}
                         </span>
                         <ChevronsUpDown strokeWidth={1} className="opacity-50" />
                     </Button>
@@ -59,7 +59,7 @@ export default function ProjectCombobox({
                                 Inbox
                             </CommandItem>
                         </CommandGroup>
-                            <CommandSeparator />
+                        <CommandSeparator />
                         <CommandGroup>
                             {mapAllProjects(projects.filter(project => project.id !== 1))}
                         </CommandGroup>

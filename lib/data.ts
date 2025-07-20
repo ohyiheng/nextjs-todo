@@ -1,4 +1,4 @@
-import { ProjectNode, Task } from "@/lib/definitions";
+import { Project, ProjectNode, Task } from "@/lib/definitions";
 
 import postgres from "postgres";
 
@@ -24,7 +24,7 @@ const sql = postgres(
  * each with their nested sub-projects.
  */
 export async function fetchProjects() {
-    const projectNodes = await sql<ProjectNode[]>`
+    const projectNodes = await sql<Project[]>`
         SELECT ${sql("id", "name", "createdAt", "lastModifiedAt", "sortBy", "sortOrder")}
         FROM projects
     `
@@ -32,7 +32,7 @@ export async function fetchProjects() {
 }
 
 export async function fetchProjectsById(id: string) {
-    const projectNodes = await sql<ProjectNode[]>`
+    const projectNodes = await sql<Project[]>`
         SELECT ${sql("id", "name", "createdAt", "lastModifiedAt")} FROM projects WHERE id = ${id}
     `
     return projectNodes[ 0 ];
