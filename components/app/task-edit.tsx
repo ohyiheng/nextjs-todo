@@ -12,6 +12,8 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "../ui/drawer";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { Ellipsis } from "lucide-react";
+import DeleteButton from "./delete-button";
+import { Button } from "../ui/button";
 
 export default function TaskEdit({
     task,
@@ -57,18 +59,10 @@ export default function TaskEdit({
             <DrawerContent className="px-4 mb-6 box-border sm:[&>button:last-child]:hidden focus-within:outline-none">
                 <DrawerHeader className="px-0 mb-2 flex-row justify-between items-center">
                     <DrawerTitle>Edit task</DrawerTitle>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger>
-                            <Ellipsis />
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                            <DropdownMenuItem variant="destructive" onClick={async () => {
-                                if (dispatch) dispatch({ type: "delete", id: task.id });
-                                await deleteTask(task.id);
-                                setOpen(false);
-                            }}>Delete</DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    <DeleteButton onClick={async () => {
+                        if (dispatch) dispatch({ type: "delete", id: task.id });
+                        await deleteTask(task.id);
+                    }} display="icon" />
                 </DrawerHeader>
                 <TaskForm form={form} onSubmit={onSubmit} close={() => setOpen(false)} />
             </DrawerContent>
@@ -84,18 +78,10 @@ export default function TaskEdit({
                     <DialogTitle>
                         Edit task
                     </DialogTitle>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger>
-                            <Ellipsis />
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                            <DropdownMenuItem variant="destructive" onClick={async () => {
-                                if (dispatch) dispatch({ type: "delete", id: task.id });
-                                await deleteTask(task.id);
-                                setOpen(false);
-                            }}>Delete</DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    <DeleteButton onClick={async () => {
+                        if (dispatch) dispatch({ type: "delete", id: task.id });
+                        await deleteTask(task.id);
+                    }} display="icon" />
                 </DialogHeader>
                 <TaskForm form={form} onSubmit={onSubmit} close={() => setOpen(false)} />
             </DialogContent>
