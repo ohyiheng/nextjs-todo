@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { useContext, useEffect, useState } from "react"
 import type { Task } from "@/lib/definitions";
 import { TasksContext, TasksDispatchContext } from "../providers/TasksContext";
-import { Calendar, ChevronRight, Ellipsis, Plus, Target, Trash } from "lucide-react";
+import { Calendar, ChevronRight, Edit, Ellipsis, Plus, SquarePen, Target, Trash, Trash2 } from "lucide-react";
 import { Checkbox } from "../ui/checkbox";
 import { completeTask, deleteTask } from "@/lib/actions";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
@@ -19,6 +19,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { useIsMobile } from "@/hooks/use-mobile";
 import DeleteButton from "./delete-button";
+import { Dialog, DialogContent, DialogFooter, DialogTitle, DialogTrigger } from "../ui/dialog";
 
 export function Task({
     id,
@@ -105,30 +106,43 @@ export function Task({
                     </div>
                 </div>
                 {!isMobile &&
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" onClick={(e) => {
-                                e.stopPropagation();
-                            }}>
-                                <Ellipsis />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                            <DropdownMenuItem onClick={() => setOpen(true)}>Edit</DropdownMenuItem>
-                            <DropdownMenuItem variant="destructive">
-                                <DeleteButton onClick={async () => {
+                    <Dialog>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon" onClick={(e) => {
+                                    e.stopPropagation();
+                                }}>
+                                    <Ellipsis />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                                <DropdownMenuItem onClick={() => setOpen(true)}>
+                                    <SquarePen /> Edit
+                                </DropdownMenuItem>
+                                <DialogTrigger asChild>
+                                    <DropdownMenuItem variant="destructive">
+                                        <Trash2 /> Delete
+                                    </DropdownMenuItem>
+                                </DialogTrigger>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                        <DialogContent>
+                            <DialogTitle>Are you sure?</DialogTitle>
+                            <DialogFooter className="flex items-center justify-end gap-2">
+                                <Button variant="secondary" onClick={() => {}}>Cancel</Button>
+                                <Button variant="destructive" onClick={async () => {
                                     if (dispatch) dispatch({ type: "delete", id: task.id });
                                     await deleteTask(task.id);
-                                }} display="text" className="w-full" />
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                                }}>Delete</Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
                 }
                 {open &&
                     <TaskEdit task={task} open={open} setOpen={setOpen} />
                 }
             </CardContent>
-        </Card>
+        </Card >
     )
 }
 

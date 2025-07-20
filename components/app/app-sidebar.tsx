@@ -12,21 +12,17 @@ import {
     SidebarMenuAction,
     SidebarMenuButton,
     SidebarMenuItem,
-    SidebarMenuSub,
-    SidebarMenuSubButton,
-    SidebarMenuSubItem,
     SidebarRail,
     useSidebar,
 } from "@/components/ui/sidebar"
 import useProjects from "../providers/ProjectsProvider"
-import { Calendar, Hash, Inbox, Plus, Search, Sun, Tag } from "lucide-react";
-import { ProjectNode } from "@/lib/definitions";
-import { Collapsible } from "../ui/collapsible";
-import { CollapsibleContent, CollapsibleTrigger } from "@radix-ui/react-collapsible";
+import { Calendar, Ellipsis, Inbox, Plus, Search, SquareGanttChart, SquarePen, Sun, Tag, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { useSetAtom } from "jotai";
-import { addTaskDialogOpenAtom } from "@/lib/atoms";
+import { addTaskDialogOpenAtom, editingProjectAtom, projectEditOpenAtom } from "@/lib/atoms";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import ProjectDropdown from "./project-dropdown";
 
 export function AppSidebar() {
     const { projects } = useProjects();
@@ -54,12 +50,14 @@ export function AppSidebar() {
     ];
 
     const projectsWithoutInbox = projects.filter(project => project.id !== 1);
-    const { state } = useSidebar();
+    const { state, setOpenMobile } = useSidebar();
 
     const setAddTaskDialogOpen = useSetAtom(addTaskDialogOpenAtom);
+    const setEditingProject = useSetAtom(editingProjectAtom);
+    const setProjectEditOpen = useSetAtom(projectEditOpenAtom);
 
     return (
-        <Sidebar className="" collapsible="icon">
+        <Sidebar collapsible="icon">
             <SidebarHeader>
                 <SidebarMenuButton onClick={() => setAddTaskDialogOpen(true)}>
                     <Plus />
@@ -78,7 +76,7 @@ export function AppSidebar() {
                             {links.map(link => (
                                 <SidebarMenuItem key={link.href}>
                                     <SidebarMenuButton asChild>
-                                        <Link href={link.href}>
+                                        <Link href={link.href} onClick={() => setOpenMobile(false)}>
                                             {link.icon}
                                             <span>{link.title}</span>
                                         </Link>
@@ -99,7 +97,7 @@ export function AppSidebar() {
                                             <TooltipTrigger asChild>
                                                 <SidebarMenuButton asChild>
                                                     <Link className="truncate" href={`/app/project/${project.id}`}>
-                                                        <Hash />
+                                                        <SquareGanttChart />
                                                         <span>{project.name}</span>
                                                     </Link>
                                                 </SidebarMenuButton>
@@ -109,12 +107,20 @@ export function AppSidebar() {
                                             </TooltipContent>
                                         </Tooltip>
                                         :
-                                        <SidebarMenuButton asChild>
-                                            <Link className="truncate" href={`/app/project/${project.id}`}>
-                                                <Hash />
-                                                <span>{project.name}</span>
-                                            </Link>
-                                        </SidebarMenuButton>
+                                        <>
+                                            <SidebarMenuButton asChild>
+                                                <Link
+                                                    title={project.name}
+                                                    className="truncate"
+                                                    href={`/app/project/${project.id}`}
+                                                    onClick={() => setOpenMobile(false)}
+                                                >
+                                                    <SquareGanttChart />
+                                                    <span>{project.name}</span>
+                                                </Link>
+                                            </SidebarMenuButton>
+                                            <ProjectDropdown project={project} inSidebar={true} />
+                                        </>
                                     }
                                 </SidebarMenuItem>
                             ))}

@@ -44,3 +44,10 @@ export const TaskFormSchema = z.object({
 })
 
 export type TaskFormType = z.infer<typeof TaskFormSchema>;
+
+export const ProjectFormSchema = z.object({
+    id: z.number(),
+    name: z.string("Project needs a name!").check(z.minLength(1, "Project needs a name!")),
+})
+
+export type ProjectFormType = z.infer<typeof ProjectFormSchema>;

@@ -1,6 +1,6 @@
 "use server";
 
-import { TaskFormType } from "./definitions";
+import { ProjectFormType, TaskFormType } from "./definitions";
 import postgres from "postgres";
 import { revalidatePath } from "next/cache";
 import { SortByType } from "./definitions";
@@ -84,6 +84,17 @@ export async function completeTask(id: string, completed: boolean) {
     revalidatePath("/app/project/[id]", "page");
 }
 
+export async function updateProject(project: ProjectFormType) {
+    try {
+        await sql`UPDATE projects SET
+            name = ${project.name},
+            last_modified_at = NOW()
+            WHERE id = ${project.id}`;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 export async function updateProjectSort(id: number, sortBy?: SortByType, sortOrder?: "asc" | "desc") {
     try {
         if (sortBy) {
@@ -98,5 +109,13 @@ export async function updateProjectSort(id: number, sortBy?: SortByType, sortOrd
         }
     } catch (error) {
         console.error(error);
+    }
+}
+
+export async function deleteProject(id: number) {
+    try {
+        await sql`DELETE FROM projects WHERE id = ${id}`
+    } catch (error) {
+        console.error(error)
     }
 }

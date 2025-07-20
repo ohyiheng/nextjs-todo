@@ -1,6 +1,7 @@
 "use client";
 
-import { ProjectNode } from "@/lib/definitions";
+import { ProjectFormType, Project } from "@/lib/definitions";
+import { getProjectById } from "@/lib/utils";
 import { arrayMove } from "@dnd-kit/sortable";
 import { createContext, Dispatch, useContext, useReducer } from "react";
 
@@ -8,38 +9,56 @@ type ProjectsAction = {
     type: "move",
     oldIndex: number,
     newIndex: number
+} | {
+    type: "edit",
+    newValues: ProjectFormType
+} | {
+    type: "delete",
+    id: number
 }
 
 type ProjectsContextType = {
-    projects: ProjectNode[],
+    projects: Project[],
     dispatch: Dispatch<ProjectsAction>
 }
 
 const ProjectsContext = createContext<ProjectsContextType | undefined>(undefined);
 
 export function ProjectsProvider({
-    projects, 
+    projects,
     children
 }: {
-    projects: ProjectNode[],
+    projects: Project[],
     children: React.ReactNode
 }) {
     const [ projectList, dispatch ] = useReducer(projectsReducer, projects);
 
     return (
-        <ProjectsContext value={{ projects: projectList, dispatch: dispatch}}>
+        <ProjectsContext value={{ projects: projectList, dispatch: dispatch }}>
             {children}
         </ProjectsContext>
     )
 }
 
-function projectsReducer(prevProjects: ProjectNode[], action: ProjectsAction) {
+function projectsReducer(prevProjects: Project[], action: ProjectsAction) {
     if (!prevProjects) {
         return [];
     }
     switch (action.type) {
         case "move": {
             return arrayMove(prevProjects, action.oldIndex, action.newIndex);
+        }
+        case "edit": {
+            return prevProjects.map(project => {
+                if (project.id === action.newValues.id) {
+                    return { ...project, name: action.newValues.name };
+                } else {
+                    return project;
+                }
+            });
+        }
+        case "delete": {
+            return prevProjects.filter(project => project.id !== action.id);
         }
     }
 }
