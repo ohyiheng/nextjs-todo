@@ -58,6 +58,7 @@ function tasksReducer(prevTasks: Task[] | null, action: TasksAction) {
             return prevTasks;
         }
         case "add": {
+            // todo: check uuid for duplicates
             const newTasks = [...prevTasks, {...action.newValues}]
             return newTasks;
         }
