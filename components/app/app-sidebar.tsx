@@ -9,23 +9,25 @@ import {
     SidebarGroupLabel,
     SidebarHeader,
     SidebarMenu,
-    SidebarMenuAction,
     SidebarMenuButton,
     SidebarMenuItem,
     SidebarRail,
     useSidebar,
 } from "@/components/ui/sidebar"
 import useProjects from "../providers/ProjectsProvider"
-import { Calendar, Ellipsis, Inbox, Plus, Search, SquareGanttChart, SquarePen, Sun, Tag, Trash2 } from "lucide-react";
+import { Calendar, Inbox, Plus, Search, SquareGanttChart, Sun, Tag } from "lucide-react";
 import Link from "next/link";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
-import { useSetAtom } from "jotai";
-import { addTaskDialogOpenAtom, editingProjectAtom, projectEditOpenAtom } from "@/lib/atoms";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import { useAtomValue, useSetAtom } from "jotai";
+import { activeProjectAtom, addTaskDialogOpenAtom } from "@/lib/atoms";
 import ProjectDropdown from "./project-dropdown";
+import { usePathname } from "next/navigation";
 
 export function AppSidebar() {
     const { projects } = useProjects();
+    const activeProject = useAtomValue(activeProjectAtom);
+    const pathname = usePathname();
+
     const links = [
         {
             title: "Inbox",
@@ -53,8 +55,6 @@ export function AppSidebar() {
     const { state, setOpenMobile } = useSidebar();
 
     const setAddTaskDialogOpen = useSetAtom(addTaskDialogOpenAtom);
-    const setEditingProject = useSetAtom(editingProjectAtom);
-    const setProjectEditOpen = useSetAtom(projectEditOpenAtom);
 
     return (
         <Sidebar collapsible="icon">
@@ -75,7 +75,7 @@ export function AppSidebar() {
                         <SidebarMenu>
                             {links.map(link => (
                                 <SidebarMenuItem key={link.href}>
-                                    <SidebarMenuButton asChild>
+                                    <SidebarMenuButton isActive={link.href === pathname} asChild>
                                         <Link href={link.href} onClick={() => setOpenMobile(false)}>
                                             {link.icon}
                                             <span>{link.title}</span>
@@ -108,7 +108,7 @@ export function AppSidebar() {
                                         </Tooltip>
                                         :
                                         <>
-                                            <SidebarMenuButton asChild>
+                                            <SidebarMenuButton isActive={activeProject?.id === project.id} asChild>
                                                 <Link
                                                     title={project.name}
                                                     className="truncate"
