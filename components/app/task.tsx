@@ -8,7 +8,7 @@ import { Calendar, ChevronRight, Edit, Ellipsis, Plus, SquarePen, Target, Trash,
 import { Checkbox } from "../ui/checkbox";
 import { completeTask, deleteTask } from "@/lib/actions";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
-import { computeDueDateColor, computeStartDateColor, getTaskSortingPredicate, taskHasStarted, partition, taskInFuture } from "@/lib/utils";
+import { computeDueDateColor, computeStartDateColor, getTaskSortingPredicate, taskHasStarted, partition, taskInFuture, getProjectById } from "@/lib/utils";
 import { useAtomValue, useSetAtom } from "jotai";
 import { activeProjectAtom, addTaskDialogOpenAtom } from "@/lib/atoms";
 import { DateTime } from "luxon";
@@ -20,13 +20,16 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { useIsMobile } from "@/hooks/use-mobile";
 import DeleteButton from "./delete-button";
 import { Dialog, DialogContent, DialogFooter, DialogTitle, DialogTrigger } from "../ui/dialog";
+import useProjects from "../providers/ProjectsProvider";
 
 export function Task({
     id,
-    task
+    task,
+    showProject = false,
 }: {
     id: string,
-    task: Task
+    task: Task,
+    showProject: boolean
 }) {
     let checkboxColor;
     switch (task.priority) {
@@ -45,6 +48,7 @@ export function Task({
     }
 
     const [ open, setOpen ] = useState(false);
+    const { projects } = useProjects();
 
     const dispatch = useContext(TasksDispatchContext);
 
@@ -105,39 +109,44 @@ export function Task({
                         }
                     </div>
                 </div>
-                {!isMobile &&
-                    <Dialog>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" onClick={(e) => {
-                                    e.stopPropagation();
-                                }}>
-                                    <Ellipsis />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                                <DropdownMenuItem onClick={() => setOpen(true)}>
-                                    <SquarePen /> Edit
-                                </DropdownMenuItem>
-                                <DialogTrigger asChild>
-                                    <DropdownMenuItem variant="destructive">
-                                        <Trash2 /> Delete
+                <div className="flex items-center gap-2">
+                    {showProject &&
+                         <p className="text-muted-foreground">{getProjectById(projects, task.projectId)?.name}</p>
+                    }
+                    {!isMobile &&
+                        <Dialog>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="icon" onClick={(e) => {
+                                        e.stopPropagation();
+                                    }}>
+                                        <Ellipsis />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent>
+                                    <DropdownMenuItem onClick={() => setOpen(true)}>
+                                        <SquarePen /> Edit
                                     </DropdownMenuItem>
-                                </DialogTrigger>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                        <DialogContent>
-                            <DialogTitle>Are you sure?</DialogTitle>
-                            <DialogFooter className="flex items-center justify-end gap-2">
-                                <Button variant="secondary" onClick={() => { }}>Cancel</Button>
-                                <Button variant="destructive" onClick={async () => {
-                                    if (dispatch) dispatch({ type: "delete", id: task.id });
-                                    await deleteTask(task.id);
-                                }}>Delete</Button>
-                            </DialogFooter>
-                        </DialogContent>
-                    </Dialog>
-                }
+                                    <DialogTrigger asChild>
+                                        <DropdownMenuItem variant="destructive">
+                                            <Trash2 /> Delete
+                                        </DropdownMenuItem>
+                                    </DialogTrigger>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                            <DialogContent>
+                                <DialogTitle>Are you sure?</DialogTitle>
+                                <DialogFooter className="flex items-center justify-end gap-2">
+                                    <Button variant="secondary" onClick={() => { }}>Cancel</Button>
+                                    <Button variant="destructive" onClick={async () => {
+                                        if (dispatch) dispatch({ type: "delete", id: task.id });
+                                        await deleteTask(task.id);
+                                    }}>Delete</Button>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
+                    }
+                </div>
                 {open &&
                     <TaskEdit task={task} open={open} setOpen={setOpen} />
                 }
@@ -172,6 +181,7 @@ export function TaskContainer({
     const [ pendingTasks, completedTasks ] = partition(filteredTasks, task => !task.completed);
     const activeProject = useAtomValue(activeProjectAtom);
     const setAddTaskDialogOpen = useSetAtom(addTaskDialogOpenAtom);
+    const showProject = filter === "upcoming" || filter === "today";
 
     let sortingPredicate: (a: Task, b: Task) => number;
     sortingPredicate = getTaskSortingPredicate(activeProject ?? undefined);
@@ -188,7 +198,7 @@ export function TaskContainer({
             {pendingTasks.length > 0 &&
                 <TaskSection>
                     {pendingTasks.sort(sortingPredicate).map(task => (
-                        <Task key={task.id} id={task.id} task={task} />
+                        <Task key={task.id} id={task.id} task={task} showProject={showProject} />
                     ))}
                 </TaskSection>
             }
@@ -215,7 +225,7 @@ export function TaskContainer({
                     <CollapsibleContent>
                         <TaskSection>
                             {completedTasks.map(task => (
-                                <Task key={task.id} id={task.id} task={task} />
+                                <Task key={task.id} id={task.id} task={task} showProject={showProject} />
                             ))}
                         </TaskSection>
                     </CollapsibleContent>
