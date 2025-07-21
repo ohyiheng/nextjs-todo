@@ -21,6 +21,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import DeleteButton from "./delete-button";
 import { Dialog, DialogContent, DialogFooter, DialogTitle, DialogTrigger } from "../ui/dialog";
 import useProjects from "../providers/ProjectsProvider";
+import { usePathname } from "next/navigation";
 
 export function Task({
     id,
@@ -162,16 +163,17 @@ export function TaskContainer({
 }: {
     filter?: "today" | "upcoming"
     projectId?: number,
-    tagId?: number
+    tagId?: string
 }) {
     const tasks = useContext(TasksContext);
-    if (tasks == null) {
+    if (!tasks) {
         return;
     }
-    console.log(tasks);
+    
+    const page = usePathname().split('/')[2];
 
     let filteredTasks = tasks;
-    switch (filter) {
+    switch (page) {
         case "today":
             filteredTasks = tasks.filter(taskHasStarted);
             break;
@@ -185,7 +187,7 @@ export function TaskContainer({
     const [ pendingTasks, completedTasks ] = partition(filteredTasks, task => !task.completed);
     const activeProject = useAtomValue(activeProjectAtom);
     const setAddTaskDialogOpen = useSetAtom(addTaskDialogOpenAtom);
-    const showProject = filter === "upcoming" || filter === "today";
+    const showProject = ["upcoming", "today", "tag"].includes(page);
 
     let sortingPredicate: (a: Task, b: Task) => number;
     sortingPredicate = getTaskSortingPredicate(activeProject ?? undefined);

@@ -17,7 +17,7 @@ type TasksAction = {
     id: string
 }
 
-export const TasksContext = createContext<Task[] | null>(null);
+export const TasksContext = createContext<Task[] | undefined>(undefined);
 export const TasksDispatchContext = createContext<Dispatch<TasksAction> | undefined>(undefined);
 
 export default function TasksProvider({
@@ -38,10 +38,10 @@ export default function TasksProvider({
     )
 }
 
-function tasksReducer(prevTasks: Task[] | null, action: TasksAction) {
+function tasksReducer(prevTasks: Task[] | undefined, action: TasksAction) {
     console.log("dispatching...");
     if (!prevTasks) {
-        return null;
+        return undefined;
     }
     switch (action.type) {
         case "move": {

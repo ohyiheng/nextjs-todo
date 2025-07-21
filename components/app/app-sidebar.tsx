@@ -13,18 +13,16 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
     SidebarRail,
-    SidebarSeparator,
     useSidebar,
 } from "@/components/ui/sidebar"
 import useProjects from "../providers/ProjectsProvider"
-import { Calendar, Hash, Inbox, Plus, Search, SquareGanttChart, Sun, Tag } from "lucide-react";
+import { Calendar, Hash, Inbox, Plus, SquareGanttChart, Sun, Tag } from "lucide-react";
 import Link from "next/link";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { useAtom, useSetAtom } from "jotai";
 import { activeProjectAtom, addTaskDialogOpenAtom, projectAddOpenAtom } from "@/lib/atoms";
 import ProjectDropdown from "./project-dropdown";
 import { usePathname } from "next/navigation";
-import { Button } from "../ui/button";
 import useTags from "../providers/TagsProvider";
 
 export function AppSidebar() {
@@ -140,11 +138,11 @@ export function AppSidebar() {
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {tags.map(tag => (
-                                <SidebarMenuItem key={tag.id}>
+                                <SidebarMenuItem key={tag}>
                                     <SidebarMenuButton asChild>
-                                        <Link href={`/app/tag/${tag.id}`} onClick={() => setOpenMobile(false)}>
+                                        <Link href={`/app/tag/${tag}`} onClick={() => setOpenMobile(false)}>
                                             <Hash />
-                                            <span className="truncate">{tag.name}</span>
+                                            <span className="truncate">{tag}</span>
                                         </Link>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>

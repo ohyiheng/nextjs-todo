@@ -20,7 +20,7 @@ export default function AddTask() {
     const activeProject = useAtomValue(activeProjectAtom);
     const dispatch = useContext(TasksDispatchContext);
     const pathname = usePathname();
-    const onTodayPage = pathname.split('/')[2] === "today";
+    const page = pathname.split('/')[2];
 
     const newDate = new Date();
 
@@ -32,11 +32,12 @@ export default function AddTask() {
             description: undefined,
             priority: '0',
             projectId: activeProject?.id ?? 1,
-            startDate: onTodayPage ? newDate : null,
+            startDate: page === "today" ? newDate : null,
             dueDate: null,
             createdAt: newDate,
             lastModifiedAt: newDate,
-            completed: false
+            completed: false,
+            tags: page === "tag" ? [pathname.split('/')[3]] : []
         }
     })
 
@@ -61,6 +62,8 @@ export default function AddTask() {
         form.reset();
         form.setValue("id", uuidv4()); // refresh UUID whenever dialog opens/closes
         form.setValue("projectId", activeProject?.id ?? 1);
+        form.setValue("startDate", page === "today" ? newDate : null);
+        form.setValue("tags", page === "tag" ? [pathname.split('/')[3]] : []);
     }, [ addTaskDialogOpen ])
 
     if (isMobile) return (

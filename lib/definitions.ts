@@ -11,12 +11,7 @@ export type Task = {
     projectId: number,
     startDate: Date | null,
     dueDate: Date | null,
-    tags?: number[] // tag ids only
-}
-
-export type Tag = {
-    id: number,
-    name: string
+    tags?: string[] // tag ids only
 }
 
 export type SortByType = "priority" | "start" | "due" | "name";
@@ -46,7 +41,7 @@ export const TaskFormSchema = z.object({
     createdAt: z.date(),
     lastModifiedAt: z.date(),
     completed: z.boolean(),
-    tags: z.array(z.number())
+    tags: z.array(z.string())
 })
 
 export type TaskFormType = z.infer<typeof TaskFormSchema>;
