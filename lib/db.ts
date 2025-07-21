@@ -7,7 +7,7 @@ const sql = postgres(
         transform: {
             ...postgres.camel,
         },
-        max: 100
+        max: 10
     },
 );
 

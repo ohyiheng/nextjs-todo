@@ -1,12 +1,9 @@
 "use client";
 
-import { activeProjectAtom, editingProjectAtom, projectEditOpenAtom } from "@/lib/atoms";
-import { useAtomValue, useSetAtom } from "jotai";
+import { activeProjectAtom } from "@/lib/atoms";
+import { useAtomValue } from "jotai";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
-import { Button } from "../ui/button";
-import { Ellipsis, SquarePen, Trash2 } from "lucide-react";
 import ProjectDropdown from "./project-dropdown";
 
 
@@ -19,6 +16,7 @@ export default function AppTitle() {
         title = activeProject.name;
     } else {
         title = pathname.split('/')[ 2 ];
+        title = title.replace(title[0], title[0].toLocaleUpperCase());
     }
 
     const [ mounted, setMounted ] = useState(false);

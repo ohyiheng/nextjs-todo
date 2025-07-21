@@ -2,6 +2,6 @@ import { TaskContainer } from "@/components/app/task";
 
 export default function Page() {
     return (
-        <TaskContainer projectId={1} />
+        <TaskContainer filter="upcoming" />
     )
 }

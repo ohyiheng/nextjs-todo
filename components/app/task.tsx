@@ -2,13 +2,13 @@
 
 import clsx from "clsx";
 import { useContext, useEffect, useState } from "react"
-import type { Task } from "@/lib/definitions";
+import type { Project, Task } from "@/lib/definitions";
 import { TasksContext, TasksDispatchContext } from "../providers/TasksContext";
 import { Calendar, ChevronRight, Edit, Ellipsis, Plus, SquarePen, Target, Trash, Trash2 } from "lucide-react";
 import { Checkbox } from "../ui/checkbox";
 import { completeTask, deleteTask } from "@/lib/actions";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
-import { computeDueDateColor, computeStartDateColor, getTaskSortingPredicate, partition, taskInFuture } from "@/lib/utils";
+import { computeDueDateColor, computeStartDateColor, getTaskSortingPredicate, taskHasStarted, partition, taskInFuture } from "@/lib/utils";
 import { useAtomValue, useSetAtom } from "jotai";
 import { activeProjectAtom, addTaskDialogOpenAtom } from "@/lib/atoms";
 import { DateTime } from "luxon";
@@ -129,7 +129,7 @@ export function Task({
                         <DialogContent>
                             <DialogTitle>Are you sure?</DialogTitle>
                             <DialogFooter className="flex items-center justify-end gap-2">
-                                <Button variant="secondary" onClick={() => {}}>Cancel</Button>
+                                <Button variant="secondary" onClick={() => { }}>Cancel</Button>
                                 <Button variant="destructive" onClick={async () => {
                                     if (dispatch) dispatch({ type: "delete", id: task.id });
                                     await deleteTask(task.id);
@@ -146,13 +146,28 @@ export function Task({
     )
 }
 
-export function TaskContainer({ projectId }: { projectId: number }) {
+export function TaskContainer({
+    filter,
+    projectId
+}: {
+    filter?: "today" | "upcoming"
+    projectId?: number
+}) {
     const tasks = useContext(TasksContext);
     if (tasks == null) {
         return;
     }
 
-    const filteredTasks = tasks.filter((task) => task.projectId === projectId);
+    let filteredTasks = tasks;
+    switch (filter) {
+        case "today":
+            filteredTasks = tasks.filter(taskHasStarted);
+            break;
+        case "upcoming":
+            filteredTasks = tasks.filter(taskInFuture);
+            break;
+    }
+    if (projectId) filteredTasks = tasks.filter(task => task.projectId === projectId);
 
     const [ pendingTasks, completedTasks ] = partition(filteredTasks, task => !task.completed);
     const activeProject = useAtomValue(activeProjectAtom);
@@ -177,12 +192,14 @@ export function TaskContainer({ projectId }: { projectId: number }) {
                     ))}
                 </TaskSection>
             }
-            <Button variant="outline" className="w-full cursor-pointer"
-                onClick={() => setAddTaskDialogOpen(true)}
-            >
-                <Plus />
-                Add task
-            </Button>
+            {filter !== "upcoming" &&
+                <Button variant="outline" className="w-full cursor-pointer"
+                    onClick={() => setAddTaskDialogOpen(true)}
+                >
+                    <Plus />
+                    Add task
+                </Button>
+            }
             {completedTasks.length > 0 &&
                 <Collapsible defaultOpen={false}>
                     <CollapsibleTrigger asChild>

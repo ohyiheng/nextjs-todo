@@ -10,7 +10,7 @@ const sql = postgres(
             ...postgres.camel,
             undefined: null
         },
-        max: 100
+        max: 10
     },
 );
 /**

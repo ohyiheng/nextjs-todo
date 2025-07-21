@@ -13,11 +13,14 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "../ui/drawer";
 import { TasksDispatchContext } from "../providers/TasksContext";
 import { uuidv4 } from "@/lib/utils";
 import { addTask } from "@/lib/actions";
+import { usePathname } from "next/navigation";
 
 export default function AddTask() {
     const [ addTaskDialogOpen, setAddTaskDialogOpen ] = useAtom(addTaskDialogOpenAtom);
     const activeProject = useAtomValue(activeProjectAtom);
     const dispatch = useContext(TasksDispatchContext);
+    const pathname = usePathname();
+    const onTodayPage = pathname.split('/')[2] === "today";
 
     const newDate = new Date();
 
@@ -29,7 +32,7 @@ export default function AddTask() {
             description: undefined,
             priority: '0',
             projectId: activeProject?.id ?? 1,
-            startDate: null,
+            startDate: onTodayPage ? newDate : null,
             dueDate: null,
             createdAt: newDate,
             lastModifiedAt: newDate,
