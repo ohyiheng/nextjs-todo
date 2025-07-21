@@ -66,6 +66,16 @@ export function taskInFuture(task: Task): boolean {
     return diffInDays > 0 ? true : false;
 }
 
+export function taskHasStarted(task: Task) {
+    const startDate = task.startDate ? DateTime.fromJSDate(task.startDate) : undefined;
+    const dueDate = task.dueDate ? DateTime.fromJSDate(task.dueDate) : undefined;
+
+    const today = DateTime.now();
+    if (startDate) return startDate.diff(today, 'days').days <= 0;
+    if (dueDate) return dueDate.diff(today, 'days').days <= 0;
+    return false;
+}
+
 export function getTaskSortingPredicate(project?: Project) {
     let sortingPredicate: (a: Task, b: Task) => number;
     switch (project?.sortBy) {
