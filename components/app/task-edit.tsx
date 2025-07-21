@@ -24,6 +24,7 @@ export default function TaskEdit({
     setOpen: Dispatch<boolean>
 }) {
     const dispatch = useContext(TasksDispatchContext);
+
     const form = useForm<TaskFormType>({
         resolver: zodResolver(TaskFormSchema),
         defaultValues: {
@@ -36,7 +37,8 @@ export default function TaskEdit({
             projectId: task.projectId,
             createdAt: task.createdAt,
             lastModifiedAt: task.lastModifiedAt,
-            completed: task.completed
+            completed: task.completed,
+            tags: task.tags
         }
     })
 

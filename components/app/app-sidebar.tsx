@@ -17,7 +17,7 @@ import {
     useSidebar,
 } from "@/components/ui/sidebar"
 import useProjects from "../providers/ProjectsProvider"
-import { Calendar, Inbox, Plus, Search, SquareGanttChart, Sun, Tag } from "lucide-react";
+import { Calendar, Hash, Inbox, Plus, Search, SquareGanttChart, Sun, Tag } from "lucide-react";
 import Link from "next/link";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { useAtom, useSetAtom } from "jotai";
@@ -25,10 +25,12 @@ import { activeProjectAtom, addTaskDialogOpenAtom, projectAddOpenAtom } from "@/
 import ProjectDropdown from "./project-dropdown";
 import { usePathname } from "next/navigation";
 import { Button } from "../ui/button";
+import useTags from "../providers/TagsProvider";
 
 export function AppSidebar() {
     const { projects } = useProjects();
-    const [activeProject, setActiveProject] = useAtom(activeProjectAtom);
+    const tags = useTags();
+    const [ activeProject, setActiveProject ] = useAtom(activeProjectAtom);
     const setAddTaskDialogOpen = useSetAtom(addTaskDialogOpenAtom);
     const setProjectAddOpen = useSetAtom(projectAddOpenAtom);
     const pathname = usePathname();
@@ -128,6 +130,23 @@ export function AppSidebar() {
                                             <ProjectDropdown project={project} inSidebar={true} />
                                         </>
                                     }
+                                </SidebarMenuItem>
+                            ))}
+                        </SidebarMenu>
+                    </SidebarGroupContent>
+                </SidebarGroup>
+                <SidebarGroup>
+                    <SidebarGroupLabel>Tags</SidebarGroupLabel>
+                    <SidebarGroupContent>
+                        <SidebarMenu>
+                            {tags.map(tag => (
+                                <SidebarMenuItem key={tag.id}>
+                                    <SidebarMenuButton asChild>
+                                        <Link href={`/app/tag/${tag.id}`} onClick={() => setOpenMobile(false)}>
+                                            <Hash />
+                                            <span className="truncate">{tag.name}</span>
+                                        </Link>
+                                    </SidebarMenuButton>
                                 </SidebarMenuItem>
                             ))}
                         </SidebarMenu>

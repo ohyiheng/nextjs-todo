@@ -1,8 +1,8 @@
 "use client";
 
-import { TaskFormType } from "@/lib/definitions";
+import { Tag, TaskFormType } from "@/lib/definitions";
 import { UseFormReturn } from "react-hook-form";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "../ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import ProjectCombobox from "./project-combobox";
@@ -13,6 +13,8 @@ import { Separator } from "../ui/separator";
 import CancelButton from "./cancel-button";
 import { Target } from "lucide-react";
 import { SetStateAction } from "jotai";
+import { MultiSelect, MultiSelectTrigger } from "../ui/multiselect";
+import useTags from "../providers/TagsProvider";
 
 
 export default function TaskForm({
@@ -24,6 +26,12 @@ export default function TaskForm({
     onSubmit: (values: TaskFormType) => Promise<void>
     close?: (arg: SetStateAction<boolean>) => void
 }) {
+    const tags = useTags();
+    // const tagOptions = tags.map(tag => ({
+    //     label: tag.name,
+    //     value: tag.id.toString()
+    // }))
+
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -97,6 +105,27 @@ export default function TaskForm({
                         )}
                     />
                 </div>
+                <FormField
+                        control={form.control}
+                        name="tags"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Tags</FormLabel>
+                                <FormControl>
+                                    <MultiSelect<Tag, number>
+                                        options={tags}
+                                        value={field.value}
+                                        getLabel={option => option.name}
+                                        getValue={option => option.id}
+                                        onValueChange={field.onChange}
+                                    >
+                                        {(props) => <MultiSelectTrigger {...props} />}
+                                    </MultiSelect>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
                 <Separator className="my-6" />
                 <div className="w-full flex justify-between items-center gap-2">
                     <FormField

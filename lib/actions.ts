@@ -53,6 +53,11 @@ export async function updateTask(task: TaskFormType) {
             start_date = ${task.startDate},
             due_date = ${task.dueDate}
             WHERE id = ${task.id}`;
+
+        await sql`DELETE FROM tasks_tags WHERE task_id = ${task.id}`;
+        for (let i = 0; i < task.tags.length; i++) {
+            await sql`INSERT INTO tasks_tags VALUES (${task.id}, ${task.tags[i]})`;
+        }
     } catch (error) {
         console.error(error);
     }
