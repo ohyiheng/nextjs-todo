@@ -1,6 +1,5 @@
 "use client";
 
-import { getNextProjectId } from "@/lib/data";
 import { ProjectFormType, Project, SortByType } from "@/lib/definitions";
 import { getProjectById } from "@/lib/utils";
 import { arrayMove } from "@dnd-kit/sortable";

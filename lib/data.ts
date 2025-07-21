@@ -1,4 +1,4 @@
-import { Project, ProjectNode, Task } from "@/lib/definitions";
+import { Project, ProjectNode, Tag, Task } from "@/lib/definitions";
 
 import postgres from "postgres";
 
@@ -72,8 +72,28 @@ export async function fetchTasks(projectId?: number) {
         )} FROM tasks`
     }
 
-    return tasks.map(task => ({
-        ...task,
-        description: task.description ?? undefined
-    }));
+    for (let i = 0; i < tasks.length; i++) {
+        const tags = await sql<{id: number}[]>`
+            SELECT tags.id
+            FROM tasks
+            INNER JOIN tasks_tags ON tasks.id = tasks_tags.task_id
+            INNER JOIN tags ON tasks_tags.tag_id = tags.id
+            WHERE tasks.id = ${tasks[i].id}
+        `
+        tasks[i].tags = tags.map(tag => tag.id);
+        tasks[i].description = tasks[i].description ?? undefined
+    }
+
+    return tasks;
+}
+
+export async function fetchTags() {
+    const tags: Tag[] = await sql<Tag[]>`
+        SELECT ${sql(
+            "id",
+            "name"
+        )} FROM tags
+    `
+
+    return tags;
 }

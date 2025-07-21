@@ -55,6 +55,7 @@ function tasksReducer(prevTasks: Task[] | null, action: TasksAction) {
             task!.projectId = action.newValues.projectId;
             task!.startDate = action.newValues.startDate;
             task!.dueDate = action.newValues.dueDate;
+            task!.tags = action.newValues.tags;
             return prevTasks;
         }
         case "add": {

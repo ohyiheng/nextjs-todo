@@ -5,10 +5,13 @@ import { useAtomValue } from "jotai";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import ProjectDropdown from "./project-dropdown";
+import useTags from "../providers/TagsProvider";
+import { getTagById } from "@/lib/utils";
 
 
 export default function AppTitle() {
     const activeProject = useAtomValue(activeProjectAtom);
+    const tags = useTags();
     const pathname = usePathname();
 
     let title;
@@ -16,7 +19,11 @@ export default function AppTitle() {
         title = activeProject.name;
     } else {
         title = pathname.split('/')[ 2 ];
-        title = title.replace(title[0], title[0].toLocaleUpperCase());
+        if (title === "tag") {
+            title = getTagById(tags, parseInt(pathname.split('/')[3]))?.name ?? "Tag not found"
+        } else {
+            title = title.replace(title[0], title[0].toLocaleUpperCase());
+        }
     }
 
     const [ mounted, setMounted ] = useState(false);

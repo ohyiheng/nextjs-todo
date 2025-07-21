@@ -157,15 +157,18 @@ export function Task({
 
 export function TaskContainer({
     filter,
-    projectId
+    projectId,
+    tagId
 }: {
     filter?: "today" | "upcoming"
-    projectId?: number
+    projectId?: number,
+    tagId?: number
 }) {
     const tasks = useContext(TasksContext);
     if (tasks == null) {
         return;
     }
+    console.log(tasks);
 
     let filteredTasks = tasks;
     switch (filter) {
@@ -177,6 +180,7 @@ export function TaskContainer({
             break;
     }
     if (projectId) filteredTasks = tasks.filter(task => task.projectId === projectId);
+    if (tagId) filteredTasks = tasks.filter(task => task.tags?.some(tag => tag === tagId));
 
     const [ pendingTasks, completedTasks ] = partition(filteredTasks, task => !task.completed);
     const activeProject = useAtomValue(activeProjectAtom);
