@@ -1,6 +1,6 @@
 "use client";
 
-import { Tag, TaskFormType } from "@/lib/definitions";
+import { TaskFormType } from "@/lib/definitions";
 import { UseFormReturn } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
@@ -112,11 +112,11 @@ export default function TaskForm({
                             <FormItem>
                                 <FormLabel>Tags</FormLabel>
                                 <FormControl>
-                                    <MultiSelect<Tag, number>
+                                    <MultiSelect<string, string>
                                         options={tags}
                                         value={field.value}
-                                        getLabel={option => option.name}
-                                        getValue={option => option.id}
+                                        getLabel={(option) => option}
+                                        getValue={(option) => option}
                                         onValueChange={field.onChange}
                                     >
                                         {(props) => <MultiSelectTrigger {...props} />}

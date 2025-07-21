@@ -5,7 +5,7 @@ export default async function Page({
 }: {
     params: Promise<{ id: string }>
 }) {
-    const tagId = parseInt((await params).id)
+    const tagId = (await params).id
     return (
         <TaskContainer tagId={tagId} />
     )

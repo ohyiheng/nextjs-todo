@@ -1,6 +1,5 @@
 "use client";
 
-import { Tag } from "@/lib/definitions";
 import { createContext, useContext, useState } from "react";
 
 // type ProjectsAction = {
@@ -15,13 +14,13 @@ import { createContext, useContext, useState } from "react";
 //     id: number
 // }
 
-const TagsContext = createContext<Tag[] | undefined>(undefined);
+const TagsContext = createContext<string[] | undefined>(undefined);
 
 export function TagsProvider({
     tags,
     children
 }: {
-    tags: Tag[],
+    tags: string[],
     children: React.ReactNode
 }) {
     // const [ projectList, dispatch ] = useReducer(projectsReducer, projects);

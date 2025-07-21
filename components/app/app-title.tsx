@@ -20,7 +20,7 @@ export default function AppTitle() {
     } else {
         title = pathname.split('/')[ 2 ];
         if (title === "tag") {
-            title = getTagById(tags, parseInt(pathname.split('/')[3]))?.name ?? "Tag not found"
+            title = pathname.split('/')[3] ?? "Tag not found"
         } else {
             title = title.replace(title[0], title[0].toLocaleUpperCase());
         }
