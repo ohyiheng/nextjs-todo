@@ -66,10 +66,6 @@ export function AppSidebar() {
                     <Plus />
                     Add task
                 </SidebarMenuButton>
-                <SidebarMenuButton>
-                    <Search />
-                    Search
-                </SidebarMenuButton>
             </SidebarHeader>
             <SidebarContent>
                 <SidebarGroup>
