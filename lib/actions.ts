@@ -170,3 +170,11 @@ export async function editTag(oldTag: string, newTag: string, tagAlreadyExists: 
     }
     revalidatePath(`/app/tag/${newTag}`);
 }
+
+export async function deleteTag(id: string) {
+    try {
+        await sql`DELETE FROM tags WHERE id = ${id}`
+    } catch (error) {
+        console.error(error)
+    }
+}

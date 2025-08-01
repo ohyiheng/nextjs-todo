@@ -13,7 +13,7 @@ type TasksAction = {
     type: "edit" | "add",
     newValues: TaskFormType
 } | {
-    type: "delete",
+    type: "delete" | "delete-tag",
     id: string
 } | {
     type: "rename-tag",
@@ -69,6 +69,11 @@ function tasksReducer(prevTasks: Task[] | undefined, action: TasksAction) {
         }
         case "delete": {
             return prevTasks.filter(task => task.id !== action.id)
+        }
+        case "delete-tag": {
+            return prevTasks.map(task => ({
+                ...task, tags: task.tags?.filter(tag => tag !== action.id)
+            }))
         }
         case "rename-tag": {
             return prevTasks.map(task => ({
