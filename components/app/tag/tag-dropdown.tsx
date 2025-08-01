@@ -1,15 +1,16 @@
 "use client";
 
-import { deleteProject, deleteTask } from "@/lib/actions";
+import { deleteTag, deleteTask } from "@/lib/actions";
 import { Ellipsis, SquarePen, Trash2 } from "lucide-react";
 import { Button } from "../../ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogTitle, DialogTrigger } from "../../ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../ui/dropdown-menu";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { tagEditOpenAtom, editingTagAtom, activeTagAtom } from "@/lib/atoms";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { redirect, usePathname } from "next/navigation";
 import useTags from "../../providers/TagsProvider";
+import { TasksDispatchContext } from "@/components/providers/TasksContext";
 
 export default function TagDropdown({
     tag,
@@ -24,6 +25,8 @@ export default function TagDropdown({
     const activeTag = useAtomValue(activeTagAtom);
 
     const [ deleteConfirmOpen, setDeleteConfirmOpen ] = useState(false);
+
+    const dispatch = useContext(TasksDispatchContext);
 
     return (
         <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
@@ -52,8 +55,9 @@ export default function TagDropdown({
                 <DialogFooter className="flex-row items-center justify-end gap-2">
                     <Button variant="secondary" onClick={() => setDeleteConfirmOpen(false)}>Cancel</Button>
                     <Button variant="destructive" onClick={async () => {
-                        setTags(tags.filter(t => t !== tag))
-                        // await deleteProject(project.id);
+                        setTags(tags.filter(t => t !== tag));
+                        if (dispatch) dispatch({type: "delete-tag", id: tag})
+                        await deleteTag(tag);
                         if (tag === activeTag) {
                             redirect("/app/inbox");
                         }
