@@ -4,6 +4,7 @@ import { ProjectFormType, TaskFormType } from "./definitions";
 import postgres from "postgres";
 import { revalidatePath } from "next/cache";
 import { SortByType } from "./definitions";
+import { setDefaultAutoSelectFamily } from "net";
 
 const sql = postgres(
     "postgres://postgres:example@localhost:5432/postgres",
@@ -139,4 +140,33 @@ export async function deleteProject(id: number) {
     } catch (error) {
         console.error(error)
     }
+}
+
+export async function addTag(tag: string) {
+    try {
+        await sql`INSERT INTO tags
+            VALUES (${tag})`;
+    } catch (error) {
+        console.error(error);
+    }
+    revalidatePath(`/app/tag/${tag}`);
+}
+
+export async function editTag(oldTag: string, newTag: string, tagAlreadyExists: boolean) {
+    try {
+        sql.begin(async () => {
+            if (!tagAlreadyExists) {
+                await sql`INSERT INTO tags VALUES (${newTag})`
+            }
+            await sql`UPDATE tasks_tags
+                SET tag_id = ${newTag}
+                WHERE task_id NOT IN (SELECT task_id FROM tasks_tags WHERE tag_id = ${newTag})
+                AND tag_id = ${oldTag}`
+            await sql`DELETE FROM tasks_tags WHERE tag_id = ${oldTag}`
+            await sql`DELETE FROM tags WHERE id = ${oldTag}`
+        })
+    } catch (error) {
+        console.error(error);
+    }
+    revalidatePath(`/app/tag/${newTag}`);
 }

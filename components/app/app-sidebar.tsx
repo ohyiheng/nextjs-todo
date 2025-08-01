@@ -10,25 +10,28 @@ import {
     SidebarGroupLabel,
     SidebarHeader,
     SidebarMenu,
+    SidebarMenuAction,
     SidebarMenuButton,
     SidebarMenuItem,
-    SidebarRail,
     useSidebar,
 } from "@/components/ui/sidebar"
 import useProjects from "../providers/ProjectsProvider"
-import { Calendar, Hash, Inbox, Plus, SquareGanttChart, Sun, Tag } from "lucide-react";
+import { Calendar, Ellipsis, Hash, Inbox, Plus, SquareGanttChart, Sun, Tag } from "lucide-react";
 import Link from "next/link";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
-import { useAtom, useSetAtom } from "jotai";
-import { activeProjectAtom, addTaskDialogOpenAtom, projectAddOpenAtom } from "@/lib/atoms";
-import ProjectDropdown from "./project-dropdown";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { activeProjectAtom, activeTagAtom, addTaskDialogOpenAtom, projectAddOpenAtom } from "@/lib/atoms";
+import ProjectDropdown from "./project/project-dropdown";
 import { usePathname } from "next/navigation";
 import useTags from "../providers/TagsProvider";
+import TagAdd from "./tag/tag-add";
+import TagDropdown from "./tag/tag-dropdown";
 
 export function AppSidebar() {
     const { projects } = useProjects();
-    const tags = useTags();
-    const [ activeProject, setActiveProject ] = useAtom(activeProjectAtom);
+    const { tags } = useTags();
+    const activeProject = useAtomValue(activeProjectAtom);
+    const activeTag = useAtomValue(activeTagAtom);
     const setAddTaskDialogOpen = useSetAtom(addTaskDialogOpenAtom);
     const setProjectAddOpen = useSetAtom(projectAddOpenAtom);
     const pathname = usePathname();
@@ -48,11 +51,6 @@ export function AppSidebar() {
             title: "Upcoming",
             href: "/app/upcoming",
             icon: <Calendar />
-        },
-        {
-            title: "Tags",
-            href: "/app/tags",
-            icon: <Tag />
         },
     ];
 
@@ -87,10 +85,15 @@ export function AppSidebar() {
                 </SidebarGroup>
                 <SidebarGroup>
                     <SidebarGroupLabel>Projects</SidebarGroupLabel>
-                    <SidebarGroupAction onClick={() => setProjectAddOpen(true)}>
-                        <Plus className="text-muted-foreground cursor-pointer" />
-                        <span className="sr-only">Add Project</span>
-                    </SidebarGroupAction>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <SidebarGroupAction onClick={() => setProjectAddOpen(true)}>
+                                <Plus className="text-muted-foreground cursor-pointer" />
+                                <span className="sr-only">Add a project</span>
+                            </SidebarGroupAction>
+                        </TooltipTrigger>
+                        <TooltipContent side="top">Add projects</TooltipContent>
+                    </Tooltip>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {projectsWithoutInbox.map(project => (
@@ -98,7 +101,7 @@ export function AppSidebar() {
                                     {state === "collapsed" ?
                                         <Tooltip>
                                             <TooltipTrigger asChild>
-                                                <SidebarMenuButton asChild>
+                                                <SidebarMenuButton isActive={activeProject?.id === project.id} asChild>
                                                     <Link className="truncate" href={`/app/project/${project.id}`}>
                                                         <SquareGanttChart />
                                                         <span>{project.name}</span>
@@ -125,7 +128,11 @@ export function AppSidebar() {
                                                     <span>{project.name}</span>
                                                 </Link>
                                             </SidebarMenuButton>
-                                            <ProjectDropdown project={project} inSidebar={true} />
+                                            <ProjectDropdown project={project}>
+                                                <SidebarMenuAction className="opacity-0 group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 cursor-pointer">
+                                                    <Ellipsis />
+                                                </SidebarMenuAction>
+                                            </ProjectDropdown>
                                         </>
                                     }
                                 </SidebarMenuItem>
@@ -135,16 +142,45 @@ export function AppSidebar() {
                 </SidebarGroup>
                 <SidebarGroup>
                     <SidebarGroupLabel>Tags</SidebarGroupLabel>
+                    <TagAdd>
+                        <SidebarGroupAction>
+                            <Plus className="text-muted-foreground cursor-pointer" />
+                            <span className="sr-only">Add a tag</span>
+                        </SidebarGroupAction>
+                    </TagAdd>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {tags.map(tag => (
                                 <SidebarMenuItem key={tag}>
-                                    <SidebarMenuButton asChild>
-                                        <Link href={`/app/tag/${tag}`} onClick={() => setOpenMobile(false)}>
-                                            <Hash />
-                                            <span className="truncate">{tag}</span>
-                                        </Link>
-                                    </SidebarMenuButton>
+                                    {state === "collapsed" ?
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <SidebarMenuButton isActive={activeTag === tag} asChild>
+                                                    <Link className="truncate" href={`/app/tag/${tag}`}>
+                                                        <Hash />
+                                                        <span>{tag}</span>
+                                                    </Link>
+                                                </SidebarMenuButton>
+                                            </TooltipTrigger>
+                                            <TooltipContent side="right">
+                                                <p>{tag}</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                        :
+                                        <>
+                                            <SidebarMenuButton isActive={activeTag === tag} asChild>
+                                                <Link href={`/app/tag/${tag}`} onClick={() => setOpenMobile(false)}>
+                                                    <Hash />
+                                                    <span className="truncate">{tag}</span>
+                                                </Link>
+                                            </SidebarMenuButton>
+                                            <TagDropdown tag={tag}>
+                                                <SidebarMenuAction className="opacity-0 group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 cursor-pointer">
+                                                    <Ellipsis />
+                                                </SidebarMenuAction>
+                                            </TagDropdown>
+                                        </>
+                                    }
                                 </SidebarMenuItem>
                             ))}
                         </SidebarMenu>
@@ -153,7 +189,6 @@ export function AppSidebar() {
             </SidebarContent>
             <SidebarFooter>
             </SidebarFooter>
-            <SidebarRail />
         </Sidebar >
     )
 }
