@@ -2,10 +2,10 @@
 
 import { ProjectFormType } from "@/lib/definitions";
 import { UseFormReturn } from "react-hook-form";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import CancelButton from "./cancel-button";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../../ui/form";
+import { Input } from "../../ui/input";
+import { Button } from "../../ui/button";
+import CancelButton from "../cancel-button";
 import { SetStateAction } from "jotai";
 
 

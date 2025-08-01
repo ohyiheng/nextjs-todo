@@ -15,6 +15,10 @@ type TasksAction = {
 } | {
     type: "delete",
     id: string
+} | {
+    type: "rename-tag",
+    oldTag: string,
+    newTag: string
 }
 
 export const TasksContext = createContext<Task[] | undefined>(undefined);
@@ -60,11 +64,24 @@ function tasksReducer(prevTasks: Task[] | undefined, action: TasksAction) {
         }
         case "add": {
             // todo: check uuid for duplicates
-            const newTasks = [...prevTasks, {...action.newValues}]
+            const newTasks = [ ...prevTasks, { ...action.newValues } ]
             return newTasks;
         }
         case "delete": {
             return prevTasks.filter(task => task.id !== action.id)
+        }
+        case "rename-tag": {
+            return prevTasks.map(task => ({
+                ...task, tags: task.tags?.includes(action.newTag)
+                    ? task.tags?.filter(tag => tag !== action.oldTag)
+                    : task.tags?.map(tag => {
+                        if (tag === action.oldTag) {
+                            return action.newTag
+                        } else {
+                            return tag
+                        }
+                    })
+            }))
         }
     }
 }

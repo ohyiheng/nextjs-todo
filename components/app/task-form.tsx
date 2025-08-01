@@ -5,7 +5,7 @@ import { UseFormReturn } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
-import ProjectCombobox from "./project-combobox";
+import ProjectCombobox from "./project/project-combobox";
 import { DatePicker } from "./date-picker";
 import { Button } from "../ui/button";
 import PrioritySelect from "./priority-select";
@@ -26,7 +26,7 @@ export default function TaskForm({
     onSubmit: (values: TaskFormType) => Promise<void>
     close?: (arg: SetStateAction<boolean>) => void
 }) {
-    const tags = useTags();
+    const { tags } = useTags();
     // const tagOptions = tags.map(tag => ({
     //     label: tag.name,
     //     value: tag.id.toString()
@@ -106,26 +106,26 @@ export default function TaskForm({
                     />
                 </div>
                 <FormField
-                        control={form.control}
-                        name="tags"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Tags</FormLabel>
-                                <FormControl>
-                                    <MultiSelect<string, string>
-                                        options={tags}
-                                        value={field.value}
-                                        getLabel={(option) => option}
-                                        getValue={(option) => option}
-                                        onValueChange={field.onChange}
-                                    >
-                                        {(props) => <MultiSelectTrigger {...props} />}
-                                    </MultiSelect>
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
+                    control={form.control}
+                    name="tags"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Tags</FormLabel>
+                            <FormControl>
+                                <MultiSelect<string, string>
+                                    options={tags}
+                                    value={field.value}
+                                    getLabel={(option) => option}
+                                    getValue={(option) => option}
+                                    onValueChange={field.onChange}
+                                >
+                                    {(props) => <MultiSelectTrigger {...props} />}
+                                </MultiSelect>
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
                 <Separator className="my-6" />
                 <div className="w-full flex justify-between items-center gap-2">
                     <FormField

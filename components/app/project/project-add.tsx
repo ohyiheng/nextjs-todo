@@ -3,10 +3,10 @@
 import { ProjectFormSchema, ProjectFormType } from "@/lib/definitions";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../../ui/dialog";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "../ui/drawer";
-import useProjects from "../providers/ProjectsProvider";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "../../ui/drawer";
+import useProjects from "../../providers/ProjectsProvider";
 import ProjectForm from "./project-form";
 import { useAtom } from "jotai";
 import { activeProjectAtom, projectAddOpenAtom } from "@/lib/atoms";
@@ -24,10 +24,6 @@ export default function ProjectAdd() {
         defaultValues: {
             id: projects.length,
             name: "",
-            createdAt: new Date(),
-            lastModifiedAt: new Date(),
-            sortBy: "priority",
-            sortOrder: "desc"
         }
     })
 
@@ -36,10 +32,10 @@ export default function ProjectAdd() {
         if (dispatch) {
             dispatch({
                 type: "add",
-                newValues: {...values, id: id}
+                newValues: { ...values, id: id }
             });
         }
-        await addProject({...values, id: id});
+        await addProject({ ...values, id: id });
         setProjectAddOpen(false);
     }
 

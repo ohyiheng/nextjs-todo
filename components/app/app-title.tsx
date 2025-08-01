@@ -4,9 +4,11 @@ import { activeProjectAtom } from "@/lib/atoms";
 import { useAtomValue } from "jotai";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import ProjectDropdown from "./project-dropdown";
+import ProjectDropdown from "./project/project-dropdown";
 import useTags from "../providers/TagsProvider";
 import { getTagById } from "@/lib/utils";
+import { Button } from "../ui/button";
+import { Ellipsis } from "lucide-react";
 
 
 export default function AppTitle() {
@@ -20,9 +22,9 @@ export default function AppTitle() {
     } else {
         title = pathname.split('/')[ 2 ];
         if (title === "tag") {
-            title = pathname.split('/')[3] ?? "Tag not found"
+            title = pathname.split('/')[ 3 ] ?? "Tag not found"
         } else {
-            title = title.replace(title[0], title[0].toLocaleUpperCase());
+            title = title.replace(title[ 0 ], title[ 0 ].toLocaleUpperCase());
         }
     }
 
@@ -40,7 +42,13 @@ export default function AppTitle() {
         <div className="flex items-center gap-3 truncate">
             <h1 className="text-lg md:text-xl lg:text-2xl truncate">{title}</h1>
             {activeProject && activeProject?.id !== 1 &&
-                <ProjectDropdown project={activeProject} />
+                <ProjectDropdown project={activeProject}>
+                    <Button variant="ghost" size="icon" onClick={(e) => {
+                        e.stopPropagation();
+                    }}>
+                        <Ellipsis />
+                    </Button>
+                </ProjectDropdown>
             }
         </div>
     )

@@ -49,10 +49,12 @@ export type TaskFormType = z.infer<typeof TaskFormSchema>;
 export const ProjectFormSchema = z.object({
     id: z.number(),
     name: z.string("Project needs a name!").check(z.minLength(1, "Project needs a name!")),
-    createdAt: z.date(),
-    lastModifiedAt: z.date(),
-    sortBy: z.literal(["priority", "start", "due", "name"]),
-    sortOrder: z.literal(["asc", "desc"]),
 })
 
 export type ProjectFormType = z.infer<typeof ProjectFormSchema>;
+
+export const TagSchema = z.string().toLowerCase().regex(/^[a-z][a-z\-\_\d]+$/, "Invalid tag format");
+export const TagFormSchema = z.object({
+    value: TagSchema
+});
+export type TagFormType = z.infer<typeof TagFormSchema>;

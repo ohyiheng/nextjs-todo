@@ -1,20 +1,13 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, Dispatch, SetStateAction, useContext, useState } from "react";
 
-// type ProjectsAction = {
-//     type: "move",
-//     oldIndex: number,
-//     newIndex: number
-// } | {
-//     type: "edit" | "add",
-//     newValues: ProjectFormType
-// } | {
-//     type: "delete",
-//     id: number
-// }
+type TagsContextType = {
+    tags: string[],
+    setTags: Dispatch<SetStateAction<string[]>>
+}
 
-const TagsContext = createContext<string[] | undefined>(undefined);
+const TagsContext = createContext<TagsContextType | undefined>(undefined);
 
 export function TagsProvider({
     tags,
@@ -27,7 +20,7 @@ export function TagsProvider({
     const [ tagList, setTagList ] = useState(tags)
 
     return (
-        <TagsContext value={tagList}>
+        <TagsContext value={{tags: tagList, setTags: setTagList}}>
             {children}
         </TagsContext>
     )

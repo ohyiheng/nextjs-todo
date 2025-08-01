@@ -3,18 +3,18 @@
 import { ProjectFormSchema, ProjectFormType } from "@/lib/definitions";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../../ui/dialog";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "../ui/drawer";
-import DeleteButton from "./delete-button";
-import useProjects from "../providers/ProjectsProvider";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "../../ui/drawer";
+import DeleteButton from "../delete-button";
+import useProjects from "../../providers/ProjectsProvider";
 import ProjectForm from "./project-form";
 import { useAtom, useAtomValue } from "jotai";
 import { activeProjectAtom, editingProjectAtom, projectEditOpenAtom } from "@/lib/atoms";
 import { useEffect, useState } from "react";
 import { deleteProject, deleteTask, updateProject } from "@/lib/actions";
 import { Trash2 } from "lucide-react";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import { redirect } from "next/navigation";
 
 export default function ProjectEdit() {
@@ -26,7 +26,11 @@ export default function ProjectEdit() {
     const { dispatch } = useProjects();
 
     const form = useForm<ProjectFormType>({
-        resolver: zodResolver(ProjectFormSchema)
+        resolver: zodResolver(ProjectFormSchema),
+        defaultValues: {
+            id: editingProject?.id,
+            name: editingProject?.name,
+        }
     })
 
     async function onSubmit(values: ProjectFormType) {
@@ -68,7 +72,7 @@ export default function ProjectEdit() {
                                 <Button variant="destructive" onClick={async () => {
                                     if (dispatch) dispatch({ type: "delete", id: editingProject.id });
                                     await deleteProject(editingProject.id);
-                                    
+
                                     setDeleteConfirmOpen(false);
                                     setProjectEditOpen(false);
                                     if (editingProject.id === activeProject?.id) {

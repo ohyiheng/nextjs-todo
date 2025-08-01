@@ -1,14 +1,15 @@
-import ActiveProjectUpdater from "@/components/app/active-project-updater";
+import ActiveItemUpdater from "@/components/app/active-item-updater";
 import AddTask from "@/components/app/task-add";
 import { AppSidebar } from "@/components/app/app-sidebar";
 import AppTitle from "@/components/app/app-title";
-import ProjectSortingSelect from "@/components/app/project-sorting-select";
+import ProjectSortingSelect from "@/components/app/project/project-sorting-select";
 import Providers from "@/components/providers/Providers";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { fetchTasks } from "@/lib/data";
 import TasksProvider from "@/components/providers/TasksContext";
-import ProjectEdit from "@/components/app/project-edit";
-import ProjectAdd from "@/components/app/project-add";
+import ProjectEdit from "@/components/app/project/project-edit";
+import ProjectAdd from "@/components/app/project/project-add";
+import TagEdit from "@/components/app/tag/tag-edit";
 
 export default async function Layout({
     children,
@@ -32,13 +33,14 @@ export default async function Layout({
                                 <ProjectSortingSelect />
                             </header>
                             <main className="p-3 m-auto">
-                                <ActiveProjectUpdater />
+                                <ActiveItemUpdater />
                                 {children}
                             </main>
                         </div>
                         <AddTask />
                         <ProjectEdit />
                         <ProjectAdd />
+                        <TagEdit />
                     </TasksProvider>
                 </SidebarInset>
             </SidebarProvider>
