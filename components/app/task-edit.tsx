@@ -10,9 +10,9 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogT
 import TaskForm from "./task-form";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "../ui/drawer";
-import DeleteButton from "./delete-button";
 import { Button } from "../ui/button";
 import { Trash2 } from "lucide-react";
+import { useUser } from "../providers/UserProvider";
 
 export default function TaskEdit({
     task,
@@ -24,6 +24,7 @@ export default function TaskEdit({
     setOpen: Dispatch<boolean>
 }) {
     const dispatch = useContext(TasksDispatchContext);
+    const user = useUser();
 
     const form = useForm<TaskFormType>({
         resolver: zodResolver(TaskFormSchema),
@@ -49,7 +50,7 @@ export default function TaskEdit({
                 newValues: values
             });
         }
-        await updateTask(values);
+        await updateTask(values, user);
         setOpen(false);
     }
 

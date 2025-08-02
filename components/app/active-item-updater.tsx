@@ -11,10 +11,8 @@ import { useEffect } from "react";
 export default function ActiveItemUpdater() {
     const pathname = usePathname();
     const setActiveProject = useSetAtom(activeProjectAtom);
-    const { projects } = useProjects();
+    const { projects, inboxId } = useProjects();
     const setActiveTag = useSetAtom(activeTagAtom);
-
-    console.log(projects);
 
     const pathList = pathname.split('/').slice(2);
     useEffect(() => {
@@ -22,7 +20,7 @@ export default function ActiveItemUpdater() {
         setActiveProject(null);
         
         if (pathList[ 0 ] === "inbox") {
-            setActiveProject(getProjectById(projects, 1) ?? null);
+            setActiveProject(getProjectById(projects, inboxId) ?? null);
         } else if (pathList[ 0 ] === "project") {
             if (pathList.length > 1) {
                 setActiveProject(getProjectById(projects, parseInt(pathList[ 1 ])) ?? null);

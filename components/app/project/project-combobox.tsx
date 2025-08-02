@@ -1,12 +1,12 @@
 "use client";
 
-import { ProjectNode, TaskFormType } from "@/lib/definitions";
+import { TaskFormType } from "@/lib/definitions";
 import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
 import { ChevronsUpDown } from "lucide-react";
 import { Button } from "../../ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "../../ui/command";
 import useProjects from "../../providers/ProjectsProvider";
-import { JSX, useState } from "react";
+import { useState } from "react";
 import React from "react";
 import { FormControl } from "../../ui/form";
 import { UseFormSetValue } from "react-hook-form";
@@ -21,7 +21,7 @@ export default function ProjectCombobox({
     setValue: UseFormSetValue<TaskFormType>,
     variant?: "link" | "default" | "destructive" | "outline" | "secondary" | "ghost" | null
 }) {
-    const { projects } = useProjects();
+    const { projects, inboxId } = useProjects();
     const [ isOpen, setIsOpen ] = useState(false);
 
     return (
@@ -52,7 +52,7 @@ export default function ProjectCombobox({
                             <CommandItem
                                 keywords={[ "Inbox" ]}
                                 onSelect={() => {
-                                    setValue("projectId", 1);
+                                    setValue("projectId", inboxId!);
                                     setIsOpen(false);
                                 }}
                             >
@@ -61,31 +61,22 @@ export default function ProjectCombobox({
                         </CommandGroup>
                         <CommandSeparator />
                         <CommandGroup>
-                            {mapAllProjects(projects.filter(project => project.id !== 1))}
+                            {projects.filter(project => !project.isInbox).map(project => (
+                                <CommandItem
+                                    key={project.id}
+                                    keywords={project.name.split(' ')}
+                                    onSelect={() => {
+                                        setValue("projectId", project.id);
+                                        setIsOpen(false);
+                                    }}
+                                >
+                                    {project.name}
+                                </CommandItem>
+                            ))}
                         </CommandGroup>
                     </CommandList>
                 </Command>
             </PopoverContent>
         </Popover>
     )
-
-    function mapAllProjects(projects: ProjectNode[] | null): JSX.Element[] {
-        if (projects && projects.length > 0) {
-            return projects.map((project) => (
-                <React.Fragment key={project.id}>
-                    <CommandItem
-                        keywords={project.name.split(' ')}
-                        onSelect={() => {
-                            setValue("projectId", project.id);
-                            setIsOpen(false);
-                        }}
-                    >
-                        {project.name}
-                    </CommandItem>
-                    {mapAllProjects(project.subProjects)}
-                </React.Fragment>
-            ))
-        }
-        return [];
-    }
 }

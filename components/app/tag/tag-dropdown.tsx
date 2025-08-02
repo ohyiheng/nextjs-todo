@@ -1,16 +1,17 @@
 "use client";
 
-import { deleteTag, deleteTask } from "@/lib/actions";
-import { Ellipsis, SquarePen, Trash2 } from "lucide-react";
+import { deleteTag } from "@/lib/actions";
+import { SquarePen, Trash2 } from "lucide-react";
 import { Button } from "../../ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogTitle, DialogTrigger } from "../../ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../ui/dropdown-menu";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { tagEditOpenAtom, editingTagAtom, activeTagAtom } from "@/lib/atoms";
 import { useContext, useState } from "react";
-import { redirect, usePathname } from "next/navigation";
+import { redirect } from "next/navigation";
 import useTags from "../../providers/TagsProvider";
 import { TasksDispatchContext } from "@/components/providers/TasksContext";
+import { useUser } from "@/components/providers/UserProvider";
 
 export default function TagDropdown({
     tag,
@@ -23,6 +24,7 @@ export default function TagDropdown({
     const setTagEditOpen = useSetAtom(tagEditOpenAtom);
     const setEditingTag = useSetAtom(editingTagAtom);
     const activeTag = useAtomValue(activeTagAtom);
+    const user = useUser();
 
     const [ deleteConfirmOpen, setDeleteConfirmOpen ] = useState(false);
 
@@ -56,8 +58,8 @@ export default function TagDropdown({
                     <Button variant="secondary" onClick={() => setDeleteConfirmOpen(false)}>Cancel</Button>
                     <Button variant="destructive" onClick={async () => {
                         setTags(tags.filter(t => t !== tag));
-                        if (dispatch) dispatch({type: "delete-tag", id: tag})
-                        await deleteTag(tag);
+                        if (dispatch) dispatch({ type: "delete-tag", id: tag })
+                        await deleteTag(tag, user);
                         if (tag === activeTag) {
                             redirect("/app/inbox");
                         }

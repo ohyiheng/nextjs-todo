@@ -52,12 +52,6 @@
   --sidebar-ring: oklch(0.705 0.015 286.067);
 }
 
-/* @theme {
-  --text-sm: 0.8rem;
-  --text-base: 0.925rem;
-  --text-lg: 1.1rem;
-} */
-
 /*
 @theme inline {
   --color-background: var(--background);

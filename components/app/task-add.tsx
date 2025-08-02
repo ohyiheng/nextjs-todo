@@ -14,13 +14,17 @@ import { TasksDispatchContext } from "../providers/TasksContext";
 import { uuidv4 } from "@/lib/utils";
 import { addTask } from "@/lib/actions";
 import { usePathname } from "next/navigation";
+import { useUser } from "../providers/UserProvider";
+import useProjects from "../providers/ProjectsProvider";
 
 export default function AddTask() {
     const [ addTaskDialogOpen, setAddTaskDialogOpen ] = useAtom(addTaskDialogOpenAtom);
     const activeProject = useAtomValue(activeProjectAtom);
+    const { inboxId } = useProjects();
     const dispatch = useContext(TasksDispatchContext);
     const pathname = usePathname();
-    const page = pathname.split('/')[2];
+    const page = pathname.split('/')[ 2 ];
+    const user = useUser();
 
     const newDate = new Date();
 
@@ -31,13 +35,13 @@ export default function AddTask() {
             name: "",
             description: undefined,
             priority: '0',
-            projectId: activeProject?.id ?? 1,
+            projectId: activeProject?.id ?? inboxId,
             startDate: page === "today" ? newDate : null,
             dueDate: null,
             createdAt: newDate,
             lastModifiedAt: newDate,
             completed: false,
-            tags: page === "tag" ? [pathname.split('/')[3]] : []
+            tags: page === "tag" ? [ pathname.split('/')[ 3 ] ] : []
         }
     })
 
@@ -48,7 +52,7 @@ export default function AddTask() {
         } else {
             console.log("dispatch function undefined");
         }
-        await addTask(values);
+        await addTask(values, user);
         setAddTaskDialogOpen(false);
     }
 
@@ -61,9 +65,9 @@ export default function AddTask() {
     useEffect(() => {
         form.reset();
         form.setValue("id", uuidv4()); // refresh UUID whenever dialog opens/closes
-        form.setValue("projectId", activeProject?.id ?? 1);
+        form.setValue("projectId", activeProject?.id ?? inboxId);
         form.setValue("startDate", page === "today" ? newDate : null);
-        form.setValue("tags", page === "tag" ? [pathname.split('/')[3]] : []);
+        form.setValue("tags", page === "tag" ? [ pathname.split('/')[ 3 ] ] : []);
     }, [ addTaskDialogOpen ])
 
     if (isMobile) return (

@@ -6,6 +6,7 @@ import { useRef, useState } from "react";
 import useTags from "../../providers/TagsProvider";
 import { TagSchema } from "@/lib/definitions";
 import { addTag } from "@/lib/actions";
+import { useUser } from "@/components/providers/UserProvider";
 
 export default function TagAdd({
     children
@@ -17,6 +18,7 @@ export default function TagAdd({
     const [ open, setOpen ] = useState(false);
     const [ error, setError ] = useState(false);
     const ref = useRef<HTMLButtonElement>(null);
+    const user = useUser();
 
     async function handleSubmit() {
         const result = TagSchema.safeParse(tagInput);
@@ -29,7 +31,7 @@ export default function TagAdd({
                 setTags([ ...tags, result.data ]);
                 setTagInput("");
                 setOpen(false);
-                await addTag(result.data);
+                await addTag(result.data, user);
             }
         }
     }

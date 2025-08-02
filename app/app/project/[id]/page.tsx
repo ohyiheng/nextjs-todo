@@ -1,6 +1,4 @@
-import TasksProvider from "@/components/providers/TasksContext";
 import { TaskContainer } from "@/components/app/task";
-import { fetchTasks } from "@/lib/data";
 
 export default async function Page({
     params

@@ -23,11 +23,7 @@ export type Project = {
     lastModifiedAt: Date,
     sortBy: SortByType,
     sortOrder: "asc" | "desc",
-    parentId?: number,
-}
-
-export type ProjectNode = Project & {
-    subProjects: ProjectNode[] | null
+    isInbox: boolean
 }
 
 export const TaskFormSchema = z.object({
@@ -49,6 +45,11 @@ export type TaskFormType = z.infer<typeof TaskFormSchema>;
 export const ProjectFormSchema = z.object({
     id: z.number(),
     name: z.string("Project needs a name!").check(z.minLength(1, "Project needs a name!")),
+    createdAt: z.date(),
+    lastModifiedAt: z.date(),
+    sortBy: z.literal(["priority", "start", "due", "name"]),
+    sortOrder: z.literal(["asc", "desc"]),
+    isInbox: z.boolean()
 })
 
 export type ProjectFormType = z.infer<typeof ProjectFormSchema>;
