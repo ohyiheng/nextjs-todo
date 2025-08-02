@@ -5,9 +5,9 @@ import { z } from "zod/v4";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import * as argon2 from "argon2";
-import { createSession } from "@/lib/session";
+import { createSession, deleteSession } from "@/lib/session";
 import sql from "@/lib/db";
-import { getUserInfo, verifyCredentials } from "./data-access-layer";
+import { getUserInfo, verifyCredentials, verifySessionCookies } from "./data-access-layer";
 
 export type LoginFormState = {
     errors?: {
@@ -29,7 +29,7 @@ const LoginFormSchema = z.object({
         .min(2, "Username must have at least 2 characters")
         .max(120, "Username cannot exceed 120 characters"),
     password: z.string()
-        .min(8, "Password must have at least 8 characters"),
+        .min(6, "Password must have at least 6 characters"),
 })
 
 export async function logIn(prevState: LoginFormState, formData: FormData): Promise<LoginFormState> {
@@ -51,8 +51,8 @@ export async function logIn(prevState: LoginFormState, formData: FormData): Prom
     if (await verifyCredentials(username, password)) {
         const newSession = await createSession(username);
         await setSessionCookies(newSession.token);
-        revalidatePath("/app")
-        redirect("/app");
+        revalidatePath("/app", "layout")
+        redirect("/app/inbox");
     }
 
     return {
@@ -93,8 +93,15 @@ export async function signUp(prevState: LoginFormState, formData: FormData): Pro
     }
 
     await setSessionCookies(newSession.token);
-    revalidatePath("/app");
-    redirect("/app");
+    revalidatePath("/app", "layout")
+    redirect("/app/inbox");
+}
+
+export async function logOut() {
+    const { id } = await verifySessionCookies();
+
+    (await cookies()).delete("session_token");
+    await deleteSession(id);
 }
 
 async function createUser(username: string, password: string) {
@@ -118,4 +125,9 @@ async function setSessionCookies(sessionToken: string) {
         path: "/",
         sameSite: "lax",
     });
+}
+
+export async function deleteUser(username: string) {
+    (await cookies()).delete("session_token");
+    await sql`DELETE FROM users WHERE username = ${username}`;
 }

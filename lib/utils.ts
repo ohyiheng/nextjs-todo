@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-import { Project, Tag, Task } from "./definitions";
+import { Project, Task } from "./definitions";
 import { DateTime } from "luxon";
 
 export async function hashSecret(secret: string): Promise<Uint8Array> {
@@ -113,10 +113,6 @@ export function getTaskSortingPredicate(project?: Project) {
         }
     }
     return sortingPredicate;
-}
-
-export function getTagById(tags: Tag[], id: number) {
-    return tags.find(tag => tag.id === id);
 }
 
 export function uuidv4() {
