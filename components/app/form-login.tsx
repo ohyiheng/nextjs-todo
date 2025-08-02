@@ -1,15 +1,15 @@
 "use client";
 
-import { logIn, signUp as sU, LoginFormState } from "@/lib/auth";
+import { logIn, signUp, LoginFormState } from "@/lib/auth";
 import clsx from "clsx";
 import Link from "next/link";
 import { useActionState } from "react";
 
-export default function LoginForm({ signUp }: { signUp?: boolean }) {
+export default function LoginForm({ signingUp }: { signingUp?: boolean }) {
     const initialLoginFormState: LoginFormState = {
         message: null,
     }
-    const [ formState, formAction ] = useActionState(signUp ? sU : logIn, initialLoginFormState);
+    const [ formState, formAction ] = useActionState(signingUp ? signUp : logIn, initialLoginFormState);
 
     return (
         <form action={formAction}
@@ -22,7 +22,7 @@ export default function LoginForm({ signUp }: { signUp?: boolean }) {
             shadow-xs rounded-xl
         ">
             <h2 className="text-xl font-bold">
-                {signUp ? "Sign up for a new account" : "Log in to your account"}
+                {signingUp ? "Sign up for a new account" : "Log in to your account"}
             </h2>
             <div className="space-y-2.5">
                 <label htmlFor="username" className={clsx(
@@ -92,10 +92,10 @@ export default function LoginForm({ signUp }: { signUp?: boolean }) {
                     Submit
                 </button>
                 <p className="self-center text-sm">
-                    {signUp ? "Already have an account? " : "Don't have an account? "}
-                    <Link href={signUp ? "/auth/login" : "/auth/signup"}
+                    {signingUp ? "Already have an account? " : "Don't have an account? "}
+                    <Link href={signingUp ? "/auth/login" : "/auth/signup"}
                         className="underline hover:text-sky-800">
-                        {signUp ? "Log in" : "Sign up"}
+                        {signingUp ? "Log in" : "Sign up"}
                     </Link>
                 </p>
             </div>

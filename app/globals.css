@@ -58,15 +58,6 @@
   --text-lg: 1.1rem;
 } */
 
-h1 {
-  @apply font-semibold;
-}
-
-.lucide-small {
-  width: 16px;
-  height: 16px;
-}
-
 /*
 @theme inline {
   --color-background: var(--background);
@@ -176,5 +167,22 @@ body {
 
   body {
     @apply bg-background text-foreground;
+  }
+
+  button {
+    @apply cursor-pointer;
+  }
+
+  h1, h2 {
+    @apply font-semibold;
+  }
+
+  h3 {
+    @apply font-medium;
+  }
+
+  .lucide-small {
+    width: 16px;
+    height: 16px;
   }
 }

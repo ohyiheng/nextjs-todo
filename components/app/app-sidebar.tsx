@@ -16,7 +16,7 @@ import {
     useSidebar,
 } from "@/components/ui/sidebar"
 import useProjects from "../providers/ProjectsProvider"
-import { Calendar, Ellipsis, Hash, Inbox, Plus, SquareGanttChart, Sun, Tag } from "lucide-react";
+import { Calendar, Ellipsis, Hash, Inbox, LogOut, Plus, Settings, SquareGanttChart, Sun, Tag } from "lucide-react";
 import Link from "next/link";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
@@ -26,6 +26,9 @@ import { usePathname } from "next/navigation";
 import useTags from "../providers/TagsProvider";
 import TagAdd from "./tag/tag-add";
 import TagDropdown from "./tag/tag-dropdown";
+import { useUser } from "../providers/UserProvider";
+import { logOut } from "@/lib/auth";
+import { AppSettings } from "./settings/app-settings";
 
 export function AppSidebar() {
     const { projects } = useProjects();
@@ -35,6 +38,7 @@ export function AppSidebar() {
     const setAddTaskDialogOpen = useSetAtom(addTaskDialogOpenAtom);
     const setProjectAddOpen = useSetAtom(projectAddOpenAtom);
     const pathname = usePathname();
+    const username = useUser();
 
     const links = [
         {
@@ -188,6 +192,21 @@ export function AppSidebar() {
                 </SidebarGroup>
             </SidebarContent>
             <SidebarFooter>
+                <SidebarGroup className="p-0">
+                    <SidebarGroupLabel>
+                        <span className="truncate">{username}</span>
+                    </SidebarGroupLabel>
+                    <SidebarGroupContent>
+                        <SidebarMenu>
+                            <SidebarMenuItem>
+                                <AppSettings />
+                                <SidebarMenuButton onClick={logOut}>
+                                    <LogOut /> Log out
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        </SidebarMenu>
+                    </SidebarGroupContent>
+                </SidebarGroup>
             </SidebarFooter>
         </Sidebar >
     )

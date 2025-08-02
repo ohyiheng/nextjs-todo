@@ -62,10 +62,11 @@ export async function getSessionFromDb(sessionId: string): Promise<Session | nul
     }
     const session: Session = {
         id: queryResult[ 0 ].id,
-        secretHash: queryResult[ 0 ].secret_hash,
-        createdAt: new Date(queryResult[ 0 ].created_at * 1000),
+        secretHash: queryResult[ 0 ].secretHash,
+        createdAt: new Date(queryResult[ 0 ].createdAt * 1000),
         username: queryResult[ 0 ].username
     }
+    console.log(session);
 
     // If expired
     if ((Date.now() - session.createdAt.getTime()) >= sessionTimeoutInSeconds * 1000) {
@@ -76,7 +77,7 @@ export async function getSessionFromDb(sessionId: string): Promise<Session | nul
     return session;
 }
 
-async function deleteSession(sessionId: string) {
+export async function deleteSession(sessionId: string) {
     await sql`DELETE FROM sessions WHERE id = ${sessionId}`;
 }
 

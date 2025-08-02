@@ -18,7 +18,7 @@ export async function getUserInfo(username: string): Promise<User | null> {
     try {
         const queryResult: {
             username: string,
-            password_hash: string,
+            passwordHash: string,
             email: string | null
         }[] = await sql`SELECT * FROM users WHERE username = ${username}`;
         if (queryResult.length == 0) {
@@ -26,7 +26,7 @@ export async function getUserInfo(username: string): Promise<User | null> {
         }
         return {
             username: queryResult[ 0 ].username,
-            passwordHash: queryResult[ 0 ].password_hash,
+            passwordHash: queryResult[ 0 ].passwordHash,
             email: queryResult[ 0 ].email,
         };
     } catch (error) {
@@ -63,7 +63,7 @@ export const verifySessionCookies = cache(async () => {
     const session = await validateSession(sessionToken);
 
     if (!session) {
-        redirect("/auth/login")
+        redirect("/auth/login");
     }
 
     return session;
