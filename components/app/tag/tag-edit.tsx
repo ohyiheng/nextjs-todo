@@ -6,17 +6,17 @@ import { useForm } from "react-hook-form";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../../ui/dialog";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "../../ui/drawer";
-import useProjects from "../../providers/ProjectsProvider";
 import TagForm from "./tag-form";
 import { useAtom, useAtomValue } from "jotai";
 import { activeTagAtom, editingTagAtom, tagEditOpenAtom } from "@/lib/atoms";
 import { useContext, useEffect, useState } from "react";
-import { deleteProject, deleteTask, editTag, updateProject } from "@/lib/actions";
+import { editTag } from "@/lib/actions";
 import { Trash2 } from "lucide-react";
 import { Button } from "../../ui/button";
 import { redirect } from "next/navigation";
 import useTags from "@/components/providers/TagsProvider";
 import { TasksDispatchContext } from "@/components/providers/TasksContext";
+import { useUser } from "@/components/providers/UserProvider";
 
 export default function TagEdit() {
     const { tags, setTags } = useTags();
@@ -25,6 +25,7 @@ export default function TagEdit() {
     const activeTag = useAtomValue(activeTagAtom);
     const [ deleteConfirmOpen, setDeleteConfirmOpen ] = useState(false);
     const dispatch = useContext(TasksDispatchContext);
+    const user = useUser();
 
     const form = useForm<TagFormType>({
         resolver: zodResolver(TagFormSchema),
@@ -48,9 +49,9 @@ export default function TagEdit() {
         }
 
         if (dispatch) {
-            dispatch({type: "rename-tag", oldTag: editingTag!, newTag: values.value})
+            dispatch({ type: "rename-tag", oldTag: editingTag!, newTag: values.value })
         }
-        await editTag(editingTag!, values.value, tagAlreadyExists)
+        await editTag(editingTag!, values.value, user, tagAlreadyExists)
 
         setTagEditOpen(false);
         if (editingTag === activeTag) {

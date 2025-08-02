@@ -1,7 +1,6 @@
 "use client";
 
-import { ProjectFormType, Project, SortByType } from "@/lib/definitions";
-import { getProjectById } from "@/lib/utils";
+import { ProjectFormType, Project } from "@/lib/definitions";
 import { arrayMove } from "@dnd-kit/sortable";
 import { createContext, Dispatch, useContext, useReducer } from "react";
 
@@ -19,6 +18,7 @@ type ProjectsAction = {
 
 type ProjectsContextType = {
     projects: Project[],
+    inboxId: number,
     dispatch: Dispatch<ProjectsAction>
 }
 
@@ -32,9 +32,10 @@ export function ProjectsProvider({
     children: React.ReactNode
 }) {
     const [ projectList, dispatch ] = useReducer(projectsReducer, projects);
+    const inboxId = projectList.find(project => project.isInbox)?.id;
 
     return (
-        <ProjectsContext value={{ projects: projectList, dispatch: dispatch }}>
+        <ProjectsContext value={{ projects: projectList, inboxId: inboxId!, dispatch: dispatch }}>
             {children}
         </ProjectsContext>
     )

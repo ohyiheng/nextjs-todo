@@ -1,14 +1,13 @@
 "use client";
 
-import { deleteProject, deleteTask } from "@/lib/actions";
-import { Ellipsis, SquarePen, Trash2 } from "lucide-react";
+import { deleteProject } from "@/lib/actions";
+import { SquarePen, Trash2 } from "lucide-react";
 import { Button } from "../../ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogTitle, DialogTrigger } from "../../ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../../ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../ui/dropdown-menu";
 import useProjects from "../../providers/ProjectsProvider";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { projectEditOpenAtom, editingProjectAtom, activeProjectAtom } from "@/lib/atoms";
-import { SidebarMenuAction } from "../../ui/sidebar";
 import { Project } from "@/lib/definitions";
 import { useState } from "react";
 import { redirect } from "next/navigation";
@@ -50,7 +49,10 @@ export default function ProjectDropdown({
                 </DropdownMenuContent>
             </DropdownMenu>
             <DialogContent>
-                <DialogTitle>Are you sure?</DialogTitle>
+                <DialogHeader>
+                    <DialogTitle>Are you sure?</DialogTitle>
+                    <DialogDescription>The {project.name} project and all of its tasks will be permanently deleted.</DialogDescription>
+                </DialogHeader>
                 <DialogFooter className="flex-row items-center justify-end gap-2">
                     <Button variant="secondary" onClick={() => setDeleteConfirmOpen(false)}>Cancel</Button>
                     <Button variant="destructive" onClick={async () => {

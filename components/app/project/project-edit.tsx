@@ -6,13 +6,12 @@ import { useForm } from "react-hook-form";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../../ui/dialog";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "../../ui/drawer";
-import DeleteButton from "../delete-button";
 import useProjects from "../../providers/ProjectsProvider";
 import ProjectForm from "./project-form";
 import { useAtom, useAtomValue } from "jotai";
 import { activeProjectAtom, editingProjectAtom, projectEditOpenAtom } from "@/lib/atoms";
 import { useEffect, useState } from "react";
-import { deleteProject, deleteTask, updateProject } from "@/lib/actions";
+import { deleteProject, updateProject } from "@/lib/actions";
 import { Trash2 } from "lucide-react";
 import { Button } from "../../ui/button";
 import { redirect } from "next/navigation";
@@ -26,11 +25,7 @@ export default function ProjectEdit() {
     const { dispatch } = useProjects();
 
     const form = useForm<ProjectFormType>({
-        resolver: zodResolver(ProjectFormSchema),
-        defaultValues: {
-            id: editingProject?.id,
-            name: editingProject?.name,
-        }
+        resolver: zodResolver(ProjectFormSchema)
     })
 
     async function onSubmit(values: ProjectFormType) {
@@ -51,6 +46,11 @@ export default function ProjectEdit() {
             form.reset({
                 id: editingProject?.id,
                 name: editingProject?.name,
+                createdAt: editingProject?.createdAt,
+                lastModifiedAt: new Date(),
+                sortBy: editingProject?.sortBy,
+                sortOrder: editingProject?.sortOrder,
+                isInbox: editingProject?.isInbox
             });
         }
     }, [ editingProject ])

@@ -25,18 +25,48 @@ import {
 } from "@/components/ui/sidebar"
 import SettingsAppearance from "./settings-appearance"
 import SettingsUser from "./settings-user"
+import { useIsMobile } from "@/hooks/use-mobile"
+import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
 const data = {
     nav: [
-        { name: "Appearance", icon: Paintbrush },
-        { name: "User", icon: User },
+        { name: "Appearance", icon: Paintbrush, content: <SettingsAppearance/> },
+        { name: "User", icon: User, content: <SettingsUser/> },
     ],
 }
 
 export function AppSettings() {
-    const [ open, setOpen ] = React.useState(true);
+    const [ open, setOpen ] = React.useState(false);
     const [ activeSettings, setActiveSettings ] = React.useState(data.nav[ 0 ].name);
+    const isMobile = useIsMobile();
 
+    if (isMobile) return (
+        <Drawer open={open} onOpenChange={setOpen}>
+            <DrawerTrigger asChild>
+                <SidebarMenuButton> <Settings /> Options </SidebarMenuButton>
+            </DrawerTrigger>
+            <DrawerContent>
+                <DrawerHeader>
+                    <DrawerTitle>Settings</DrawerTitle>
+                    <DrawerDescription className="sr-only">
+                        Customize your settings here.
+                    </DrawerDescription>
+                </DrawerHeader>
+                <DrawerFooter>
+                <Accordion type="single" collapsible defaultValue={activeSettings}>
+                    {data.nav.map(item => (
+                        <AccordionItem key={item.name} value={item.name}>
+                            <AccordionTrigger>{item.name}</AccordionTrigger>
+                            <AccordionContent>{item.content}</AccordionContent>
+                        </AccordionItem>
+                    ))}
+                </Accordion>
+
+                </DrawerFooter>
+            </DrawerContent>
+        </Drawer>
+    )
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
@@ -76,8 +106,7 @@ export function AppSettings() {
                             </div>
                         </header>
                         <div className="text-sm">
-                            {activeSettings === "Appearance" && <SettingsAppearance />}
-                            {activeSettings === "User" && <SettingsUser />}
+                            {data.nav.find(item => item.name === activeSettings)?.content}
                         </div>
                     </main>
                 </SidebarProvider>

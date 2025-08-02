@@ -35,6 +35,7 @@ export default function ProjectSortingSelect() {
             }
         ];
 
+    if (!activeProject) return undefined;
     return (
         <Popover>
             <PopoverTrigger asChild>

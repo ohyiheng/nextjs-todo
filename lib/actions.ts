@@ -4,7 +4,6 @@ import { ProjectFormType, TaskFormType } from "./definitions";
 import postgres from "postgres";
 import { revalidatePath } from "next/cache";
 import { SortByType } from "./definitions";
-import { setDefaultAutoSelectFamily } from "net";
 
 const sql = postgres(
     "postgres://postgres:example@localhost:5432/postgres",
@@ -18,7 +17,7 @@ const sql = postgres(
     },
 );
 
-export async function addTask(task: TaskFormType) {
+export async function addTask(task: TaskFormType, username: string) {
     try {
         await sql`INSERT INTO tasks (
             id,
@@ -37,6 +36,10 @@ export async function addTask(task: TaskFormType) {
             ${task.dueDate},
             ${task.projectId}
          )`;
+
+        task.tags.forEach(async (tag) => {
+            await sql`INSERT INTO tasks_tags VALUES (${task.id}, ${tag}, ${username})`
+        });
     } catch (error) {
         console.error(error);
     }
@@ -44,7 +47,7 @@ export async function addTask(task: TaskFormType) {
     revalidatePath("/app/project/[id]", "page");
 }
 
-export async function updateTask(task: TaskFormType) {
+export async function updateTask(task: TaskFormType, username: string) {
     try {
         await sql`UPDATE tasks SET
             name = ${task.name},
@@ -57,7 +60,7 @@ export async function updateTask(task: TaskFormType) {
 
         await sql`DELETE FROM tasks_tags WHERE task_id = ${task.id}`;
         for (let i = 0; i < task.tags.length; i++) {
-            await sql`INSERT INTO tasks_tags VALUES (${task.id}, ${task.tags[i]})`;
+            await sql`INSERT INTO tasks_tags VALUES (${task.id}, ${task.tags[ i ]}, ${username})`;
         }
     } catch (error) {
         console.error(error);
@@ -91,15 +94,15 @@ export async function completeTask(id: string, completed: boolean) {
 }
 
 export async function getNextProjectId() {
-    const queryResult = await sql<{newId: string}[]>`SELECT nextval(pg_get_serial_sequence('projects', 'id')) as new_id`
-    const id: string = queryResult[0].newId;
+    const queryResult = await sql<{ newId: string }[]>`SELECT nextval(pg_get_serial_sequence('projects', 'id')) as new_id`
+    const id: string = queryResult[ 0 ].newId;
     return parseInt(id);
 }
 
-export async function addProject(project: ProjectFormType) {
+export async function addProject(project: ProjectFormType, username: string) {
     try {
-        await sql`INSERT INTO projects (id, name)
-            VALUES (${project.id}, ${project.name})`;
+        await sql`INSERT INTO projects (id, name, owner)
+            VALUES (${project.id}, ${project.name}, ${username})`;
     } catch (error) {
         console.error(error);
     }
@@ -142,28 +145,29 @@ export async function deleteProject(id: number) {
     }
 }
 
-export async function addTag(tag: string) {
+export async function addTag(tag: string, username: string) {
     try {
         await sql`INSERT INTO tags
-            VALUES (${tag})`;
+            VALUES (${tag}, ${username})`;
     } catch (error) {
         console.error(error);
     }
     revalidatePath(`/app/tag/${tag}`);
 }
 
-export async function editTag(oldTag: string, newTag: string, tagAlreadyExists: boolean) {
+export async function editTag(oldTag: string, newTag: string, username: string, tagAlreadyExists: boolean) {
     try {
-        sql.begin(async () => {
+        await sql.begin(async () => {
             if (!tagAlreadyExists) {
-                await sql`INSERT INTO tags VALUES (${newTag})`
+                await addTag(newTag, username);
             }
             await sql`UPDATE tasks_tags
                 SET tag_id = ${newTag}
                 WHERE task_id NOT IN (SELECT task_id FROM tasks_tags WHERE tag_id = ${newTag})
-                AND tag_id = ${oldTag}`
-            await sql`DELETE FROM tasks_tags WHERE tag_id = ${oldTag}`
-            await sql`DELETE FROM tags WHERE id = ${oldTag}`
+                AND tag_id = ${oldTag}
+                AND tag_owner = ${username}`;
+            await sql`DELETE FROM tasks_tags WHERE tag_id = ${oldTag} AND tag_owner = ${username}`;
+            await deleteTag(oldTag, username);
         })
     } catch (error) {
         console.error(error);
@@ -171,9 +175,9 @@ export async function editTag(oldTag: string, newTag: string, tagAlreadyExists: 
     revalidatePath(`/app/tag/${newTag}`);
 }
 
-export async function deleteTag(id: string) {
+export async function deleteTag(id: string, username: string) {
     try {
-        await sql`DELETE FROM tags WHERE id = ${id}`
+        await sql`DELETE FROM tags WHERE id = ${id} AND owner = ${username}`;
     } catch (error) {
         console.error(error)
     }

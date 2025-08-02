@@ -66,8 +66,7 @@ export async function getSessionFromDb(sessionId: string): Promise<Session | nul
         createdAt: new Date(queryResult[ 0 ].createdAt * 1000),
         username: queryResult[ 0 ].username
     }
-    console.log(session);
-
+    
     // If expired
     if ((Date.now() - session.createdAt.getTime()) >= sessionTimeoutInSeconds * 1000) {
         await deleteSession(sessionId);

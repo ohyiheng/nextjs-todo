@@ -16,10 +16,10 @@ import {
     useSidebar,
 } from "@/components/ui/sidebar"
 import useProjects from "../providers/ProjectsProvider"
-import { Calendar, Ellipsis, Hash, Inbox, LogOut, Plus, Settings, SquareGanttChart, Sun, Tag } from "lucide-react";
+import { Calendar, CircleCheckBig, Ellipsis, Hash, Inbox, LogOut, Plus, SquareGanttChart, Sun } from "lucide-react";
 import Link from "next/link";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { activeProjectAtom, activeTagAtom, addTaskDialogOpenAtom, projectAddOpenAtom } from "@/lib/atoms";
 import ProjectDropdown from "./project/project-dropdown";
 import { usePathname } from "next/navigation";
@@ -58,16 +58,27 @@ export function AppSidebar() {
         },
     ];
 
-    const projectsWithoutInbox = projects.filter(project => project.id !== 1);
+    const projectsWithoutInbox = projects.filter(project => !project.isInbox);
     const { state, setOpenMobile } = useSidebar();
 
     return (
         <Sidebar collapsible="icon">
             <SidebarHeader>
-                <SidebarMenuButton onClick={() => setAddTaskDialogOpen(true)}>
-                    <Plus />
-                    Add task
-                </SidebarMenuButton>
+                <SidebarMenu>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton size="lg" asChild>
+                            <Link href="/">
+                                <CircleCheckBig className="!size-5" />
+                                <span className="text-base font-bold">Tugas</span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton onClick={() => setAddTaskDialogOpen(true)}>
+                            <Plus /> Add task
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                </SidebarMenu>
             </SidebarHeader>
             <SidebarContent>
                 <SidebarGroup>
@@ -200,7 +211,10 @@ export function AppSidebar() {
                         <SidebarMenu>
                             <SidebarMenuItem>
                                 <AppSettings />
-                                <SidebarMenuButton onClick={logOut}>
+                                <SidebarMenuButton
+                                    className="hover:text-destructive focus:text-destructive"
+                                    onClick={logOut}
+                                >
                                     <LogOut /> Log out
                                 </SidebarMenuButton>
                             </SidebarMenuItem>

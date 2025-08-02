@@ -2,9 +2,9 @@
 
 import clsx from "clsx";
 import { useContext, useEffect, useState } from "react"
-import type { Project, Task } from "@/lib/definitions";
+import type { Task } from "@/lib/definitions";
 import { TasksContext, TasksDispatchContext } from "../providers/TasksContext";
-import { Calendar, ChevronRight, Edit, Ellipsis, Plus, SquarePen, Target, Trash, Trash2 } from "lucide-react";
+import { Calendar, ChevronRight, Ellipsis, Plus, SquarePen, Target, Trash2 } from "lucide-react";
 import { Checkbox } from "../ui/checkbox";
 import { completeTask, deleteTask } from "@/lib/actions";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
@@ -15,10 +15,8 @@ import { DateTime } from "luxon";
 import { Button } from "../ui/button";
 import TaskEdit from "./task-edit";
 import { Card, CardContent } from "../ui/card";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { useIsMobile } from "@/hooks/use-mobile";
-import DeleteButton from "./delete-button";
 import { Dialog, DialogContent, DialogFooter, DialogTitle, DialogTrigger } from "../ui/dialog";
 import useProjects from "../providers/ProjectsProvider";
 import { usePathname } from "next/navigation";
@@ -158,10 +156,12 @@ export function Task({
 
 export function TaskContainer({
     filter,
+    isInbox,
     projectId,
     tagId
 }: {
     filter?: "today" | "upcoming"
+    isInbox?: boolean,
     projectId?: number,
     tagId?: string
 }) {
@@ -181,6 +181,9 @@ export function TaskContainer({
             filteredTasks = tasks.filter(taskInFuture);
             break;
     }
+
+    const { inboxId } = useProjects();
+    if (isInbox) projectId = inboxId;
     if (projectId) filteredTasks = tasks.filter(task => task.projectId === projectId);
     if (tagId) filteredTasks = tasks.filter(task => task.tags?.some(tag => tag === tagId));
 

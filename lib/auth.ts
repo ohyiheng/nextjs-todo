@@ -107,7 +107,10 @@ export async function logOut() {
 async function createUser(username: string, password: string) {
     try {
         const passwordHash = await argon2.hash(password);
-        await sql`INSERT INTO users VALUES(${username}, ${passwordHash})`;
+        await sql.begin(async () => {
+            await sql`INSERT INTO users VALUES(${username}, ${passwordHash})`;
+            await sql`INSERT INTO projects (name, is_inbox, owner) VALUES ('Inbox', true, ${username})`;
+        })
         return await createSession(username);
     } catch (error) {
         console.log(error);
