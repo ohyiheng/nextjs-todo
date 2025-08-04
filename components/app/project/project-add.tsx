@@ -12,7 +12,6 @@ import { useAtom } from "jotai";
 import { projectAddOpenAtom } from "@/lib/atoms";
 import { useEffect } from "react";
 import { addProject } from "@/lib/actions";
-import { getNextProjectId } from "@/lib/actions";
 import { useUser } from "@/components/providers/UserProvider";
 
 export default function ProjectAdd() {
@@ -34,14 +33,13 @@ export default function ProjectAdd() {
     })
 
     async function onSubmit(values: ProjectFormType) {
-        const id = await getNextProjectId();
+        const id = await addProject({ ...values }, user);
         if (dispatch) {
             dispatch({
                 type: "add",
-                newValues: { ...values, id: id }
+                newValues: { ...values, id: id! }
             });
         }
-        await addProject({ ...values, id: id }, user);
         setProjectAddOpen(false);
     }
 
