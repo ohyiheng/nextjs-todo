@@ -7,13 +7,16 @@ import { TagsProvider } from "./TagsProvider";
 import { verifySessionCookies } from "@/lib/data-access-layer";
 import UserProvider from "./UserProvider";
 import TasksProvider from "./TasksContext";
+import { redirect } from "next/navigation";
 
 export default async function Providers({
     children
 }: {
     children: React.ReactNode
 }) {
-    const { username } = await verifySessionCookies();
+    const session = await verifySessionCookies();
+    if (!session) redirect("/auth/login");
+    const { username } = session;
     const tags = await fetchTags(username);
     const projects = await fetchProjects(username);
     const tasks = await fetchTasks(username);

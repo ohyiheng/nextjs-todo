@@ -2,7 +2,6 @@ import "server-only";
 
 import { cookies } from "next/headers";
 import { cache } from "react";
-import { redirect } from "next/navigation";
 import * as argon2 from "argon2";
 import { getSessionFromDb, Session } from "@/lib/session";
 import { hashSecret, compareHashConstantTime } from "@/lib/utils";
@@ -57,14 +56,10 @@ export const verifySessionCookies = cache(async () => {
     const sessionToken = cookieStore.get("session_token")?.value;
 
     if (!sessionToken) {
-        redirect("/auth/login");
+        return null;
     }
 
     const session = await validateSession(sessionToken);
-
-    if (!session) {
-        redirect("/auth/login");
-    }
 
     return session;
 })

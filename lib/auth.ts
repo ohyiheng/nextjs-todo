@@ -98,7 +98,9 @@ export async function signUp(prevState: LoginFormState, formData: FormData): Pro
 }
 
 export async function logOut() {
-    const { id } = await verifySessionCookies();
+    const session = await verifySessionCookies();
+    if (!session) redirect("/auth/login");
+    const { id } = session;
 
     (await cookies()).delete("session_token");
     await deleteSession(id);
