@@ -70,7 +70,6 @@ export function TaskItem({
                 <div className="flex items-center gap-4 grow">
                     <Checkbox checked={task.completed}
                         onCheckedChange={async () => {
-                            console.log(task.completed);
                             await completeTask(task.id, task.completed);
                             task.completed = !task.completed;
                         }}
@@ -196,8 +195,6 @@ export function TaskContainer({
     useEffect(() => {
         setMounted(true);
     }, []);
-
-    console.log(filteredTasks);
 
     if (!mounted) return undefined;
     if (!tasks) return undefined;

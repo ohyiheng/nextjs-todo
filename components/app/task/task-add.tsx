@@ -45,7 +45,6 @@ export default function AddTask() {
     })
 
     const onSubmit = async (values: TaskFormType) => {
-        console.log(values);
         if (dispatch) {
             dispatch({ type: "add", newValues: values });
         } else {
