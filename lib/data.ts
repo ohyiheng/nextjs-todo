@@ -2,17 +2,26 @@ import { Project, Task } from "@/lib/definitions";
 
 import postgres from "postgres";
 
+let { POSTGRES_USER } = process.env;
+const { POSTGRES_PASSWORD, POSTGRES_CONTAINER_NAME } = process.env;
+
+if (!POSTGRES_USER) POSTGRES_USER = "postgres";
+if (!POSTGRES_PASSWORD) {
+    throw new Error("POSTGRES_PASSWORD is not set")
+}
+
 const sql = postgres(
-    "postgres://postgres:example@localhost:5432/postgres",
+    `postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_CONTAINER_NAME}:5432/postgres`,
     {
         idle_timeout: 10,
         transform: {
             ...postgres.camel,
-            undefined: null
+            undefined: null,
         },
         max: 10
     },
 );
+
 /**
  * Fetches all projects from the database and constructs a hierarchical tree structure
  * of projects and their sub-projects up to a maximum depth of 5 levels.

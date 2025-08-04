@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { SortByType } from "./definitions";
 
 const sql = postgres(
-    "postgres://postgres:example@localhost:5432/postgres",
+    "postgres://postgres:example@postgres:5432/postgres",
     {
         idle_timeout: 10,
         transform: {
