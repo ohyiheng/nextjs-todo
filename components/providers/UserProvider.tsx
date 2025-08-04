@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext } from "react";
 
 const UserContext = createContext<string | undefined>(undefined);
 
@@ -11,10 +11,8 @@ export default function UserProvider({
     value: string
     children: React.ReactNode
 }) {
-    const [ user, setUser ] = useState(value);
-
     return (
-        <UserContext value={user}>
+        <UserContext value={value}>
             {children}
         </UserContext>
     )

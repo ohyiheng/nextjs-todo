@@ -3,7 +3,6 @@
 import { MouseEventHandler, useState } from "react";
 import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "../ui/dialog";
-import { Trash, Trash2 } from "lucide-react";
 
 export default function DeleteButton({
     onClick,

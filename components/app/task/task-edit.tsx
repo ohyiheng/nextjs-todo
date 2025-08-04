@@ -5,14 +5,14 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form";
 import React, { Dispatch, useContext, useState } from "react";
 import { deleteTask, updateTask } from "@/lib/actions";
-import { TasksDispatchContext } from "../providers/TasksContext";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
+import { TasksDispatchContext } from "../../providers/TasksContext";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../../ui/dialog";
 import TaskForm from "./task-form";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "../ui/drawer";
-import { Button } from "../ui/button";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "../../ui/drawer";
+import { Button } from "../../ui/button";
 import { Trash2 } from "lucide-react";
-import { useUser } from "../providers/UserProvider";
+import { useUser } from "../../providers/UserProvider";
 
 export default function TaskEdit({
     task,

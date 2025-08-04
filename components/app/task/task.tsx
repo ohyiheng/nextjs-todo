@@ -3,30 +3,28 @@
 import clsx from "clsx";
 import { useContext, useEffect, useState } from "react"
 import type { Task } from "@/lib/definitions";
-import { TasksContext, TasksDispatchContext } from "../providers/TasksContext";
-import { Calendar, ChevronRight, Ellipsis, Plus, SquarePen, Target, Trash2 } from "lucide-react";
-import { Checkbox } from "../ui/checkbox";
+import { TasksContext, TasksDispatchContext } from "../../providers/TasksContext";
+import { Calendar, ChevronRight, Ellipsis, Plus, SquareGanttChart, SquarePen, Target, Trash2 } from "lucide-react";
+import { Checkbox } from "../../ui/checkbox";
 import { completeTask, deleteTask } from "@/lib/actions";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../../ui/collapsible";
 import { computeDueDateColor, computeStartDateColor, getTaskSortingPredicate, taskHasStarted, partition, taskInFuture, getProjectById } from "@/lib/utils";
 import { useAtomValue, useSetAtom } from "jotai";
 import { activeProjectAtom, addTaskDialogOpenAtom } from "@/lib/atoms";
 import { DateTime } from "luxon";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import TaskEdit from "./task-edit";
-import { Card, CardContent } from "../ui/card";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import { Card, CardContent } from "../../ui/card";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../../ui/dropdown-menu";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Dialog, DialogContent, DialogFooter, DialogTitle, DialogTrigger } from "../ui/dialog";
-import useProjects from "../providers/ProjectsProvider";
+import { Dialog, DialogContent, DialogFooter, DialogTitle, DialogTrigger } from "../../ui/dialog";
+import useProjects from "../../providers/ProjectsProvider";
 import { usePathname } from "next/navigation";
 
-export function Task({
-    id,
+export function TaskItem({
     task,
     showProject = false,
 }: {
-    id: string,
     task: Task,
     showProject: boolean
 }) {
@@ -110,7 +108,9 @@ export function Task({
                 </div>
                 <div className="flex items-center gap-2">
                     {showProject &&
-                         <p className="text-muted-foreground">{getProjectById(projects, task.projectId)?.name}</p>
+                        <p className="text-muted-foreground flex items-center gap-1">
+                            <SquareGanttChart className="size-4" /> {getProjectById(projects, task.projectId)?.name}
+                        </p>
                     }
                     {!isMobile &&
                         <Dialog>
@@ -166,51 +166,42 @@ export function TaskContainer({
     tagId?: string
 }) {
     const tasks = useContext(TasksContext);
-    if (!tasks) {
-        return;
-    }
-    
-    const page = usePathname().split('/')[2];
+    const page = usePathname()?.split('/')[ 2 ];
 
     let filteredTasks = tasks;
     switch (page) {
         case "today":
-            filteredTasks = tasks.filter(taskHasStarted);
+            filteredTasks = tasks?.filter(taskHasStarted);
             break;
         case "upcoming":
-            filteredTasks = tasks.filter(taskInFuture);
+            filteredTasks = tasks?.filter(taskInFuture);
             break;
     }
 
     const { inboxId } = useProjects();
     if (isInbox) projectId = inboxId;
-    if (projectId) filteredTasks = tasks.filter(task => task.projectId === projectId);
-    if (tagId) filteredTasks = tasks.filter(task => task.tags?.some(tag => tag === tagId));
+    if (projectId) filteredTasks = tasks?.filter(task => task.projectId === projectId);
+    if (tagId) filteredTasks = tasks?.filter(task => task.tags?.some(tag => tag === tagId));
 
-    const [ pendingTasks, completedTasks ] = partition(filteredTasks, task => !task.completed);
+    let pendingTasks, completedTasks;
+    if (filteredTasks) {
+        [ pendingTasks, completedTasks ] = partition(filteredTasks, task => !task.completed);
+    }
     const activeProject = useAtomValue(activeProjectAtom);
     const setAddTaskDialogOpen = useSetAtom(addTaskDialogOpenAtom);
-    const showProject = ["upcoming", "today", "tag"].includes(page);
 
-    let sortingPredicate: (a: Task, b: Task) => number;
-    sortingPredicate = getTaskSortingPredicate(activeProject ?? undefined);
+    const sortingPredicate = getTaskSortingPredicate(activeProject ?? undefined);
 
     const [ mounted, setMounted ] = useState(false);
     useEffect(() => {
         setMounted(true);
     }, []);
 
-    if (!mounted) return null;
-
+    if (!mounted) return undefined;
+    if (!tasks) return undefined;
     return (
-        <div className="space-y-6">
-            {pendingTasks.length > 0 &&
-                <TaskSection>
-                    {pendingTasks.sort(sortingPredicate).map(task => (
-                        <Task key={task.id} id={task.id} task={task} showProject={showProject} />
-                    ))}
-                </TaskSection>
-            }
+        <div className="space-y-6 w-full lg:w-4/5 xl:w-3/5 mx-auto">
+            <TaskSection tasks={pendingTasks} sortFn={sortingPredicate} showProject={!activeProject} />
             {filter !== "upcoming" &&
                 <Button variant="outline" className="w-full cursor-pointer"
                     onClick={() => setAddTaskDialogOpen(true)}
@@ -219,39 +210,58 @@ export function TaskContainer({
                     Add task
                 </Button>
             }
-            {completedTasks.length > 0 &&
-                <Collapsible defaultOpen={false}>
-                    <CollapsibleTrigger asChild>
-                        <button className="mb-2 flex items-center gap-1 cursor-pointer group">
-                            <p className="text-sm text-muted-foreground font-medium">Completed</p>
-                            <ChevronRight className={clsx(
-                                "stroke-muted-foreground",
-                                "duration-100 ease-in-out",
-                                "group-data-[state=open]:rotate-90"
-                            )} />
-                        </button>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent>
-                        <TaskSection>
-                            {completedTasks.map(task => (
-                                <Task key={task.id} id={task.id} task={task} showProject={showProject} />
-                            ))}
-                        </TaskSection>
-                    </CollapsibleContent>
-                </Collapsible>
-            }
-        </div>
+            <TaskSection tasks={completedTasks} collapsible={true} name="Completed" showProject={!activeProject} />
+        </div >
     )
 }
 
 function TaskSection({
-    children,
+    tasks,
+    sortFn,
+    showProject = true,
+    collapsible = false,
+    defaultOpen = false,
+    name,
 }: {
-    children?: React.ReactNode
+    tasks?: Task[],
+    sortFn?: (a: Task, b: Task) => number,
+    showProject?: boolean,
+    collapsible?: boolean,
+    defaultOpen?: boolean,
+    name?: string,
 }) {
+    if (!tasks || tasks.length === 0) return undefined;
+
+    if (sortFn) tasks.sort(sortFn);
+
+    if (collapsible) return (
+        <Collapsible defaultOpen={defaultOpen}>
+            <CollapsibleTrigger asChild>
+                <button className="mb-2 flex items-center gap-1 cursor-pointer group">
+                    <p className="text-sm text-muted-foreground font-medium">
+                        {name}
+                    </p>
+                    <ChevronRight className={clsx(
+                        "stroke-muted-foreground",
+                        "duration-100 ease-in-out",
+                        "group-data-[state=open]:rotate-90"
+                    )} />
+                </button>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+                <div className="space-y-2">
+                    {tasks.map(task => (
+                        <TaskItem key={task.id} task={task} showProject={showProject} />
+                    ))}
+                </div>
+            </CollapsibleContent>
+        </Collapsible>
+    )
     return (
         <div className="space-y-2">
-            {children}
+            {tasks.map(task => (
+                <TaskItem key={task.id} task={task} showProject={showProject} />
+            ))}
         </div>
     )
 }

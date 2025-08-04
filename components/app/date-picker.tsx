@@ -2,8 +2,9 @@
 
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Calendar } from "../ui/calendar";
-import { CalendarIcon, LucideIcon, Target } from "lucide-react";
+import { CalendarIcon, LucideIcon } from "lucide-react";
 import { Button } from "../ui/button";
+import { OnSelectHandler } from "react-day-picker";
 
 export function DatePicker({
     initialDate,
@@ -13,7 +14,7 @@ export function DatePicker({
     size = "default"
 }: {
     initialDate: Date | null,
-    onChange: (...event: any[]) => void,
+    onChange: OnSelectHandler<Date | undefined>,
     placeholder?: string
     icon?: LucideIcon,
     size?: "default" | "sm"

@@ -67,7 +67,7 @@ export default function TagEdit() {
                 value: editingTag ?? undefined
             });
         }
-    }, [ editingTag ])
+    }, [ editingTag, form ])
 
     if (!editingTag) return null;
     if (isMobile) return (

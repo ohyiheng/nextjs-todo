@@ -1,4 +1,4 @@
-import { TaskContainer } from "@/components/app/task";
+import { TaskContainer } from "@/components/app/task/task";
 
 export default async function Page({
     params

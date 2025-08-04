@@ -2,19 +2,19 @@
 
 import { TaskFormType } from "@/lib/definitions";
 import { UseFormReturn } from "react-hook-form";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
-import { Input } from "../ui/input";
-import { Textarea } from "../ui/textarea";
-import ProjectCombobox from "./project/project-combobox";
-import { DatePicker } from "./date-picker";
-import { Button } from "../ui/button";
-import PrioritySelect from "./priority-select";
-import { Separator } from "../ui/separator";
-import CancelButton from "./cancel-button";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../../ui/form";
+import { Input } from "../../ui/input";
+import { Textarea } from "../../ui/textarea";
+import ProjectCombobox from "../project/project-combobox";
+import { DatePicker } from "../date-picker";
+import { Button } from "../../ui/button";
+import PrioritySelect from "../priority-select";
+import { Separator } from "../../ui/separator";
+import CancelButton from "../cancel-button";
 import { Target } from "lucide-react";
 import { SetStateAction } from "jotai";
-import { MultiSelect, MultiSelectTrigger } from "../ui/multiselect";
-import useTags from "../providers/TagsProvider";
+import { MultiSelect, MultiSelectTrigger } from "../../ui/multiselect";
+import useTags from "../../providers/TagsProvider";
 
 
 export default function TaskForm({

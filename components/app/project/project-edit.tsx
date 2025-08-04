@@ -53,7 +53,7 @@ export default function ProjectEdit() {
                 isInbox: editingProject?.isInbox
             });
         }
-    }, [ editingProject ])
+    }, [ editingProject, form ])
 
     if (!editingProject) return null;
     if (isMobile) return (

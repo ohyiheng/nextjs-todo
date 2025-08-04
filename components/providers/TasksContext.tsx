@@ -52,7 +52,7 @@ function tasksReducer(prevTasks: Task[] | undefined, action: TasksAction) {
             return arrayMove(prevTasks, action.oldIndex, action.newIndex);
         }
         case "edit": {
-            let task = getTaskById(prevTasks, action.newValues.id);
+            const task = getTaskById(prevTasks, action.newValues.id);
             task!.name = action.newValues.name;
             task!.description = action.newValues.description;
             task!.priority = action.newValues.priority;

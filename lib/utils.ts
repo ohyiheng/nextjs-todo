@@ -21,8 +21,8 @@ export function compareHashConstantTime(a: Uint8Array, b: Uint8Array) {
 }
 
 export function partition<T>(array: T[], predicate: (x: T) => boolean) {
-    let [ pass, fail ]: [ T[], T[] ] = [ Array(), Array() ];
-    for (let item of array) {
+    const [ pass, fail ]: [ T[], T[] ] = [ [], [] ];
+    for (const item of array) {
         if (predicate(item)) {
             pass.push(item);
         } else {
