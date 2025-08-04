@@ -93,7 +93,7 @@ async function seedTasksTags() {
         tag_owner TEXT,
 
         PRIMARY KEY (task_id, tag_id, tag_owner),
-        FOREIGN KEY (tag_id, tag_owner) REFERENCES tags(id, owner)
+        FOREIGN KEY (tag_id, tag_owner) REFERENCES tags(id, owner) ON DELETE CASCADE
     )`;
 
     await sql`CREATE OR REPLACE FUNCTION check_tag_owner()
