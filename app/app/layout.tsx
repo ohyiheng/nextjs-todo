@@ -22,7 +22,7 @@ export default async function Layout({
                 <AppSidebar />
                 <SidebarInset>
                     <div className="w-full">
-                        <header className="p-3 flex justify-between items-center gap-2">
+                        <header className="p-3 min-h-16 flex justify-between items-center gap-2">
                             <SidebarTrigger />
                             <AppTitle />
                             <div className="flex items-center gap-2">
