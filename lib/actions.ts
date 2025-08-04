@@ -1,21 +1,9 @@
 "use server";
 
 import { ProjectFormType, TaskFormType } from "./definitions";
-import postgres from "postgres";
 import { revalidatePath } from "next/cache";
 import { SortByType } from "./definitions";
-
-const sql = postgres(
-    "postgres://postgres:example@postgres:5432/postgres",
-    {
-        idle_timeout: 10,
-        transform: {
-            ...postgres.camel,
-            undefined: null
-        },
-        max: 100
-    },
-);
+import sql from "./db";
 
 export async function addTask(task: TaskFormType, username: string) {
     try {
