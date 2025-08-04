@@ -66,10 +66,10 @@ export function AppSidebar() {
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton size="lg" asChild>
+                        <SidebarMenuButton size={state == "collapsed" ? "default" : "lg"} asChild>
                             <Link href="/">
-                                <CircleCheckBig className="!size-5" />
-                                <span className="text-base font-bold">Tugas</span>
+                                <CircleCheckBig className={state == "collapsed" ? undefined : "!size-5"} />
+                                <span className="text-lg font-semibold">Tugas</span>
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
