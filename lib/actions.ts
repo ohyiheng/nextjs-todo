@@ -81,16 +81,19 @@ export async function completeTask(id: string, completed: boolean) {
     revalidatePath("/app/project/[id]", "page");
 }
 
-export async function getNextProjectId() {
-    const queryResult = await sql<{ newId: string }[]>`SELECT nextval(pg_get_serial_sequence('projects', 'id')) as new_id`
-    const id: string = queryResult[ 0 ].newId;
-    return parseInt(id);
-}
+// export async function getNextProjectId() {
+//     const queryResult = await sql<{ id: string }[]>`SELECT currval(pg_get_serial_sequence('projects', 'id')) as id`
+//     const nextId = parseInt(queryResult[ 0 ].id) + 1;
+//     return nextId;
+// }
 
 export async function addProject(project: ProjectFormType, username: string) {
     try {
-        await sql`INSERT INTO projects (id, name, owner)
-            VALUES (${project.id}, ${project.name}, ${username})`;
+        const insertion = await sql<{id: number}[]>`INSERT INTO projects (name, owner)
+            VALUES (${project.name}, ${username})
+            RETURNING id`;
+
+        return insertion[0].id;
     } catch (error) {
         console.error(error);
     }
