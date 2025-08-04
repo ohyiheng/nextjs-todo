@@ -32,9 +32,9 @@ export default function AppTitle() {
     }
 
     return (
-        <div className="lg:absolute lg:left-1/2 lg:-translate-x-1/2 md:max-w-3/5 flex items-center gap-3 truncate">
+        <div className="lg:absolute lg:left-1/2 lg:-translate-x-1/2 lg:max-w-3/5 flex items-center grow gap-3 truncate">
             <div className="flex items-center gap-1 text-lg md:text-xl lg:text-2xl truncate">
-                {activeTag && <Hash />}
+                {activeTag && <Hash className="size-5 lg:size-6" />}
                 <h1 className="truncate">{title ?? "Tugas"}</h1>
             </div>
         </div>

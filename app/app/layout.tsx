@@ -20,9 +20,9 @@ export default async function Layout({
         <Providers>
             <SidebarProvider>
                 <AppSidebar />
-                <SidebarInset>
-                    <div className="w-full">
-                        <header className="p-3 min-h-16 flex justify-between items-center gap-2">
+                <SidebarInset className="max-w-full">
+                    <div className="w-full max-w-full h-full flex flex-col">
+                        <header className="p-3 min-h-16 max-w-full flex justify-between items-center gap-3">
                             <SidebarTrigger />
                             <AppTitle />
                             <div className="flex items-center gap-2">
@@ -30,7 +30,7 @@ export default async function Layout({
                                 <ProjectSortingSelect />
                             </div>
                         </header>
-                        <main className="p-3 m-auto">
+                        <main className="p-3 m-auto w-full grow">
                             <ActiveItemUpdater />
                             {children}
                         </main>

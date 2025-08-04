@@ -158,12 +158,12 @@ export function TaskContainer({
     filter,
     isInbox,
     projectId,
-    tagId
+    tagId,
 }: {
     filter?: "today" | "upcoming"
     isInbox?: boolean,
     projectId?: number,
-    tagId?: string
+    tagId?: string,
 }) {
     const tasks = useContext(TasksContext);
     const page = usePathname()?.split('/')[ 2 ];
@@ -197,8 +197,23 @@ export function TaskContainer({
         setMounted(true);
     }, []);
 
+    console.log(filteredTasks);
+
     if (!mounted) return undefined;
     if (!tasks) return undefined;
+    if (!filteredTasks || filteredTasks.length === 0) return (
+        <div className="w-full h-full flex justify-center items-center">
+            <div className="flex flex-col items-center gap-4">
+                <span className="text-sm text-muted-foreground">No tasks found, add one?</span>
+                <Button variant="outline" className="w-full cursor-pointer"
+                    onClick={() => setAddTaskDialogOpen(true)}
+                >
+                    <Plus />
+                    Add task
+                </Button>
+            </div>
+        </div>
+    )
     return (
         <div className="space-y-6 w-full lg:w-4/5 xl:w-3/5 mx-auto">
             <TaskSection tasks={pendingTasks} sortFn={sortingPredicate} showProject={!activeProject} />
