@@ -8,6 +8,7 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/s
 import ProjectEdit from "@/components/app/project/project-edit";
 import ProjectAdd from "@/components/app/project/project-add";
 import TagEdit from "@/components/app/tag/tag-edit";
+import MainMoreOptions from "@/components/app/main-more-options";
 
 export default async function Layout({
     children,
@@ -21,12 +22,13 @@ export default async function Layout({
                 <AppSidebar />
                 <SidebarInset>
                     <div className="w-full">
-                        <header className="p-3 flex justify-between items-center">
-                            <div className="flex items-center gap-4 grow truncate">
-                                <SidebarTrigger />
-                                <AppTitle />
+                        <header className="p-3 flex justify-between items-center gap-2">
+                            <SidebarTrigger />
+                            <AppTitle />
+                            <div className="flex items-center gap-2">
+                                <MainMoreOptions />
+                                <ProjectSortingSelect />
                             </div>
-                            <ProjectSortingSelect />
                         </header>
                         <main className="p-3 m-auto">
                             <ActiveItemUpdater />
