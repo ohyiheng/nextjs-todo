@@ -14,11 +14,12 @@ export default function ActiveItemUpdater() {
     const { projects, inboxId } = useProjects();
     const setActiveTag = useSetAtom(activeTagAtom);
 
-    const pathList = pathname.split('/').slice(2);
+    const pathList = pathname?.split('/').slice(2);
     useEffect(() => {
         setActiveTag(null);
         setActiveProject(null);
         
+        if (!pathList) return;
         if (pathList[ 0 ] === "inbox") {
             setActiveProject(getProjectById(projects, inboxId) ?? null);
         } else if (pathList[ 0 ] === "project") {

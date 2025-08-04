@@ -23,7 +23,7 @@ export default function SettingsUser() {
                     <DialogHeader>
                         <DialogTitle>Confirm deletion of account</DialogTitle>
                     </DialogHeader>
-                    <Label htmlFor="username" className="leading-4">Please type your username "{user}"</Label>
+                    <Label htmlFor="username" className="leading-4">Please type your username &quot;{user}&quot;</Label>
                     <Input name="username" value={usernameInput} onChange={(e) => setUsernameInput(e.target.value)} />
                     <div className="flex gap-2 justify-end">
                         <Button variant="outline" onClick={() => setDeleteConfirmOpen(false)}>Cancel</Button>

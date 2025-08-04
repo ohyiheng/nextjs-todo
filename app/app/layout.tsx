@@ -1,5 +1,5 @@
 import ActiveItemUpdater from "@/components/app/active-item-updater";
-import AddTask from "@/components/app/task-add";
+import AddTask from "@/components/app/task/task-add";
 import { AppSidebar } from "@/components/app/app-sidebar";
 import AppTitle from "@/components/app/app-title";
 import ProjectSortingSelect from "@/components/app/project/project-sorting-select";

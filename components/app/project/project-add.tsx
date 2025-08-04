@@ -54,7 +54,7 @@ export default function ProjectAdd() {
             createdAt: new Date(),
             lastModifiedAt: new Date()
         });
-    }, [ projectAddOpen ])
+    }, [ projectAddOpen, form, projects.length ])
 
     if (isMobile) return (
         <Drawer open={projectAddOpen} onOpenChange={setProjectAddOpen}>
