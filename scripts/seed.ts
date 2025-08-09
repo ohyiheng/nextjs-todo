@@ -1,12 +1,16 @@
 import postgres from "postgres";
 
 let { POSTGRES_USER } = process.env;
-const { POSTGRES_PASSWORD, POSTGRES_CONTAINER_NAME } = process.env;
+const { POSTGRES_PASSWORD, POSTGRES_CONTAINER_NAME, DEMO } = process.env;
 
 if (!POSTGRES_USER) POSTGRES_USER = "postgres";
 if (!POSTGRES_PASSWORD) {
     throw new Error("POSTGRES_PASSWORD is not set")
 }
+
+let demo: boolean, demoUserExists: boolean = false;
+if (DEMO?.toLowerCase() === "true") demo = true;
+else demo = false;
 
 const sql = postgres(
     `postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_CONTAINER_NAME}:5432/postgres`,
@@ -24,6 +28,18 @@ async function seedUsers() {
         username TEXT PRIMARY KEY,
         password_hash TEXT NOT NULL
     )`;
+
+    if (demo) {
+        // if demo user already exists, skip
+        const users = await sql`SELECT username FROM users WHERE username = 'demo'`;
+        if (users && users.length > 0) {
+            demoUserExists = true;
+            return;
+        }
+
+        // else, insert demo user with password 'demo123'
+        await sql`INSERT INTO users VALUES ('demo', '$argon2d$v=19$m=16,t=2,p=1$b2pGbFRiR1FZY0FycUlYdA$oH9vy9BGSPhVoJsKp9qJlA')`;
+    }
 }
 
 async function seedSessions() {
@@ -36,7 +52,6 @@ async function seedSessions() {
 }
 
 async function seedProjects() {
-    // await sql`DROP TABLE IF EXISTS projects CASCADE`;
     await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
 
     await sql`
@@ -50,11 +65,15 @@ async function seedProjects() {
         is_inbox BOOLEAN DEFAULT FALSE NOT NULL,
         owner TEXT REFERENCES users(username) ON DELETE CASCADE NOT NULL
     )`;
+
+    if (demo && !demoUserExists) {
+        // insert 'Inbox' project for user 'demo'
+        await sql`INSERT INTO projects (name, is_inbox, owner)
+            VALUES ('Inbox', TRUE, 'demo')`;
+    }
 }
 
 async function seedTasks() {
-    // await sql`DROP TABLE IF EXISTS tasks CASCADE`;
-
     await sql`
     CREATE TABLE IF NOT EXISTS tasks (
         id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
@@ -75,8 +94,6 @@ async function seedTasks() {
 }
 
 async function seedTags() {
-    // await sql`DROP TABLE IF EXISTS tags CASCADE`;
-
     await sql`CREATE TABLE IF NOT EXISTS tags (
         id TEXT,
         owner TEXT REFERENCES users(username) ON DELETE CASCADE,
@@ -85,8 +102,6 @@ async function seedTags() {
 }
 
 async function seedTasksTags() {
-    // await sql`DROP TABLE IF EXISTS tasks_tags CASCADE`;
-
     await sql`CREATE TABLE IF NOT EXISTS tasks_tags (
         task_id UUID REFERENCES tasks(id) ON DELETE CASCADE,
         tag_id TEXT,
