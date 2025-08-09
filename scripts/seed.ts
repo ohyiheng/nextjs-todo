@@ -1,7 +1,7 @@
 import postgres from "postgres";
 
 let { POSTGRES_USER } = process.env;
-const { POSTGRES_PASSWORD, POSTGRES_CONTAINER_NAME, DEMO } = process.env;
+const { POSTGRES_PASSWORD, POSTGRES_HOSTNAME, DEMO } = process.env;
 
 if (!POSTGRES_USER) POSTGRES_USER = "postgres";
 if (!POSTGRES_PASSWORD) {
@@ -13,7 +13,7 @@ if (DEMO?.toLowerCase() === "true") demo = true;
 else demo = false;
 
 const sql = postgres(
-    `postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_CONTAINER_NAME}:5432/postgres`,
+    `postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOSTNAME}:5432/postgres`,
     {
         idle_timeout: 10,
         transform: {
