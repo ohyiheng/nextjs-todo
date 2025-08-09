@@ -5,7 +5,13 @@ import clsx from "clsx";
 import Link from "next/link";
 import { useActionState } from "react";
 
-export default function LoginForm({ signingUp }: { signingUp?: boolean }) {
+export default function LoginForm({
+    signingUp,
+    demo = false
+}: {
+    signingUp?: boolean,
+    demo?: boolean
+}) {
     const initialLoginFormState: LoginFormState = {
         message: null,
     }
@@ -24,6 +30,7 @@ export default function LoginForm({ signingUp }: { signingUp?: boolean }) {
             <h2 className="text-xl font-bold">
                 {signingUp ? "Sign up for a new account" : "Log in to your account"}
             </h2>
+            {demo && <p className="text-sm">Username: demo<br /> Password: demo123</p>}
             <div className="space-y-2.5">
                 <label htmlFor="username" className={clsx(
                     "block text-sm font-semibold",
@@ -91,13 +98,15 @@ export default function LoginForm({ signingUp }: { signingUp?: boolean }) {
                 >
                     Submit
                 </button>
-                <p className="self-center text-sm">
-                    {signingUp ? "Already have an account? " : "Don't have an account? "}
-                    <Link href={signingUp ? "/auth/login" : "/auth/signup"}
-                        className="underline hover:text-sky-800">
-                        {signingUp ? "Log in" : "Sign up"}
-                    </Link>
-                </p>
+                {!demo &&
+                    <p className="self-center text-sm">
+                        {signingUp ? "Already have an account? " : "Don't have an account? "}
+                        <Link href={signingUp ? "/auth/login" : "/auth/signup"}
+                            className="underline hover:text-sky-800">
+                            {signingUp ? "Log in" : "Sign up"}
+                        </Link>
+                    </p>
+                }
             </div>
         </form>
     )

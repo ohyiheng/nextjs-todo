@@ -6,9 +6,11 @@ export default async function Page() {
     const session = await verifySessionCookies();
     if (session) redirect("/app/inbox");
 
+    const demo = process.env.NEXT_PUBLIC_DEMO?.toLowerCase() === "true";
+
     return (
         <div className="flex justify-center items-center h-screen">
-            <LoginForm />
+            <LoginForm demo={demo} />
         </div>
     )
 }

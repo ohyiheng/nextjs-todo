@@ -8,6 +8,8 @@ export default async function Home() {
   const session = await verifySessionCookies();
   if (session) redirect("/app/inbox");
 
+  const demo = process.env.NEXT_PUBLIC_DEMO?.toLowerCase() === "true";
+
   return (
     <div className="w-screen h-screen flex justify-center items-center">
       <div className="flex flex-col gap-12 items-center">
@@ -16,11 +18,13 @@ export default async function Home() {
           <span className="text-4xl font-semibold">Tugas</span>
         </div>
         <div className="flex gap-2 items-center">
-          <Button variant="outline">
-            <Link href="/auth/signup">Sign up</Link>
-          </Button>
+          {!demo &&
+            <Button variant="outline">
+              <Link href="/auth/signup">Sign up</Link>
+            </Button>
+          }
           <Button>
-            <Link href="/auth/login">Log in</Link>
+            <Link href="/auth/login">{demo ? "Begin demo" : "Log in"}</Link>
           </Button>
         </div>
       </div>
