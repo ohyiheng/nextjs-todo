@@ -2,7 +2,7 @@ services:
   db:
     image: postgres
     container_name: tugas-db
-    restart: always
+    restart: unless-stopped
     shm_size: 128mb
     volumes:
       - ./postgres:/var/lib/postgresql/data
@@ -16,6 +16,7 @@ services:
   tugas:
     image: ohyiheng/tugas:latest
     container_name: tugas
+    restart: unless-stopped
     ports:
       - 2558:3000
     depends_on:
