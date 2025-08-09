@@ -1,16 +1,19 @@
 import postgres from "postgres";
 
 let { POSTGRES_USER } = process.env;
-const { POSTGRES_PASSWORD, POSTGRES_HOSTNAME, DEMO } = process.env;
+const {
+    POSTGRES_PASSWORD,
+    POSTGRES_HOSTNAME,
+    NEXT_PUBLIC_DEMO
+} = process.env;
 
 if (!POSTGRES_USER) POSTGRES_USER = "postgres";
 if (!POSTGRES_PASSWORD) {
     throw new Error("POSTGRES_PASSWORD is not set")
 }
 
-let demo: boolean, demoUserExists: boolean = false;
-if (DEMO?.toLowerCase() === "true") demo = true;
-else demo = false;
+const demo = NEXT_PUBLIC_DEMO?.toLowerCase() === "true";
+let demoUserExists: boolean = false;
 
 const sql = postgres(
     `postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOSTNAME}:5432/postgres`,
