@@ -21,33 +21,33 @@ Tugas is a self-hostable to-do list app heavily inspired by [Todoist](https://ww
 
     ```yaml
     services:
-    db:
-        image: postgres
-        container_name: tugas-db
-        restart: unless-stopped
-        shm_size: 128mb
-        volumes:
-            - ./postgres:/var/lib/postgresql/data
-        environment:
-            POSTGRES_PASSWORD: example
-        healthcheck:
-            test: /usr/bin/pg_isready
-            interval: 5s
-            timeout: 10s
-            retries: 60
-    tugas:
-        image: ohyiheng/tugas:latest
-        container_name: tugas
-        restart: unless-stopped
-        ports:
-            - 2558:3000
-        depends_on:
         db:
-            condition: service_healthy
-        environment:
-            POSTGRES_PASSWORD: example
-            # POSTGRES_HOSTNAME must match db's container name
-            POSTGRES_HOSTNAME: tugas-db
+            image: postgres
+            container_name: tugas-db
+            restart: unless-stopped
+            shm_size: 128mb
+            volumes:
+                - ./postgres:/var/lib/postgresql/data
+            environment:
+                POSTGRES_PASSWORD: example
+            healthcheck:
+                test: /usr/bin/pg_isready
+                interval: 5s
+                timeout: 10s
+                retries: 60
+        tugas:
+            image: ohyiheng/tugas:latest
+            container_name: tugas
+            restart: unless-stopped
+            ports:
+                - 2558:3000
+            depends_on:
+            db:
+                condition: service_healthy
+            environment:
+                POSTGRES_PASSWORD: example
+                # POSTGRES_HOSTNAME must match db's container name
+                POSTGRES_HOSTNAME: tugas-db
     ```
 
 2. Configure environment variables, and run:
